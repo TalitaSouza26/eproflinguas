@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* Azuis: base da identidade. `deep` para branding/fundos fortes, `blue` para ação. */
+  --color-deep-50: #eef3fb;
+  --color-deep-100: #d6e2f5;
+  --color-deep-500: #23508f;
+  --color-deep-700: #17386a;
+  --color-deep-900: #0f2247;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-blue-50: #eef4ff;
+  --color-blue-100: #dbe7ff;
+  --color-blue-200: #bdd2ff;
+  --color-blue-500: #2f6bff;
+  --color-blue-600: #1f56e0;
+  --color-blue-700: #1a45b4;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Laranja: apoio e destaque. Usar com parcimônia. */
+  --color-accent-50: #fff4ec;
+  --color-accent-100: #ffe4d1;
+  --color-accent-500: #f97316;
+  --color-accent-600: #e35d05;
+
+  /* Estados de resposta. */
+  --color-correct-50: #ecfdf3;
+  --color-correct-200: #a7e7c1;
+  --color-correct-600: #16a34a;
+  --color-correct-700: #12813c;
+
+  --color-wrong-50: #fef2f2;
+  --color-wrong-200: #fbc5c5;
+  --color-wrong-600: #dc2626;
+  --color-wrong-700: #b31d1d;
+
+  /* Neutros. */
+  --color-ink-900: #10192b;
+  --color-ink-700: #33415c;
+  --color-ink-500: #64748b;
+  --color-ink-300: #cbd5e1;
+  --color-ink-100: #e9eef5;
+  --color-ink-50: #f6f8fb;
+
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 0.875rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ink-50);
+  color: var(--color-ink-900);
 }
