@@ -1,5 +1,5 @@
 import { ChartIcon, DocumentIcon, FlameIcon, TargetIcon, TrendUpIcon } from "@/components/ui/icons";
-import { PROGRESS_RANGES, PROGRESS_STATS, type Stat } from "@/lib/home-data";
+import { PROGRESS_STATS, type Stat } from "@/lib/home-data";
 
 const STAT_ICON = {
   quizzes: DocumentIcon,
@@ -36,30 +36,16 @@ function StatTile({ stat }: { stat: Stat }) {
 export function ProgressSummary() {
   return (
     <section className="rounded-2xl border border-ink-100 bg-white px-6 py-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-start gap-3.5">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-            <ChartIcon className="size-5" />
-          </span>
-          <div>
-            <h2 className="text-lg font-extrabold text-deep-900">Seu progresso</h2>
-            <p className="text-[13px] text-ink-500">Veja como você está evoluindo na sua jornada de aprendizado.</p>
-          </div>
+      <div className="flex items-start gap-3.5">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+          <ChartIcon className="size-5" />
+        </span>
+        <div>
+          <h2 className="text-lg font-extrabold text-deep-900">Seu progresso</h2>
+          <p className="text-[13px] text-ink-500">
+            Veja como você está evoluindo na sua jornada de aprendizado.
+          </p>
         </div>
-
-        <label className="sr-only" htmlFor="progress-range">
-          Período do progresso
-        </label>
-        <select
-          id="progress-range"
-          defaultValue={PROGRESS_RANGES[0]}
-          className="rounded-xl border border-ink-100 bg-white px-3 py-2 text-[13px] text-ink-700
-                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-        >
-          {PROGRESS_RANGES.map((range) => (
-            <option key={range}>{range}</option>
-          ))}
-        </select>
       </div>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">

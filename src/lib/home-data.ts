@@ -32,5 +32,3 @@ export const BUBO_PANEL = {
   tipTitle: "Dica do Bubo",
   tip: "Estudar um pouco todos os dias faz toda a diferença!",
 };
-
-export const PROGRESS_RANGES = ["Últimas 4 semanas", "Últimas 12 semanas", "Todo o período"];
