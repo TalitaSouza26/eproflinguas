@@ -232,3 +232,7 @@ As fases 1 e 2 de todas as trilhas são `image_word`, então **cada palavra do n
 | **Total** | **82** |
 
 Existem 4 hoje (dog, cat, house, flower — e flower nem pertence a estas trilhas). É a maior dependência para o 1º–2º sair do papel.
+
+## Dicas
+
+Toda dica trabalha a **palavra em inglês**, nunca o conceito — ver a seção correspondente em [spec-quiz.md](spec-quiz.md). Elas não são geradas automaticamente: saem escritas à mão ou revisadas item a item, porque uma dica genérica ou que entrega a resposta é pior que dica nenhuma.

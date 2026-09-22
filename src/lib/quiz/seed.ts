@@ -24,7 +24,7 @@ const RAW: unknown[] = [
     ],
     correctChoiceId: "b",
     explanation: "Dog significa cachorro.",
-    hint: "Pense no animal que late e abana o rabo.",
+    hint: "Você já viu essa palavra em “hot dog”.",
   },
   {
     id: "q2",
@@ -42,7 +42,7 @@ const RAW: unknown[] = [
     ],
     correctChoiceId: "c",
     explanation: "Cat significa gato.",
-    hint: "É o animal que mia.",
+    hint: "Tem três letras e começa com C.",
   },
   {
     id: "q3",
@@ -60,7 +60,7 @@ const RAW: unknown[] = [
     ],
     correctChoiceId: "b",
     explanation: "House significa casa.",
-    hint: "Pense no lugar onde uma família mora.",
+    hint: "Começa com H e tem cinco letras.",
   },
   {
     id: "q4",
@@ -78,7 +78,7 @@ const RAW: unknown[] = [
     ],
     correctChoiceId: "c",
     explanation: "Flower significa flor.",
-    hint: "Nasce no jardim e tem pétalas coloridas.",
+    hint: "Parece com “flor” e começa com F.",
   },
   {
     id: "q5",
@@ -94,7 +94,7 @@ const RAW: unknown[] = [
     ],
     correctChoiceId: "b",
     explanation: "Blue significa azul.",
-    hint: "É a cor do céu em dia limpo.",
+    hint: "Você já ouviu em “blue jeans”.",
   },
   {
     id: "q6",
@@ -110,7 +110,7 @@ const RAW: unknown[] = [
     ],
     correctChoiceId: "c",
     explanation: "Teacher significa professor.",
-    hint: "É quem dá a aula.",
+    hint: "Vem de “to teach”, que é ensinar.",
   },
   {
     id: "q7",
@@ -140,7 +140,7 @@ const RAW: unknown[] = [
     ],
     correctChoiceId: "a",
     explanation: "Pão em inglês é bread.",
-    hint: "É o que se come no café da manhã com manteiga.",
+    hint: "Começa com B e tem cinco letras.",
   },
   {
     id: "q9",
@@ -156,7 +156,7 @@ const RAW: unknown[] = [
     ],
     correctChoiceId: "d",
     explanation: "To sleep significa dormir.",
-    hint: "É o que você faz à noite, na cama.",
+    hint: "Está em “sleeping bag”, o saco de dormir.",
   },
   {
     id: "q10",
@@ -172,7 +172,7 @@ const RAW: unknown[] = [
     ],
     correctChoiceId: "b",
     explanation: "Seven significa sete.",
-    hint: "É o número de dias da semana.",
+    hint: "Parece com “sete” e começa com S.",
   },
 ];
 

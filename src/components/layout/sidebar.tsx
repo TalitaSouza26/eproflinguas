@@ -32,12 +32,12 @@ export function Sidebar({
                   lg:static lg:translate-x-0 ${open ? "translate-x-0 shadow-2xl" : "-translate-x-full"}`}
     >
       <div className="mb-8 flex items-start justify-between gap-2">
-        <Link href="/inicio" onClick={onNavigate} className="brand-logo block min-w-0 flex-1 px-4">
+        <Link href="/inicio" onClick={onNavigate} className="block min-w-0 flex-1 px-3">
           <Image
-            src="/brand/logo-linguas.webp"
+            src="/brand/logo-linguas-azul.webp"
             alt="eProf Línguas"
-            width={560}
-            height={190}
+            width={700}
+            height={264}
             priority
             className="h-auto w-full"
           />

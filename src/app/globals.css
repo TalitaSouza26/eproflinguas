@@ -249,13 +249,6 @@ body {
 
 }
 
-/* O menu é escuro nos dois temas, e o logo é azul: sem a placa ele sumiria. */
-.brand-logo {
-  background: #ffffff;
-  border-radius: 0.75rem;
-  padding: 0.4rem 0.6rem;
-}
-
 /* Destaque da patente na Home.
    Um brilho quente que respira atrás do emblema, com brasas subindo. É lento
    e de baixa opacidade de propósito: precisa chamar atenção sem virar

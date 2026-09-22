@@ -204,3 +204,23 @@ As não conquistadas ficam **visíveis, em cinza e com a condição à mostra**:
 | Fogo aceso | Estudar 7 dias seguidos |
 | Trilha completa | Terminar todas as fases de uma trilha |
 | Conversador | Concluir um quiz de diálogo (depende de conteúdo que ainda não existe) |
+
+## A dica trabalha a palavra, não o conceito
+
+A dica existe para ajudar o aluno a **lembrar a palavra em inglês** — nunca para descrever o que a palavra significa.
+
+Descrever o conceito falha nos dois sentidos:
+
+- Em `image_word`, o aluno **já vê** o que é. Numa foto de cachorro, "pense no animal que late" não ajuda em nada: o que falta é saber que a palavra é *dog*.
+- Em `word_meaning` e `meaning_word`, descrever o conceito **entrega a resposta**. "É quem dá a aula" para *Teacher* é a própria alternativa correta escrita de outro jeito.
+
+O que funciona:
+
+| Recurso | Exemplo |
+| --- | --- |
+| Expressão que a criança já ouviu | *Dog* — "Você já viu essa palavra em 'hot dog'." |
+| Palavra parecida em português | *Flower* — "Parece com 'flor' e começa com F." |
+| Forma da palavra | *Cat* — "Tem três letras e começa com C." |
+| Origem | *Teacher* — "Vem de 'to teach', que é ensinar." |
+
+Regra prática: se a dica faz sentido sem o aluno saber inglês nenhum, ela está descrevendo o conceito e precisa ser reescrita.
