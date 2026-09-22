@@ -218,11 +218,19 @@ export function QuizPlayer({
             </button>
           )}
 
+          {/* Sem botão: a próxima questão entra sozinha. A barra ocupa o mesmo
+              espaço do CTA para os controles não pularem entre questões, e
+              mostra quanto falta em vez de deixar o aluno esperando no escuro. */}
           {confirmed && !isLast && (
-            <button type="button" onClick={advance} className={CTA}>
-              Continuar
-              <ArrowRightIcon className="size-4" />
-            </button>
+            <div className="flex w-full flex-col items-end gap-2">
+              <p className="text-[13px] font-semibold text-ink-500">Próxima pergunta…</p>
+              <div className="h-1.5 w-40 overflow-hidden rounded-full bg-ink-100">
+                <div
+                  className="animate-advance h-full rounded-full bg-accent-500"
+                  style={{ animationDuration: `${isCorrect ? ADVANCE_DELAY.correct : ADVANCE_DELAY.wrong}ms` }}
+                />
+              </div>
+            </div>
           )}
 
           {confirmed && isLast && (

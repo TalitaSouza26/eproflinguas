@@ -305,3 +305,26 @@ body {
     display: none;
   }
 }
+
+/* Espera até a próxima questão. A duração vem inline, do mesmo valor que
+   controla o avanço — assim a barra nunca mente sobre o tempo restante. */
+@keyframes advance-bar {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.animate-advance {
+  animation-name: advance-bar;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-advance {
+    animation: none;
+  }
+}
