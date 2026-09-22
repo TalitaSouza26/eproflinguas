@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { BuboPanel } from "@/components/home/bubo-panel";
 import { ContinueCard } from "@/components/home/continue-card";
 import { CurrentBadge } from "@/components/home/current-badge";
 import { DailyMission } from "@/components/home/daily-mission";
@@ -24,10 +23,7 @@ export default function InicioPage() {
         <TrackProgress />
       </div>
 
-      <div className="space-y-5 self-start">
-        <BuboPanel />
-        <CurrentBadge />
-      </div>
+      <CurrentBadge />
     </div>
   );
 }
