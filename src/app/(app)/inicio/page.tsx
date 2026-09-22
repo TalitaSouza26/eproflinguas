@@ -27,8 +27,8 @@ export default function InicioPage() {
       </div>
 
       <div className="space-y-5 self-start">
-        <CurrentBadge />
         <BuboPanel />
+        <CurrentBadge />
       </div>
     </div>
   );
