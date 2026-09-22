@@ -79,11 +79,8 @@ export function CurrentBadge() {
           className="mx-auto mt-3 w-28 drop-shadow-lg"
         />
 
-        <p className="mt-2 text-[15px] font-bold">{category.name}</p>
-        {/* O tier é dito por extenso, não só pela cor do selo. */}
-        <p className="mt-1.5 inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
-          {tier}
-        </p>
+        {/* A patente é o próprio tier: não tem nome além de Bronze, Prata... */}
+        <p className="mt-3 text-xl font-extrabold">{tier}</p>
 
         {nextTier ? (
           <>
