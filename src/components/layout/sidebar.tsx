@@ -40,12 +40,16 @@ export function Sidebar({ signOutAction }: { signOutAction: () => Promise<void> 
               aria-current={active ? "page" : undefined}
               className={
                 active
-                  ? `${ITEM_BASE} bg-white font-semibold text-blue-600 shadow-[0_4px_14px_-6px_rgba(15,34,71,0.25)]`
+                  ? `${ITEM_BASE} bg-[var(--nav-active-bg)] font-semibold text-[var(--nav-active-fg)] shadow-[var(--nav-active-shadow)]`
                   : `${ITEM_BASE} text-[var(--shell-item)] hover:bg-[var(--shell-hover)]`
               }
             >
               <Icon
-                className={active ? "size-[22px] text-accent-500" : "size-[22px] text-[var(--shell-muted)]"}
+                className={
+                  active
+                    ? "size-[22px] text-[var(--nav-active-icon)]"
+                    : "size-[22px] text-[var(--shell-muted)]"
+                }
               />
               {label}
             </Link>

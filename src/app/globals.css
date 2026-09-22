@@ -211,6 +211,12 @@ body {
   --on-bg-muted: var(--color-ink-500);
   --on-bg-item: var(--color-ink-700);
   --on-bg-accent: var(--color-blue-600);
+
+  /* Item selecionado do menu. */
+  --nav-active-bg: var(--color-blue-500);
+  --nav-active-fg: #ffffff;
+  --nav-active-icon: #ffffff;
+  --nav-active-shadow: 0 6px 16px -8px rgb(47 107 255 / 0.7);
 }
 
 :root[data-theme="azul"] {
@@ -228,6 +234,12 @@ body {
   --on-bg-muted: #a9c2f2;
   --on-bg-item: #d8e4fb;
   --on-bg-accent: #9dbcff;
+
+  /* No tema azul um item azul sumiria no fundo: continua card branco. */
+  --nav-active-bg: #ffffff;
+  --nav-active-fg: var(--color-blue-600);
+  --nav-active-icon: var(--color-accent-500);
+  --nav-active-shadow: 0 4px 14px -6px rgb(0 0 0 / 0.4);
 }
 
 /* No tema azul o logo precisa de contraste: ele é azul sobre branco. */
