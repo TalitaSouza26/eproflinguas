@@ -2,7 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
-import { BADGE_PLACEHOLDER, FIRST_GOAL, HIGHEST_BADGE, TOTAL_EARNED } from "@/lib/badges";
+import {
+  BADGE_PLACEHOLDER,
+  FIRST_GOAL,
+  HIGHEST_BADGE,
+  TOTAL_EARNED,
+  badgeImage,
+} from "@/lib/badges";
 
 /**
  * Sem nenhuma insígnia, a Home mostra o primeiro objetivo em vez de um vazio:
@@ -70,13 +76,15 @@ export function CurrentBadge() {
           Patente atual
         </p>
 
+        {/* Aqui vale a arte do tier, não a da categoria: o card mostra a
+            patente, e é o nível que ele nomeia. */}
         <Image
-          src={category.image}
+          src={badgeImage(tier)}
           unoptimized
           alt=""
           width={512}
           height={512}
-          className="mx-auto mt-3 w-28 drop-shadow-lg"
+          className="mx-auto mt-3 w-32 drop-shadow-lg"
         />
 
         {/* A patente é o próprio tier: não tem nome além de Bronze, Prata... */}

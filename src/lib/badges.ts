@@ -90,7 +90,7 @@ export const CATEGORIES: Category[] = [
     // Conta como aprendida a palavra acertada ao menos uma vez em fase concluída.
     unit: "palavras aprendidas",
     thresholds: [20, 50, 100, 200, 400],
-    value: 240,
+    value: 430,
     available: true,
   },
   {
