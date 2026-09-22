@@ -57,7 +57,7 @@ function PatenteLadder() {
         </>
       )}
 
-      <ul className="mt-6 grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         {PATENTES.map((patente, i) => {
           const reached = i <= CURRENT_INDEX;
           const current = i === CURRENT_INDEX;
@@ -79,7 +79,7 @@ function PatenteLadder() {
                 alt=""
                 width={512}
                 height={512}
-                className={`w-20 ${reached ? "" : "opacity-40 grayscale"}`}
+                className={`w-16 sm:w-20 ${reached ? "" : "opacity-40 grayscale"}`}
               />
 
               <p
