@@ -1,4 +1,4 @@
-import { DocumentIcon, FlameIcon, TrendUpIcon } from "@/components/ui/icons";
+import { ChartIcon, DocumentIcon, FlameIcon, TrendUpIcon } from "@/components/ui/icons";
 import { PROGRESS_STATS } from "@/lib/home-data";
 
 const SHOWN = ["quizzes", "streak"] as const;
@@ -17,6 +17,13 @@ const TONE = {
 export function QuickStats() {
   return (
     <section className="self-start rounded-2xl border border-ink-100 bg-white px-6 py-5">
+      <div className="mb-5 flex items-center gap-3">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+          <ChartIcon className="size-4.5" />
+        </span>
+        <h2 className="text-[15px] font-extrabold text-deep-900">Seu progresso</h2>
+      </div>
+
       <ul className="space-y-4">
         {SHOWN.map((key) => {
           const stat = PROGRESS_STATS.find((s) => s.key === key);

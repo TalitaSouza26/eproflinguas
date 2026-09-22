@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { BuboPanel } from "@/components/home/bubo-panel";
 import { ContinueCard } from "@/components/home/continue-card";
 import { DailyMission } from "@/components/home/daily-mission";
-import { ProgressSummary } from "@/components/home/progress-summary";
 import { QuickStats } from "@/components/home/quick-stats";
 import { TrackProgress } from "@/components/home/track-progress";
 import { CURRENT_STUDENT } from "@/lib/home-data";
@@ -22,7 +21,6 @@ export default function InicioPage() {
 
         <ContinueCard />
         <DailyMission />
-        <ProgressSummary />
         <TrackProgress />
       </div>
 
