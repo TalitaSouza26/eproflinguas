@@ -3,7 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon, TargetIcon } from "@/components/ui/icons";
 import { BadgeAward } from "@/components/quiz/badge-award";
+import { PatenteAward } from "@/components/quiz/patente-award";
 import { LATEST_INSIGNIA } from "@/lib/insignias";
+import { CURRENT_PATENTE, WORDS_LEARNED } from "@/lib/patente";
 import { SEED_QUIZ } from "@/lib/quiz/seed";
 import { CURRENT_TRACK } from "@/lib/tracks";
 
@@ -52,6 +54,12 @@ export default async function ResultadoPage({
   // TODO: hoje mostra sempre a última conquistada. Com banco, só aparece
   // quando a fase realmente destravar uma.
   const badge = LATEST_INSIGNIA;
+
+  // As palavras deste quiz podem ter fechado uma patente. Quando isso
+  // acontece, seguir a trilha passa antes pela entrega do emblema.
+  // TODO: com banco, comparar a patente de antes e a de depois da fase em vez
+  // de comemorar a atual em toda conclusão.
+  const patente = CURRENT_PATENTE;
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-10">
@@ -102,10 +110,22 @@ export default async function ResultadoPage({
         )}
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Link href={`/quizzes/${CURRENT_TRACK.slug}`} className={CTA_PRIMARY}>
-            Continuar trilha
-            <ArrowRightIcon className="size-4" />
-          </Link>
+          {patente ? (
+            <PatenteAward
+              patente={patente}
+              words={WORDS_LEARNED}
+              href={`/quizzes/${CURRENT_TRACK.slug}`}
+              className={CTA_PRIMARY}
+            >
+              Continuar trilha
+              <ArrowRightIcon className="size-4" />
+            </PatenteAward>
+          ) : (
+            <Link href={`/quizzes/${CURRENT_TRACK.slug}`} className={CTA_PRIMARY}>
+              Continuar trilha
+              <ArrowRightIcon className="size-4" />
+            </Link>
+          )}
           <Link href={`/quizzes/${CURRENT_TRACK.slug}`} className={CTA_SECONDARY}>
             Refazer quiz
           </Link>
