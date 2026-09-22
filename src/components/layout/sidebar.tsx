@@ -15,7 +15,7 @@ export function Sidebar({ signOutAction }: { signOutAction: () => Promise<void> 
 
   return (
     <aside className="flex w-[272px] shrink-0 flex-col bg-[var(--shell-bg)] px-4 py-7">
-      <Link href="/inicio" className="brand-logo mb-6 block px-4">
+      <Link href="/inicio" className="brand-logo mb-8 block px-4">
         <Image
           src="/brand/logo-linguas.webp"
           alt="eProf Línguas"
@@ -25,10 +25,6 @@ export function Sidebar({ signOutAction }: { signOutAction: () => Promise<void> 
           className="h-auto w-full"
         />
       </Link>
-
-      <span className="mx-1 mb-8 rounded-lg bg-accent-500 px-5 py-3 text-center text-xs font-bold tracking-wide text-white">
-        PORTAL DO ALUNO
-      </span>
 
       <nav className="flex flex-col gap-1">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
