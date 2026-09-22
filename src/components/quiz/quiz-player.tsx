@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChoiceCard, type ChoiceState } from "@/components/quiz/choice-card";
 import { ArrowLeftIcon, ArrowRightIcon, BulbIcon, SpeakerIcon } from "@/components/ui/icons";
 import { FORMAT_INSTRUCTION, type Question } from "@/lib/quiz/types";
@@ -18,6 +18,15 @@ function stateFor(
   if (choiceId === selected) return "incorrect";
   return "muted";
 }
+
+/**
+ * Quanto tempo o feedback fica na tela antes de avançar sozinho.
+ *
+ * O erro ganha mais que o dobro: é ali que está o aprendizado, e uma criança
+ * do 2º ano não lê a explicação em um segundo. O botão continua disponível
+ * para quem quiser passar antes.
+ */
+const ADVANCE_DELAY = { correct: 1800, wrong: 4200 };
 
 const CTA =
   "inline-flex items-center gap-2.5 rounded-full bg-accent-500 px-7 py-3.5 text-sm font-bold text-white " +
@@ -61,26 +70,37 @@ export function QuizPlayer({
     ]);
   }
 
-  function advance() {
+  // Só mexe em setters de estado, então é estável e o efeito abaixo não
+  // reinicia o cronômetro a cada render.
+  const advance = useCallback(() => {
     setIndex((i) => i + 1);
     setSelected(null);
     setConfirmed(false);
     setHintOpen(false);
-  }
+  }, []);
+
+  // Depois de confirmar, a próxima questão entra sozinha.
+  useEffect(() => {
+    if (!confirmed || isLast) return;
+
+    const delay = isCorrect ? ADVANCE_DELAY.correct : ADVANCE_DELAY.wrong;
+    const timer = setTimeout(advance, delay);
+    return () => clearTimeout(timer);
+  }, [confirmed, isCorrect, isLast, advance]);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-6 py-8">
       <Link
         href="/inicio"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-ink-700 transition hover:text-deep-900
+        className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--on-bg-item)] transition hover:text-[var(--on-bg-strong)]
                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
       >
         <ArrowLeftIcon className="size-4" />
         Voltar
       </Link>
 
-      <h2 className="mt-4 text-center text-3xl font-extrabold text-deep-900">{title}</h2>
-      <p className="mt-1.5 text-center text-sm text-ink-500">{context}</p>
+      <h2 className="mt-4 text-center text-3xl font-extrabold text-[var(--on-bg-strong)]">{title}</h2>
+      <p className="mt-1.5 text-center text-sm text-[var(--on-bg-muted)]">{context}</p>
 
       {/* A barra mede posição no quiz, não desempenho: avança por questão concluída. */}
       <div className="mt-5 flex items-center gap-4">
@@ -97,7 +117,7 @@ export function QuizPlayer({
             style={{ width: `${((index + 1) / total) * 100}%` }}
           />
         </div>
-        <span className="shrink-0 text-sm font-semibold text-ink-700">
+        <span className="shrink-0 text-sm font-semibold text-[var(--on-bg-item)]">
           Pergunta {index + 1} de {total}
         </span>
       </div>

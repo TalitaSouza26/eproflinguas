@@ -13,10 +13,10 @@ export default function InicioPage() {
     <div className="grid gap-6 px-8 pb-10 pt-4 xl:grid-cols-[1fr_19rem]">
       <div className="min-w-0 space-y-5">
         <div>
-          <h2 className="text-[28px] font-extrabold leading-tight text-deep-900">
+          <h2 className="text-[28px] font-extrabold leading-tight text-[var(--on-bg-strong)]">
             Olá, {CURRENT_STUDENT.firstName}!
           </h2>
-          <p className="mt-0.5 text-[15px] text-blue-600">Pronto para aprender hoje?</p>
+          <p className="mt-0.5 text-[15px] text-[var(--on-bg-accent)]">Pronto para aprender hoje?</p>
         </div>
 
         <ContinueCard />
@@ -25,8 +25,8 @@ export default function InicioPage() {
       </div>
 
       <div className="space-y-5 self-start">
-        <BuboPanel />
         <CurrentBadge />
+        <BuboPanel />
       </div>
     </div>
   );

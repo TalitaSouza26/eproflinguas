@@ -23,8 +23,8 @@ export default async function CategoriaPage({
     <div className="mx-auto w-full max-w-5xl px-8 pb-10 pt-4">
       <Link
         href="/conquistas"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-ink-700 transition
-                   hover:text-deep-900 focus-visible:outline-2 focus-visible:outline-offset-2
+        className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--on-bg-item)] transition
+                   hover:text-[var(--on-bg-strong)] focus-visible:outline-2 focus-visible:outline-offset-2
                    focus-visible:outline-blue-500"
       >
         <ArrowLeftIcon className="size-4" />
@@ -32,10 +32,10 @@ export default async function CategoriaPage({
       </Link>
 
       <header className="mt-4">
-        <h2 className="text-2xl font-extrabold text-deep-900">{category.name}</h2>
-        <p className="mt-0.5 text-[15px] text-ink-500">{category.description}</p>
-        <p className="mt-3 text-[15px] text-ink-700">
-          <span className="font-bold text-deep-900">
+        <h2 className="text-2xl font-extrabold text-[var(--on-bg-strong)]">{category.name}</h2>
+        <p className="mt-0.5 text-[15px] text-[var(--on-bg-muted)]">{category.description}</p>
+        <p className="mt-3 text-[15px] text-[var(--on-bg-item)]">
+          <span className="font-bold text-[var(--on-bg-strong)]">
             {category.value} {category.unit}
           </span>
           {progress.nextTier
@@ -61,6 +61,7 @@ export default async function CategoriaPage({
             >
               <Image
                 src={badgeImage(tier)}
+          unoptimized
                 alt=""
                 width={512}
                 height={512}

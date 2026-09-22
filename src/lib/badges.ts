@@ -29,6 +29,8 @@ export const TIER_STYLE: Record<Tier, { ring: string; text: string; chip: string
 export type Category = {
   key: string;
   name: string;
+  /** Arte da categoria. O símbolo identifica o que ela mede. */
+  image: string;
   /** O que a categoria mede, em uma linha. */
   description: string;
   /** Unidade contada, usada nas frases de progresso. */
@@ -53,6 +55,7 @@ export const CATEGORIES: Category[] = [
   {
     key: "iniciante",
     name: "Iniciante",
+    image: "/badges/categorias/iniciante.webp",
     description: "Quizzes concluídos",
     unit: "quizzes concluídos",
     thresholds: [3, 7, 15, 30, 60],
@@ -62,6 +65,7 @@ export const CATEGORIES: Category[] = [
   {
     key: "avancando",
     name: "Avançando",
+    image: "/badges/categorias/avancando.webp",
     description: "Dias seguidos estudando",
     unit: "dias seguidos",
     thresholds: [3, 7, 14, 30, 60],
@@ -71,6 +75,7 @@ export const CATEGORIES: Category[] = [
   {
     key: "foguete",
     name: "Rápido como foguete",
+    image: "/badges/categorias/foguete.webp",
     description: "Quizzes com 80% ou mais de acerto",
     unit: "quizzes com 80%+",
     thresholds: [3, 7, 15, 30, 60],
@@ -80,6 +85,7 @@ export const CATEGORIES: Category[] = [
   {
     key: "vocabulario",
     name: "Vocabulário",
+    image: "/badges/categorias/vocabulario.webp",
     description: "Palavras aprendidas",
     // Conta como aprendida a palavra acertada ao menos uma vez em fase concluída.
     unit: "palavras aprendidas",
@@ -90,6 +96,7 @@ export const CATEGORIES: Category[] = [
   {
     key: "conversacao",
     name: "Conversação",
+    image: "/badges/categorias/conversacao.webp",
     description: "Quizzes de diálogo",
     unit: "quizzes de diálogo",
     thresholds: [3, 7, 15, 30, 60],
@@ -103,9 +110,12 @@ export const CATEGORIES: Category[] = [
 export const BADGE_PLACEHOLDER = "/badges/insignia-padrao.webp";
 
 /**
- * Arte de cada tier. O nome do tier está gravado na própria imagem, então
- * cada tier precisa da sua — e não dá para ter arte por categoria sem
- * multiplicar tudo por cinco.
+ * Arte de cada tier, com o nome gravado na imagem.
+ *
+ * Usada só na tela de detalhe, onde os cinco tiers aparecem lado a lado e a
+ * comparação entre eles é o assunto. Nas demais telas vale a arte da
+ * categoria, porque ali o que identifica é o que ela mede — o tier vai por
+ * escrito.
  *
  * TODO: falta a arte do Diamante no mesmo estilo.
  */

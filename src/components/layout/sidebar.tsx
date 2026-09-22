@@ -14,8 +14,8 @@ export function Sidebar({ signOutAction }: { signOutAction: () => Promise<void> 
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-[272px] shrink-0 flex-col bg-ink-50 px-4 py-7">
-      <Link href="/inicio" className="mb-6 block px-4">
+    <aside className="flex w-[272px] shrink-0 flex-col bg-[var(--shell-bg)] px-4 py-7">
+      <Link href="/inicio" className="brand-logo mb-6 block px-4">
         <Image
           src="/brand/logo-linguas.webp"
           alt="eProf Línguas"
@@ -41,18 +41,23 @@ export function Sidebar({ signOutAction }: { signOutAction: () => Promise<void> 
               className={
                 active
                   ? `${ITEM_BASE} bg-white font-semibold text-blue-600 shadow-[0_4px_14px_-6px_rgba(15,34,71,0.25)]`
-                  : `${ITEM_BASE} text-ink-700 hover:bg-white/70`
+                  : `${ITEM_BASE} text-[var(--shell-item)] hover:bg-[var(--shell-hover)]`
               }
             >
-              <Icon className={active ? "size-[22px] text-accent-500" : "size-[22px] text-ink-500"} />
+              <Icon
+                className={active ? "size-[22px] text-accent-500" : "size-[22px] text-[var(--shell-muted)]"}
+              />
               {label}
             </Link>
           );
         })}
 
         <form action={signOutAction}>
-          <button type="submit" className={`${ITEM_BASE} w-full text-ink-700 hover:bg-white/70`}>
-            <LogoutIcon className="size-[22px] text-ink-500" />
+          <button
+            type="submit"
+            className={`${ITEM_BASE} w-full text-[var(--shell-item)] hover:bg-[var(--shell-hover)]`}
+          >
+            <LogoutIcon className="size-[22px] text-[var(--shell-muted)]" />
             Sair da conta
           </button>
         </form>

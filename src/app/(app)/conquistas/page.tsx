@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BadgeCase } from "@/components/conquistas/badge-case";
 import { ArrowRightIcon, CheckIcon, LockIcon, MedalIcon } from "@/components/ui/icons";
 import {
   ALL_PROGRESS,
@@ -8,7 +9,6 @@ import {
   TIER_STYLE,
   TOTAL_CATEGORIES,
   TOTAL_EARNED,
-  badgeImage,
   type CategoryProgress,
 } from "@/lib/badges";
 
@@ -74,7 +74,8 @@ function CategoryCard({ progress }: { progress: CategoryProgress }) {
     <li className="rounded-2xl border border-ink-100 bg-white px-6 py-6 transition hover:border-blue-200">
       <div className="flex items-start gap-4">
         <Image
-          src={badgeImage(tier)}
+          src={category.image}
+          unoptimized
           alt=""
           width={512}
           height={512}
@@ -162,9 +163,17 @@ export default function ConquistasPage() {
             </p>
           </div>
         </div>
+
+        <div className="mt-6 border-t border-ink-100 pt-6">
+          <BadgeCase />
+        </div>
       </section>
 
-      <ul className="mt-5 grid gap-4 xl:grid-cols-2">
+      <h3 className="mt-8 text-[15px] font-extrabold text-[var(--on-bg-strong)]">
+        Seu progresso em cada uma
+      </h3>
+
+      <ul className="mt-3 grid gap-4 xl:grid-cols-2">
         {ALL_PROGRESS.map((progress) => (
           <CategoryCard key={progress.category.key} progress={progress} />
         ))}

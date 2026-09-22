@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon, TargetIcon } from "@/components/ui/icons";
-import { HIGHEST_BADGE, badgeImage } from "@/lib/badges";
+import { BadgeAward } from "@/components/quiz/badge-award";
+import { HIGHEST_BADGE } from "@/lib/badges";
 import { SEED_QUIZ } from "@/lib/quiz/seed";
 import { CURRENT_TRACK } from "@/lib/tracks";
 
@@ -56,14 +57,7 @@ export default async function ResultadoPage({
     <div className="mx-auto w-full max-w-2xl px-6 py-10">
       <section className="rounded-3xl bg-white px-8 py-10 text-center shadow-[0_18px_50px_-30px_rgba(15,34,71,0.4)]">
         {badge ? (
-          <Image
-            src={badgeImage(badge.tier)}
-            alt=""
-            width={512}
-            height={512}
-            priority
-            className="mx-auto w-40"
-          />
+          <BadgeAward badge={badge} />
         ) : (
           <Image
             src="/bubo/bubo-pointing.webp"
@@ -87,24 +81,8 @@ export default async function ResultadoPage({
         </p>
         <p className="mt-2 text-sm font-medium text-ink-500">respostas corretas</p>
 
-        {/* A arte já está no topo; aqui fica só o nome do que foi conquistado. */}
-        {badge && (
-          <div className="mt-8 rounded-2xl bg-accent-50 px-6 py-5">
-            <p className="text-xs font-bold uppercase tracking-wide text-accent-600">
-              Nova insígnia
-            </p>
-            <p className="mt-1 text-[17px] font-bold text-deep-900">
-              {badge.category.name} — {badge.tier}
-            </p>
-            <p className="mt-0.5 text-[13px] leading-relaxed text-ink-700">
-              {badge.category.value} {badge.category.unit}
-              {badge.nextTier ? ` · faltam ${badge.remaining} para ${badge.nextTier}` : ""}
-            </p>
-          </div>
-        )}
-
         {practice.length > 0 && (
-          <div className="mt-4 rounded-2xl bg-blue-50 px-6 py-5 text-left">
+          <div className="mt-8 rounded-2xl bg-blue-50 px-6 py-5 text-left">
             <p className="flex items-center gap-2.5 text-sm font-bold text-deep-900">
               <TargetIcon className="size-5 text-accent-500" />
               O que praticar mais

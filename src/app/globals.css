@@ -49,3 +49,190 @@ body {
   background: var(--color-ink-50);
   color: var(--color-ink-900);
 }
+
+/* Conquista de insígnia.
+   Microinteração curta, sem repetição: o selo entra com um pulo e um brilho
+   que se dissipa. Nada que atrase o aluno ou vire celebração longa. */
+
+@keyframes badge-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) rotate(-8deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.06) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes badge-glow {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  40% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+@keyframes badge-ray {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.2);
+  }
+  45% {
+    opacity: 0.85;
+    transform: scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1.15);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-badge-pop {
+  animation: badge-pop 1150ms cubic-bezier(0.22, 1.2, 0.36, 1) both;
+}
+
+.animate-badge-glow {
+  animation: badge-glow 1500ms ease-out both;
+}
+
+.animate-badge-ray {
+  animation: badge-ray 1000ms ease-out both;
+}
+
+.animate-rise-in {
+  animation: rise-in 650ms ease-out both;
+}
+
+/* Quem pede menos movimento vê o resultado final, sem transição. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-badge-pop,
+  .animate-badge-glow,
+  .animate-badge-ray,
+  .animate-rise-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .animate-badge-glow,
+  .animate-badge-ray {
+    display: none;
+  }
+}
+
+/* Confirmação da resposta.
+   A alternativa certa pulsa um anel duas vezes — sinal de acerto sem barulho
+   visual. A errada dá um tremor curto, o bastante para chamar atenção. */
+
+@keyframes correct-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(22, 163, 74, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+  }
+}
+
+@keyframes wrong-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+.animate-correct-pulse {
+  animation: correct-pulse 1100ms ease-out 2;
+}
+
+.animate-wrong-shake {
+  animation: wrong-shake 420ms ease-in-out 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-correct-pulse,
+  .animate-wrong-shake {
+    animation: none;
+  }
+}
+
+/* Temas da aplicação.
+   `original` é o claro; `azul` pinta a casca e o fundo de azul e mantém os
+   cards brancos. Os cards não mudam: só o que fica atrás deles. */
+
+:root {
+  --shell-bg: var(--color-ink-50);
+  --shell-border: var(--color-ink-100);
+  --shell-title: var(--color-deep-900);
+  --shell-muted: var(--color-ink-500);
+  --shell-item: var(--color-ink-700);
+  --shell-hover: rgb(255 255 255 / 0.7);
+
+  --content-from: #eaf2fd;
+  --content-to: #f8fbff;
+
+  --on-bg-strong: var(--color-deep-900);
+  --on-bg-muted: var(--color-ink-500);
+  --on-bg-item: var(--color-ink-700);
+  --on-bg-accent: var(--color-blue-600);
+}
+
+:root[data-theme="azul"] {
+  --shell-bg: #0c2464;
+  --shell-border: rgb(255 255 255 / 0.12);
+  --shell-title: #ffffff;
+  --shell-muted: #a9c2f2;
+  --shell-item: #d8e4fb;
+  --shell-hover: rgb(255 255 255 / 0.1);
+
+  --content-from: #143a9e;
+  --content-to: #0d2870;
+
+  --on-bg-strong: #ffffff;
+  --on-bg-muted: #a9c2f2;
+  --on-bg-item: #d8e4fb;
+  --on-bg-accent: #9dbcff;
+}
+
+/* No tema azul o logo precisa de contraste: ele é azul sobre branco. */
+:root[data-theme="azul"] .brand-logo {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 0.4rem 0.6rem;
+}

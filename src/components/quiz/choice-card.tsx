@@ -35,7 +35,9 @@ export function ChoiceCard({
       aria-pressed={state === "selected"}
       className={`flex w-full items-center justify-between gap-3 rounded-2xl border-2 px-5 py-4 text-left text-[15px]
                   font-semibold transition disabled:cursor-default
-                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 ${STYLES[state]}`}
+                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500
+                  ${state === "correct" ? "animate-correct-pulse" : ""}
+                  ${state === "incorrect" ? "animate-wrong-shake" : ""} ${STYLES[state]}`}
     >
       <span className="min-w-0 flex-1 text-center">{label}</span>
 
