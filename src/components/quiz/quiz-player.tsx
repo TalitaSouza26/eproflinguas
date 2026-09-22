@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ChoiceCard, type ChoiceState } from "@/components/quiz/choice-card";
+import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
 import { ArrowLeftIcon, ArrowRightIcon, BulbIcon, SpeakerIcon } from "@/components/ui/icons";
 import { FORMAT_INSTRUCTION, type Question } from "@/lib/quiz/types";
 
@@ -34,11 +35,16 @@ const CTA =
   "focus-visible:outline-offset-2 focus-visible:outline-accent-600";
 
 export function QuizPlayer({
-  title,
+  trackTitle,
+  phase,
+  phases,
   context,
   questions,
 }: {
-  title: string;
+  trackTitle: string;
+  /** Fase atual e total de fases da trilha. */
+  phase: number;
+  phases: number;
   /** Onde o aluno está na trilha e o que falta para abrir a próxima. */
   context: string;
   questions: Question[];
@@ -90,20 +96,35 @@ export function QuizPlayer({
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
-      <Link
-        href="/inicio"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--on-bg-item)] transition hover:text-[var(--on-bg-strong)]
-                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-      >
-        <ArrowLeftIcon className="size-4" />
-        Voltar
-      </Link>
+      {/* Faixa da fase: onde o aluno está, com a saída sempre à vista. */}
+      <header className={`${BLUE_CARD} px-6 py-5`}>
+        <CardBackdrop />
 
-      <h2 className="mt-4 text-center text-3xl font-extrabold text-[var(--on-bg-strong)]">{title}</h2>
-      <p className="mt-1.5 text-center text-sm text-[var(--on-bg-muted)]">{context}</p>
+        <div className="relative flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <Link
+              href="/inicio"
+              className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em]
+                         text-blue-200 transition hover:text-white focus-visible:outline-2
+                         focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              <ArrowLeftIcon className="size-4" />
+              Fase {phase} de {phases}
+            </Link>
+
+            <h2 className="mt-1 truncate text-2xl font-extrabold">{trackTitle}</h2>
+          </div>
+
+          <span className="shrink-0 rounded-full border border-white/25 px-4 py-2 text-xs font-bold">
+            {index + 1} de {total}
+          </span>
+        </div>
+      </header>
+
+      <p className="mt-3 text-center text-sm text-[var(--on-bg-muted)]">{context}</p>
 
       {/* A barra mede posição no quiz, não desempenho: avança por questão concluída. */}
-      <div className="mt-5 flex items-center gap-4">
+      <div className="mt-3 flex items-center gap-4">
         <div
           role="progressbar"
           aria-label="Progresso no quiz"

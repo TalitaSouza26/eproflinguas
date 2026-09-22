@@ -16,7 +16,9 @@ export default async function QuizPage({ params }: { params: Promise<{ track: st
   // por IA entrar, elas virão do léxico da trilha e da fase (docs/curriculo.md).
   return (
     <QuizPlayer
-      title={`${track.title} · Fase ${CURRENT_PHASE}`}
+      trackTitle={track.title}
+      phase={CURRENT_PHASE}
+      phases={track.phases}
       context={trackContextLine(track)}
       questions={SEED_QUIZ.questions}
     />
