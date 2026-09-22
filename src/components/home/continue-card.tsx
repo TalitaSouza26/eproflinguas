@@ -2,9 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
+import { HIGHEST_BADGE } from "@/lib/badges";
 import { CURRENT_TRACK } from "@/lib/tracks";
 
 export function ContinueCard() {
+  const badge = HIGHEST_BADGE;
+
   return (
     <section className={`${BLUE_CARD} px-8 py-8`}>
       <CardBackdrop />
@@ -31,15 +34,24 @@ export function ContinueCard() {
         </Link>
       </div>
 
-      <Image
-        src="/illustrations/book.webp"
-          unoptimized
-        alt=""
-        width={1456}
-        height={1092}
-        priority
-        className="pointer-events-none absolute right-4 top-1/2 hidden w-[17rem] -translate-y-1/2 lg:block"
-      />
+      {/* A insígnia de maior tier ocupa o lado direito, no lugar da ilustração. */}
+      {badge && (
+        <div className="pointer-events-none absolute right-10 top-1/2 hidden -translate-y-1/2 text-center lg:block">
+          <Image
+            src={badge.category.image}
+            unoptimized
+            alt=""
+            width={512}
+            height={512}
+            priority
+            className="mx-auto w-36 drop-shadow-2xl"
+          />
+          <p className="mt-2 text-sm font-bold text-white">{badge.category.name}</p>
+          <p className="mt-1 inline-block rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold text-white">
+            {badge.tier}
+          </p>
+        </div>
+      )}
     </section>
   );
 }
