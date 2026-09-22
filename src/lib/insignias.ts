@@ -35,7 +35,7 @@ export const INSIGNIAS: Insignia[] = [
     id: "maratonista",
     name: "Maratonista",
     condition: "Aprenda 30 palavras em um dia",
-    image: "/badges/categorias/_reserva-calendario.webp",
+    image: "/badges/insignias/maratonista.webp",
     earned: true,
     earnedAt: "15/09",
   },
