@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { BuboPanel } from "@/components/home/bubo-panel";
 import { ContinueCard } from "@/components/home/continue-card";
-import { CurrentBadge } from "@/components/home/current-badge";
 import { DailyMission } from "@/components/home/daily-mission";
 import { ProgressSummary } from "@/components/home/progress-summary";
+import { QuickStats } from "@/components/home/quick-stats";
 import { TrackProgress } from "@/components/home/track-progress";
 import { CURRENT_STUDENT } from "@/lib/home-data";
 
@@ -28,7 +28,7 @@ export default function InicioPage() {
 
       <div className="space-y-5 self-start">
         <BuboPanel />
-        <CurrentBadge />
+        <QuickStats />
       </div>
     </div>
   );
