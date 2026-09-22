@@ -62,8 +62,9 @@ export default async function ResultadoPage({
           <Image
             src="/bubo/bubo-pointing.webp"
             alt="Bubo, o mascote do eProf Línguas"
-            width={1080}
-            height={1440}
+            width={1122}
+            height={1402}
+            unoptimized
             priority
             className="mx-auto w-32"
           />

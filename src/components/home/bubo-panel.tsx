@@ -14,8 +14,9 @@ export function BuboPanel() {
       <Image
         src="/bubo/bubo-pointing.webp"
         alt="Bubo, o mascote do eProf Línguas"
-        width={1080}
-        height={1440}
+        width={1122}
+        height={1402}
+        unoptimized
         className="mx-auto mt-4 w-40"
       />
 
