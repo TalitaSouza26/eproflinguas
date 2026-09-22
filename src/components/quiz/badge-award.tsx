@@ -1,19 +1,17 @@
 import Image from "next/image";
-import { TIER_STYLE, type CategoryProgress } from "@/lib/badges";
+import type { Insignia } from "@/lib/insignias";
 
-/** Raios que saem de trás do selo. Decorativos e de vida curta. */
+/** Raios que saem de trás da insígnia. Decorativos e de vida curta. */
 const RAYS = [0, 45, 90, 135, 180, 225, 270, 315];
 
 /**
  * Entrega da insígnia na tela de resultado.
  *
- * A animação roda uma vez, dura menos de um segundo e não se repete — a
+ * A animação roda uma vez, dura menos de dois segundos e não se repete — a
  * especificação pede microinteração curta, não celebração longa. Quem tem
  * `prefers-reduced-motion` ligado vê direto o estado final.
  */
-export function BadgeAward({ badge }: { badge: CategoryProgress }) {
-  const style = badge.tier ? TIER_STYLE[badge.tier] : null;
-
+export function BadgeAward({ insignia }: { insignia: Insignia }) {
   return (
     <div className="flex flex-col items-center">
       <div className="relative flex items-center justify-center">
@@ -40,7 +38,7 @@ export function BadgeAward({ badge }: { badge: CategoryProgress }) {
         ))}
 
         <Image
-          src={badge.category.image}
+          src={insignia.image}
           unoptimized
           alt=""
           width={512}
@@ -60,16 +58,14 @@ export function BadgeAward({ badge }: { badge: CategoryProgress }) {
         className="animate-rise-in mt-1 text-xl font-extrabold text-deep-900"
         style={{ animationDelay: "900ms" }}
       >
-        {badge.category.name}
+        {insignia.name}
       </p>
-      {style && (
-        <p
-          className={`animate-rise-in mt-2 rounded-full px-3.5 py-1 text-xs font-bold ${style.chip} ${style.text}`}
-          style={{ animationDelay: "1020ms" }}
-        >
-          {badge.tier}
-        </p>
-      )}
+      <p
+        className="animate-rise-in mt-1 text-[13px] text-ink-700"
+        style={{ animationDelay: "1020ms" }}
+      >
+        {insignia.condition}
+      </p>
     </div>
   );
 }

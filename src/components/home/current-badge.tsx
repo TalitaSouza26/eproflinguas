@@ -2,70 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
+import { EARNED_INSIGNIAS } from "@/lib/insignias";
 import {
-  BADGE_PLACEHOLDER,
-  FIRST_GOAL,
-  HIGHEST_BADGE,
-  TOTAL_EARNED,
-  badgeImage,
-} from "@/lib/badges";
+  CURRENT_PATENTE,
+  NEXT_PATENTE,
+  PATENTES,
+  PATENTE_PERCENT,
+  WORDS_LEARNED,
+  WORDS_TO_NEXT,
+} from "@/lib/patente";
 
-/**
- * Sem nenhuma insígnia, a Home mostra o primeiro objetivo em vez de um vazio:
- * a microprogressão do primeiro dia é o que puxa o aluno para o terceiro quiz.
- */
-function FirstGoal() {
-  const { category, nextThreshold } = FIRST_GOAL;
-  const goal = nextThreshold ?? 1;
-
-  return (
-    <section className={`${BLUE_CARD} self-start px-6 py-6 text-center`}>
-      <CardBackdrop />
-
-      <div className="relative">
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-200">
-          Seu primeiro objetivo
-        </p>
-
-        <Image
-          src={BADGE_PLACEHOLDER}
-          unoptimized
-          alt=""
-          width={512}
-          height={512}
-          className="mx-auto mt-3 w-20 opacity-45 grayscale"
-        />
-
-        <p className="mt-2 text-[15px] font-bold">
-          {category.value} de {goal} quizzes concluídos
-        </p>
-
-        <div
-          role="progressbar"
-          aria-label="Progresso para a primeira insígnia"
-          aria-valuenow={category.value}
-          aria-valuemin={0}
-          aria-valuemax={goal}
-          className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/20"
-        >
-          <div
-            className="h-full rounded-full bg-accent-500"
-            style={{ width: `${((category.value / goal) * 100).toFixed(0)}%` }}
-          />
-        </div>
-
-        <p className="mt-3 text-xs leading-relaxed text-blue-100">
-          Complete {goal} quizzes para conquistar sua primeira insígnia.
-        </p>
-      </div>
-    </section>
-  );
-}
-
+/** A patente do aluno e o quanto falta para a próxima, em palavras. */
 export function CurrentBadge() {
-  if (!HIGHEST_BADGE) return <FirstGoal />;
-
-  const { category, tier, nextTier, remaining, percent } = HIGHEST_BADGE;
+  const shown = CURRENT_PATENTE ?? PATENTES[0];
 
   return (
     <section className={`${BLUE_CARD} self-start px-6 py-6 text-center`}>
@@ -76,38 +25,43 @@ export function CurrentBadge() {
           Patente atual
         </p>
 
-        {/* Aqui vale a arte do tier, não a da categoria: o card mostra a
-            patente, e é o nível que ele nomeia. */}
         <Image
-          src={badgeImage(tier)}
+          src={shown.image}
           unoptimized
           alt=""
           width={512}
           height={512}
-          className="mx-auto mt-3 w-32 drop-shadow-lg"
+          className={`mx-auto mt-3 w-32 drop-shadow-lg ${
+            CURRENT_PATENTE ? "" : "opacity-40 grayscale"
+          }`}
         />
 
-        {/* A patente é o próprio tier: não tem nome além de Bronze, Prata... */}
-        <p className="mt-3 text-xl font-extrabold">{tier}</p>
+        <p className="mt-3 text-xl font-extrabold">
+          {CURRENT_PATENTE ? CURRENT_PATENTE.name : "Sem patente ainda"}
+        </p>
+        <p className="mt-1 text-xs text-blue-100">{WORDS_LEARNED} palavras aprendidas</p>
 
-        {nextTier ? (
+        {NEXT_PATENTE ? (
           <>
             <div
               role="progressbar"
-              aria-label={`Progresso para ${nextTier}`}
-              aria-valuenow={percent}
+              aria-label={`Progresso para ${NEXT_PATENTE.name}`}
+              aria-valuenow={PATENTE_PERCENT}
               aria-valuemin={0}
               aria-valuemax={100}
               className="mt-4 h-2 overflow-hidden rounded-full bg-white/20"
             >
-              <div className="h-full rounded-full bg-accent-500" style={{ width: `${percent}%` }} />
+              <div
+                className="h-full rounded-full bg-accent-500"
+                style={{ width: `${PATENTE_PERCENT}%` }}
+              />
             </div>
             <p className="mt-2 text-xs leading-relaxed text-blue-100">
-              Faltam {remaining} {category.unit} para {nextTier}.
+              Faltam {WORDS_TO_NEXT} palavras para {NEXT_PATENTE.name}.
             </p>
           </>
         ) : (
-          <p className="mt-3 text-xs font-semibold text-blue-100">Tier máximo alcançado.</p>
+          <p className="mt-3 text-xs font-semibold text-blue-100">Patente máxima alcançada.</p>
         )}
 
         <Link
@@ -116,7 +70,7 @@ export function CurrentBadge() {
                      underline-offset-4 transition hover:underline focus-visible:outline-2
                      focus-visible:outline-offset-2 focus-visible:outline-white"
         >
-          Ver as {TOTAL_EARNED} conquistas
+          Ver as {EARNED_INSIGNIAS.length} insígnias
           <ArrowRightIcon className="size-3.5" />
         </Link>
       </div>

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon, TargetIcon } from "@/components/ui/icons";
 import { BadgeAward } from "@/components/quiz/badge-award";
-import { HIGHEST_BADGE } from "@/lib/badges";
+import { LATEST_INSIGNIA } from "@/lib/insignias";
 import { SEED_QUIZ } from "@/lib/quiz/seed";
 import { CURRENT_TRACK } from "@/lib/tracks";
 
@@ -49,15 +49,15 @@ export default async function ResultadoPage({
 
   // A insígnia conquistada assume o lugar do Bubo: o prêmio é o que o aluno
   // deve ver primeiro. Sem insígnia nova, o Bubo volta a receber a tela.
-  // TODO: hoje mostra sempre a de maior tier. Com banco, só aparece quando a
-  // fase realmente cruzou um marco.
-  const badge = HIGHEST_BADGE;
+  // TODO: hoje mostra sempre a última conquistada. Com banco, só aparece
+  // quando a fase realmente destravar uma.
+  const badge = LATEST_INSIGNIA;
 
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-10">
       <section className="rounded-3xl bg-white px-8 py-10 text-center shadow-[0_18px_50px_-30px_rgba(15,34,71,0.4)]">
         {badge ? (
-          <BadgeAward badge={badge} />
+          <BadgeAward insignia={badge} />
         ) : (
           <Image
             src="/bubo/bubo-pointing.webp"

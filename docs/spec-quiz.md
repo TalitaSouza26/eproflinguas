@@ -169,3 +169,38 @@ Isso muda o mock aprovado da Home, que mostrava quatro trilhas com progresso sim
 As questões **vivem no banco**. A geração por IA em tempo de execução, cogitada antes, foi descartada: tira latência da frente do aluno, elimina o custo por quiz e acaba com o risco de inglês errado sem revisão.
 
 O conteúdo é gerado a partir de `src/lib/quiz/curriculum.ts` pelo script `npm run seed:generate`, que escreve `supabase/seed.sql`. Para mudar conteúdo, edita-se o currículo e roda-se o script — nunca o SQL à mão.
+
+## Patente e insígnias
+
+São dois conceitos independentes. O modelo anterior — cinco categorias, cada uma subindo por cinco tiers — foi descartado por misturar os dois.
+
+### Patente
+
+O nível do aluno. **Um trilho só, medido em palavras aprendidas.** Conta como aprendida a palavra acertada ao menos uma vez numa fase concluída.
+
+| Patente | Palavras |
+| --- | --- |
+| Bronze I | 20 |
+| Bronze II | 50 |
+| Prata | 100 |
+| Ouro | 200 |
+| Diamante | 400 |
+
+A escada é uma lista ordenada em `src/lib/patente.ts`: novos níveis entram acrescentando itens ao fim, sem tocar em tela nenhuma.
+
+### Insígnias
+
+Conquistas avulsas espalhadas pelo percurso, cada uma com sua condição. **Ganha-se uma vez e pronto — não têm níveis.** Quem sobe é a patente.
+
+As não conquistadas ficam **visíveis, em cinza e com a condição à mostra**: o aluno precisa saber o que dá para perseguir.
+
+| Insígnia | Condição |
+| --- | --- |
+| Primeiro passo | Concluir o primeiro quiz |
+| Maratonista | Aprender 30 palavras em um dia |
+| De volta | Entrar 2 dias seguidos |
+| Persistente | Refazer um quiz |
+| Sem erro | Acertar as 10 questões de uma fase |
+| Fogo aceso | Estudar 7 dias seguidos |
+| Trilha completa | Terminar todas as fases de uma trilha |
+| Conversador | Concluir um quiz de diálogo (depende de conteúdo que ainda não existe) |
