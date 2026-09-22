@@ -27,7 +27,8 @@ export function Sidebar({
     <aside
       aria-label="Menu principal"
       className={`fixed inset-y-0 left-0 z-50 flex w-[272px] shrink-0 flex-col overflow-y-auto
-                  bg-[var(--sidebar-bg)] px-4 py-7 transition-transform duration-300
+                  bg-[var(--sidebar-bg)] [background-image:var(--sidebar-image)] px-4 py-7
+                  transition-transform duration-300
                   lg:static lg:translate-x-0 ${open ? "translate-x-0 shadow-2xl" : "-translate-x-full"}`}
     >
       <div className="mb-8 flex items-start justify-between gap-2">

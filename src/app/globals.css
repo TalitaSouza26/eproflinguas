@@ -197,8 +197,10 @@ body {
    cards brancos. Os cards não mudam: só o que fica atrás deles. */
 
 :root {
-  /* O menu é azul nos dois temas; o header acompanha o tema. */
-  --sidebar-bg: #0c2464;
+  /* O menu é azul nos dois temas; o header acompanha o tema.
+     No tema claro ele usa o mesmo gradiente dos cards de destaque. */
+  --sidebar-bg: #143a9e;
+  --sidebar-image: linear-gradient(to bottom right, #1c49cc, #143a9e, #0e2a72);
   --sidebar-item: #d8e4fb;
   --sidebar-muted: #a9c2f2;
   --sidebar-hover: rgb(255 255 255 / 0.1);
@@ -226,6 +228,10 @@ body {
 }
 
 :root[data-theme="azul"] {
+  /* Aqui o conteúdo já é azul: o menu escurece para continuar se separando. */
+  --sidebar-bg: #0c2464;
+  --sidebar-image: none;
+
   --shell-bg: #0c2464;
   --shell-border: rgb(255 255 255 / 0.12);
   --shell-title: #ffffff;
