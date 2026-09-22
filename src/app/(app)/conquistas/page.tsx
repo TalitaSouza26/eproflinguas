@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { CheckIcon, LockIcon, MedalIcon, TrophyIcon } from "@/components/ui/icons";
+import { PatenteFlame } from "@/components/ui/patente-flame";
 import { EARNED_INSIGNIAS, INSIGNIAS } from "@/lib/insignias";
 import {
   CURRENT_INDEX,
@@ -67,20 +68,25 @@ function PatenteLadder() {
               key={patente.id}
               className={`flex flex-col items-center rounded-2xl border px-3 py-4 text-center ${
                 current
-                  ? "border-accent-500 bg-accent-50"
+                  ? "border-accent-500 bg-accent-50 shadow-lg shadow-accent-500/20 ring-2 ring-accent-500/30"
                   : reached
                     ? "border-ink-100 bg-white"
                     : "border-dashed border-ink-300 bg-ink-50"
               }`}
             >
-              <Image
-                src={patente.image}
-                unoptimized
-                alt=""
-                width={512}
-                height={512}
-                className={`w-16 sm:w-20 ${reached ? "" : "opacity-40 grayscale"}`}
-              />
+              <div className="relative flex w-full items-center justify-center">
+                {current && <PatenteFlame glowClass="size-20 sm:size-24" />}
+                <Image
+                  src={patente.image}
+                  unoptimized
+                  alt=""
+                  width={512}
+                  height={512}
+                  className={`relative ${current ? "w-20 sm:w-24" : "w-16 sm:w-20"} ${
+                    reached ? "" : "opacity-40 grayscale"
+                  }`}
+                />
+              </div>
 
               <p
                 className={`mt-2 text-[13px] font-bold ${

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
+import { PatenteFlame } from "@/components/ui/patente-flame";
 import { EARNED_INSIGNIAS } from "@/lib/insignias";
 import {
   CURRENT_PATENTE,
@@ -11,14 +12,6 @@ import {
   WORDS_LEARNED,
   WORDS_TO_NEXT,
 } from "@/lib/patente";
-
-/** Brasas que sobem atrás do emblema. Decorativas e escalonadas. */
-const EMBERS = [
-  { left: "18%", delay: "0ms", size: "6px" },
-  { left: "38%", delay: "700ms", size: "4px" },
-  { left: "62%", delay: "1300ms", size: "7px" },
-  { left: "80%", delay: "1900ms", size: "5px" },
-];
 
 /** A patente do aluno e o quanto falta para a próxima, em palavras. */
 export function CurrentBadge() {
@@ -35,22 +28,7 @@ export function CurrentBadge() {
 
         {/* Só a patente conquistada pega fogo: a que falta fica apagada. */}
         <div className="relative mx-auto mt-3 flex h-32 w-32 items-center justify-center">
-          {CURRENT_PATENTE && (
-            <>
-              <span
-                aria-hidden
-                className="animate-patente-glow absolute size-28 rounded-full bg-accent-500 blur-2xl"
-              />
-              {EMBERS.map(({ left, delay, size }) => (
-                <span
-                  key={left}
-                  aria-hidden
-                  className="animate-ember absolute bottom-3 rounded-full bg-[#ffb057]"
-                  style={{ left, width: size, height: size, animationDelay: delay }}
-                />
-              ))}
-            </>
-          )}
+          {CURRENT_PATENTE && <PatenteFlame />}
 
           <Image
             src={shown.image}
