@@ -248,3 +248,53 @@ body {
   border-radius: 0.75rem;
   padding: 0.4rem 0.6rem;
 }
+
+/* Destaque da patente na Home.
+   Um brilho quente que respira atrás do emblema, com brasas subindo. É lento
+   e de baixa opacidade de propósito: precisa chamar atenção sem virar
+   distração permanente na tela inicial. */
+
+@keyframes patente-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes ember-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.5);
+  }
+  25% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-38px) scale(1);
+  }
+}
+
+.animate-patente-glow {
+  animation: patente-glow 2800ms ease-in-out infinite;
+}
+
+.animate-ember {
+  animation: ember-rise 2600ms ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-patente-glow {
+    animation: none;
+    opacity: 0.5;
+  }
+
+  .animate-ember {
+    display: none;
+  }
+}

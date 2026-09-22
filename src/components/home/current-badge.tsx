@@ -12,6 +12,14 @@ import {
   WORDS_TO_NEXT,
 } from "@/lib/patente";
 
+/** Brasas que sobem atrás do emblema. Decorativas e escalonadas. */
+const EMBERS = [
+  { left: "18%", delay: "0ms", size: "6px" },
+  { left: "38%", delay: "700ms", size: "4px" },
+  { left: "62%", delay: "1300ms", size: "7px" },
+  { left: "80%", delay: "1900ms", size: "5px" },
+];
+
 /** A patente do aluno e o quanto falta para a próxima, em palavras. */
 export function CurrentBadge() {
   const shown = CURRENT_PATENTE ?? PATENTES[0];
@@ -25,16 +33,36 @@ export function CurrentBadge() {
           Patente atual
         </p>
 
-        <Image
-          src={shown.image}
-          unoptimized
-          alt=""
-          width={512}
-          height={512}
-          className={`mx-auto mt-3 w-32 drop-shadow-lg ${
-            CURRENT_PATENTE ? "" : "opacity-40 grayscale"
-          }`}
-        />
+        {/* Só a patente conquistada pega fogo: a que falta fica apagada. */}
+        <div className="relative mx-auto mt-3 flex h-32 w-32 items-center justify-center">
+          {CURRENT_PATENTE && (
+            <>
+              <span
+                aria-hidden
+                className="animate-patente-glow absolute size-28 rounded-full bg-accent-500 blur-2xl"
+              />
+              {EMBERS.map(({ left, delay, size }) => (
+                <span
+                  key={left}
+                  aria-hidden
+                  className="animate-ember absolute bottom-3 rounded-full bg-[#ffb057]"
+                  style={{ left, width: size, height: size, animationDelay: delay }}
+                />
+              ))}
+            </>
+          )}
+
+          <Image
+            src={shown.image}
+            unoptimized
+            alt=""
+            width={512}
+            height={512}
+            className={`relative w-32 drop-shadow-lg ${
+              CURRENT_PATENTE ? "" : "opacity-40 grayscale"
+            }`}
+          />
+        </div>
 
         <p className="mt-3 text-xl font-extrabold">
           {CURRENT_PATENTE ? CURRENT_PATENTE.name : "Sem patente ainda"}
