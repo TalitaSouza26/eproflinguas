@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
 import { CheckIcon, LockIcon, MedalIcon, TrophyIcon } from "@/components/ui/icons";
 import { PatenteFlame } from "@/components/ui/patente-flame";
 import { EARNED_INSIGNIAS, INSIGNIAS } from "@/lib/insignias";
@@ -17,23 +18,21 @@ export const metadata: Metadata = { title: "Conquistas — eProf Línguas" };
 /** A escada da patente: um trilho só, medido em palavras aprendidas. */
 function PatenteLadder() {
   return (
-    <section className="rounded-2xl border border-ink-100 bg-white px-6 py-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+    <section className={`${BLUE_CARD} px-6 py-6`}>
+      <CardBackdrop />
+
+      <div className="relative flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3.5">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white">
             <TrophyIcon className="size-5" />
           </span>
           <div>
-            <h2 className="text-lg font-extrabold text-deep-900">Sua patente</h2>
-            <p className="text-[13px] text-ink-500">
-              Sobe conforme você aprende palavras novas.
-            </p>
+            <h2 className="text-lg font-extrabold">Sua patente</h2>
+            <p className="text-[13px] text-blue-100">Sobe conforme você aprende palavras novas.</p>
           </div>
         </div>
 
-        <p className="text-sm font-bold text-deep-900">
-          {WORDS_LEARNED} palavras aprendidas
-        </p>
+        <p className="text-sm font-bold">{WORDS_LEARNED} palavras aprendidas</p>
       </div>
 
       {NEXT_PATENTE && (
@@ -44,21 +43,21 @@ function PatenteLadder() {
             aria-valuenow={PATENTE_PERCENT}
             aria-valuemin={0}
             aria-valuemax={100}
-            className="mt-5 h-2.5 overflow-hidden rounded-full bg-ink-100"
+            className="relative mt-5 h-2.5 overflow-hidden rounded-full bg-white/20"
           >
             <div
               className="h-full rounded-full bg-accent-500"
               style={{ width: `${PATENTE_PERCENT}%` }}
             />
           </div>
-          <p className="mt-2 text-[13px] text-ink-700">
-            Faltam <span className="font-bold text-deep-900">{WORDS_TO_NEXT}</span> palavras para{" "}
+          <p className="relative mt-2 text-[13px] text-blue-100">
+            Faltam <span className="font-bold text-white">{WORDS_TO_NEXT}</span> palavras para{" "}
             {NEXT_PATENTE.name}.
           </p>
         </>
       )}
 
-      <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+      <ul className="relative mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         {PATENTES.map((patente, i) => {
           const reached = i <= CURRENT_INDEX;
           const current = i === CURRENT_INDEX;
@@ -68,10 +67,10 @@ function PatenteLadder() {
               key={patente.id}
               className={`flex flex-col items-center rounded-2xl border px-3 py-4 text-center ${
                 current
-                  ? "border-accent-500 bg-accent-50 shadow-lg shadow-accent-500/20 ring-2 ring-accent-500/30"
+                  ? "border-accent-500 bg-accent-50 shadow-lg shadow-accent-500/30 ring-2 ring-accent-500/40"
                   : reached
-                    ? "border-ink-100 bg-white"
-                    : "border-dashed border-ink-300 bg-ink-50"
+                    ? "border-white/20 bg-white"
+                    : "border-dashed border-white/25 bg-white/10"
               }`}
             >
               <div className="relative flex w-full items-center justify-center">
@@ -89,18 +88,18 @@ function PatenteLadder() {
               </div>
 
               <p
-                className={`mt-2 text-[13px] font-bold ${
-                  reached ? "text-deep-900" : "text-ink-500"
-                }`}
+                className={`mt-2 text-[13px] font-bold ${reached ? "text-deep-900" : "text-white"}`}
               >
                 {patente.name}
               </p>
-              <p className="text-[11px] text-ink-500">{patente.words} palavras</p>
+              <p className={`text-[11px] ${reached ? "text-ink-500" : "text-blue-100"}`}>
+                {patente.words} palavras
+              </p>
 
               {/* O estado é dito por palavra, não só pela cor da moldura. */}
               <p
                 className={`mt-2 text-[11px] font-semibold ${
-                  current ? "text-accent-600" : reached ? "text-correct-700" : "text-ink-500"
+                  current ? "text-accent-600" : reached ? "text-correct-700" : "text-blue-100"
                 }`}
               >
                 {current ? "Você está aqui" : reached ? "Alcançada" : "Bloqueada"}
