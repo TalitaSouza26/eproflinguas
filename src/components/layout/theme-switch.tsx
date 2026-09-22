@@ -41,8 +41,17 @@ const BASE =
   "rounded-full px-3 py-1.5 text-xs font-bold transition focus-visible:outline-2 " +
   "focus-visible:outline-offset-2 focus-visible:outline-blue-500";
 
-/** Troca o tema da aplicação inteira. */
-export function ThemeSwitch() {
+/**
+ * Troca o tema da aplicação inteira.
+ *
+ * O seletor vive em dois lugares de cor diferente — header e menu —, então
+ * recebe de fora quais tokens usar.
+ */
+export function ThemeSwitch({ tone = "header" }: { tone?: "header" | "sidebar" }) {
+  const item = tone === "sidebar" ? "var(--sidebar-item)" : "var(--shell-item)";
+  const hover = tone === "sidebar" ? "var(--sidebar-hover)" : "var(--shell-hover)";
+  const border = tone === "sidebar" ? "rgb(255 255 255 / 0.2)" : "var(--shell-border)";
+
   // No servidor não há DOM, então o valor inicial é sempre o tema claro.
   const theme = useSyncExternalStore(subscribe, readTheme, () => "original" as Theme);
 
@@ -54,8 +63,9 @@ export function ThemeSwitch() {
       className={`${BASE} ${
         theme === value
           ? "bg-blue-500 text-white"
-          : "text-[var(--shell-item)] hover:bg-[var(--shell-hover)]"
+          : "hover:bg-[var(--tone-hover)]"
       }`}
+      style={theme === value ? undefined : { color: item, ["--tone-hover" as string]: hover }}
     >
       {label}
     </button>
@@ -65,7 +75,8 @@ export function ThemeSwitch() {
     <div
       role="group"
       aria-label="Tema da aplicação"
-      className="flex items-center gap-1 rounded-full border border-[var(--shell-border)] p-1"
+      className="flex items-center gap-1 rounded-full border p-1"
+      style={{ borderColor: border }}
     >
       {button("azul", "Azul")}
       {button("original", "Original")}

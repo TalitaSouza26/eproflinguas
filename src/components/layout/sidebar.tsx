@@ -27,7 +27,7 @@ export function Sidebar({
     <aside
       aria-label="Menu principal"
       className={`fixed inset-y-0 left-0 z-50 flex w-[272px] shrink-0 flex-col overflow-y-auto
-                  bg-[var(--shell-bg)] px-4 py-7 transition-transform duration-300
+                  bg-[var(--sidebar-bg)] px-4 py-7 transition-transform duration-300
                   lg:static lg:translate-x-0 ${open ? "translate-x-0 shadow-2xl" : "-translate-x-full"}`}
     >
       <div className="mb-8 flex items-start justify-between gap-2">
@@ -46,7 +46,7 @@ export function Sidebar({
           type="button"
           onClick={onNavigate}
           aria-label="Fechar menu"
-          className="rounded-lg p-2 text-[var(--shell-item)] transition hover:bg-[var(--shell-hover)]
+          className="rounded-lg p-2 text-[var(--sidebar-item)] transition hover:bg-[var(--sidebar-hover)]
                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500
                      lg:hidden"
         >
@@ -66,14 +66,14 @@ export function Sidebar({
               className={
                 active
                   ? `${ITEM_BASE} bg-[var(--nav-active-bg)] font-semibold text-[var(--nav-active-fg)] shadow-[var(--nav-active-shadow)]`
-                  : `${ITEM_BASE} text-[var(--shell-item)] hover:bg-[var(--shell-hover)]`
+                  : `${ITEM_BASE} text-[var(--sidebar-item)] hover:bg-[var(--sidebar-hover)]`
               }
             >
               <Icon
                 className={
                   active
                     ? "size-[22px] text-[var(--nav-active-icon)]"
-                    : "size-[22px] text-[var(--shell-muted)]"
+                    : "size-[22px] text-[var(--sidebar-muted)]"
                 }
               />
               {label}
@@ -84,9 +84,9 @@ export function Sidebar({
         <form action={signOutAction}>
           <button
             type="submit"
-            className={`${ITEM_BASE} w-full text-[var(--shell-item)] hover:bg-[var(--shell-hover)]`}
+            className={`${ITEM_BASE} w-full text-[var(--sidebar-item)] hover:bg-[var(--sidebar-hover)]`}
           >
-            <LogoutIcon className="size-[22px] text-[var(--shell-muted)]" />
+            <LogoutIcon className="size-[22px] text-[var(--sidebar-muted)]" />
             Sair da conta
           </button>
         </form>
@@ -94,7 +94,7 @@ export function Sidebar({
 
       {/* No desktop o seletor vive no header; aqui ele acompanha a gaveta. */}
       <div className="mt-8 flex justify-center lg:hidden">
-        <ThemeSwitch />
+        <ThemeSwitch tone="sidebar" />
       </div>
     </aside>
   );

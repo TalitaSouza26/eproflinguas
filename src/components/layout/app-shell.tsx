@@ -33,7 +33,7 @@ export function AppShell({
   }, [open]);
 
   return (
-    <div className="flex min-h-screen bg-[var(--shell-bg)]">
+    <div className="flex min-h-screen bg-[var(--sidebar-bg)]">
       {/* Fundo escuro só existe com a gaveta aberta, e só no mobile. */}
       {open && (
         <button
