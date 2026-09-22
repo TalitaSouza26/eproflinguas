@@ -3,7 +3,6 @@ import Link from "next/link";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { PatenteFlame } from "@/components/ui/patente-flame";
-import { EARNED_INSIGNIAS } from "@/lib/insignias";
 import {
   CURRENT_PATENTE,
   NEXT_PATENTE,
@@ -76,7 +75,7 @@ export function CurrentBadge() {
                      underline-offset-4 transition hover:underline focus-visible:outline-2
                      focus-visible:outline-offset-2 focus-visible:outline-white"
         >
-          Ver as {EARNED_INSIGNIAS.length} insígnias
+          Ver minhas patentes
           <ArrowRightIcon className="size-3.5" />
         </Link>
       </div>
