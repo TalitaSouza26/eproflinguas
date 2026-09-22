@@ -67,7 +67,7 @@ export function CurrentBadge() {
 
       <div className="relative">
         <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-200">
-          Insígnia atual
+          Patente atual
         </p>
 
         <Image
