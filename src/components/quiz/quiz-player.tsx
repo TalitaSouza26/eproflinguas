@@ -89,7 +89,7 @@ export function QuizPlayer({
   }, [confirmed, isCorrect, isLast, advance]);
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-8">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
       <Link
         href="/inicio"
         className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--on-bg-item)] transition hover:text-[var(--on-bg-strong)]
@@ -122,7 +122,7 @@ export function QuizPlayer({
         </span>
       </div>
 
-      <section className="mt-5 rounded-3xl bg-white p-8 shadow-[0_18px_50px_-30px_rgba(15,34,71,0.4)]">
+      <section className="mt-5 rounded-3xl bg-white p-5 sm:p-8 shadow-[0_18px_50px_-30px_rgba(15,34,71,0.4)]">
         <p className="text-center text-xs font-semibold uppercase tracking-wide text-ink-500">
           {FORMAT_INSTRUCTION[question.format]}
         </p>

@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Início — eProf Línguas" };
 
 export default function InicioPage() {
   return (
-    <div className="grid gap-6 px-8 pb-10 pt-4 xl:grid-cols-[1fr_19rem]">
+    <div className="grid gap-5 px-4 pb-10 pt-4 sm:px-8 sm:gap-6 xl:grid-cols-[1fr_19rem]">
       <div className="min-w-0 space-y-5">
         <div>
           <h2 className="text-[28px] font-extrabold leading-tight text-[var(--on-bg-strong)]">

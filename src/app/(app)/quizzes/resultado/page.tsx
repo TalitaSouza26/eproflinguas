@@ -54,8 +54,8 @@ export default async function ResultadoPage({
   const badge = LATEST_INSIGNIA;
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-6 py-10">
-      <section className="rounded-3xl bg-white px-8 py-10 text-center shadow-[0_18px_50px_-30px_rgba(15,34,71,0.4)]">
+    <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-10">
+      <section className="rounded-3xl bg-white px-5 py-8 sm:px-8 sm:py-10 text-center shadow-[0_18px_50px_-30px_rgba(15,34,71,0.4)]">
         {badge ? (
           <BadgeAward insignia={badge} />
         ) : (

@@ -177,7 +177,7 @@ function InsigniaGrid() {
 
 export default function ConquistasPage() {
   return (
-    <div className="px-8 pb-10 pt-4">
+    <div className="px-4 pb-10 pt-4 sm:px-8">
       <PatenteLadder />
       <InsigniaGrid />
     </div>
