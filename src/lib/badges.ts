@@ -110,20 +110,19 @@ export const CATEGORIES: Category[] = [
 export const BADGE_PLACEHOLDER = "/badges/insignia-padrao.webp";
 
 /**
- * Arte de cada tier, com o nome gravado na imagem.
+ * Arte de cada tier.
  *
- * Usada só na tela de detalhe, onde os cinco tiers aparecem lado a lado e a
+ * Usada só na tela de detalhe, onde os cinco aparecem lado a lado e a
  * comparação entre eles é o assunto. Nas demais telas vale a arte da
  * categoria, porque ali o que identifica é o que ela mede — o tier vai por
  * escrito.
- *
- * TODO: falta a arte do Diamante no mesmo estilo.
  */
-const TIER_IMAGE: Partial<Record<Tier, string>> = {
+const TIER_IMAGE: Record<Tier, string> = {
   "Bronze I": "/badges/bronze-1.webp",
   "Bronze II": "/badges/bronze-2.webp",
   Prata: "/badges/prata.webp",
   Ouro: "/badges/ouro.webp",
+  Diamante: "/badges/diamante.webp",
 };
 
 export function badgeImage(tier: Tier | null): string {
