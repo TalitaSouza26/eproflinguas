@@ -16,14 +16,60 @@ export type Patente = {
   /** Palavras aprendidas necessárias para alcançar. */
   words: number;
   image: string;
+  /**
+   * Cores do metal da patente, tiradas do próprio emblema.
+   *
+   * A escada é uma fileira de cinco cards, e sem isso todos ficam iguais —
+   * o aluno precisa distinguir onde está de relance, não lendo o nome.
+   */
+  tint: {
+    /** Traço mais escuro: fios, bordas. */
+    from: string;
+    /** Brilho, usado no halo atrás do emblema. */
+    to: string;
+    /** Fundo pálido de selo e etiqueta. */
+    soft: string;
+    /** Texto sobre o fundo pálido. */
+    ink: string;
+  };
 };
 
 export const PATENTES: Patente[] = [
-  { id: "bronze-1", name: "Bronze I", words: 20, image: "/badges/bronze-1.webp" },
-  { id: "bronze-2", name: "Bronze II", words: 50, image: "/badges/bronze-2.webp" },
-  { id: "prata", name: "Prata", words: 100, image: "/badges/prata.webp" },
-  { id: "ouro", name: "Ouro", words: 200, image: "/badges/ouro.webp" },
-  { id: "diamante", name: "Diamante", words: 400, image: "/badges/diamante.webp" },
+  {
+    id: "bronze-1",
+    name: "Bronze I",
+    words: 20,
+    image: "/badges/bronze-1.webp",
+    tint: { from: "#a85d33", to: "#e8a878", soft: "#fbeee5", ink: "#7a3f1d" },
+  },
+  {
+    id: "bronze-2",
+    name: "Bronze II",
+    words: 50,
+    image: "/badges/bronze-2.webp",
+    tint: { from: "#8d6a3f", to: "#f0cf9b", soft: "#fbf3e6", ink: "#6b4a22" },
+  },
+  {
+    id: "prata",
+    name: "Prata",
+    words: 100,
+    image: "/badges/prata.webp",
+    tint: { from: "#6f7e96", to: "#dbe6f2", soft: "#f1f5fa", ink: "#3e4a5e" },
+  },
+  {
+    id: "ouro",
+    name: "Ouro",
+    words: 200,
+    image: "/badges/ouro.webp",
+    tint: { from: "#c08a12", to: "#ffd87c", soft: "#fff6e0", ink: "#7a5406" },
+  },
+  {
+    id: "diamante",
+    name: "Diamante",
+    words: 400,
+    image: "/badges/diamante.webp",
+    tint: { from: "#2f74cf", to: "#a6dcff", soft: "#eaf5ff", ink: "#1b3f70" },
+  },
 ];
 
 /** Quantas palavras o aluno já aprendeu. */

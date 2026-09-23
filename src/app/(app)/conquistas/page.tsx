@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
-import { CheckIcon, LockIcon, MedalIcon, TrophyIcon } from "@/components/ui/icons";
+import { CheckIcon, FlameIcon, LockIcon, MedalIcon, TrophyIcon } from "@/components/ui/icons";
 import { PatenteFlame } from "@/components/ui/patente-flame";
 import { EARNED_INSIGNIAS, INSIGNIAS } from "@/lib/insignias";
 import {
@@ -61,18 +61,52 @@ function PatenteLadder() {
         {PATENTES.map((patente, i) => {
           const reached = i <= CURRENT_INDEX;
           const current = i === CURRENT_INDEX;
+          const { from, to, soft, ink } = patente.tint;
+
+          // Cada card veste o metal da sua patente. O halo, o fio e a etiqueta
+          // saem das mesmas quatro cores, então acrescentar um nível na escada
+          // é só descrever as cores dele em patente.ts.
+          const style = {
+            "--tint-from": from,
+            "--tint-to": to,
+            "--tint-soft": soft,
+            "--tint-ink": ink,
+          } as React.CSSProperties;
 
           return (
             <li
               key={patente.id}
-              className={`flex flex-col items-center rounded-2xl border px-3 py-4 text-center ${
-                current
-                  ? "border-accent-500 bg-accent-50 shadow-lg shadow-accent-500/30 ring-2 ring-accent-500/40"
-                  : reached
-                    ? "border-white/20 bg-white"
-                    : "border-dashed border-white/25 bg-white/10"
-              }`}
+              style={style}
+              className={`relative flex flex-col items-center overflow-hidden rounded-2xl border
+                          px-3 pb-4 pt-5 text-center ${
+                            current
+                              ? "border-[var(--tint-from)] bg-white shadow-xl shadow-black/25 ring-2 ring-[var(--tint-from)]"
+                              : reached
+                                ? "border-white/25 bg-white"
+                                : "border-dashed border-white/25 bg-white/10"
+                          }`}
             >
+              {/* Luz do metal descendo do topo, como um foco sobre o emblema. */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-28"
+                style={{
+                  background:
+                    "radial-gradient(62% 100% at 50% 0%, var(--tint-to), transparent 72%)",
+                  opacity: current ? 0.85 : reached ? 0.5 : 0.14,
+                }}
+              />
+
+              {/* Degrau em número: separa Bronze I de Bronze II sem depender da
+                  cor, que nos dois é quase a mesma. */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -top-2 right-1 text-[56px] font-black leading-none"
+                style={{ color: reached ? ink : "#ffffff", opacity: reached ? 0.09 : 0.14 }}
+              >
+                {i + 1}
+              </span>
+
               <div className="relative flex w-full items-center justify-center">
                 {current && <PatenteFlame glowClass="size-20 sm:size-24" />}
                 <Image
@@ -82,26 +116,49 @@ function PatenteLadder() {
                   width={512}
                   height={512}
                   className={`relative ${current ? "w-20 sm:w-24" : "w-16 sm:w-20"} ${
-                    reached ? "" : "opacity-40 grayscale"
+                    reached ? "drop-shadow-md" : "opacity-40 grayscale"
                   }`}
                 />
               </div>
 
+              {/* Fio de metal: fecha o emblema e abre a legenda. */}
+              <span
+                aria-hidden
+                className="relative mt-2.5 h-px w-12 rounded-full"
+                style={{
+                  background: reached
+                    ? "linear-gradient(to right, transparent, var(--tint-from), transparent)"
+                    : "linear-gradient(to right, transparent, rgb(255 255 255 / 0.4), transparent)",
+                }}
+              />
+
               <p
-                className={`mt-2 text-[13px] font-bold ${reached ? "text-deep-900" : "text-white"}`}
+                className="relative mt-2 text-[13px] font-extrabold"
+                style={{ color: reached ? ink : "#ffffff" }}
               >
                 {patente.name}
               </p>
-              <p className={`text-[11px] ${reached ? "text-ink-500" : "text-blue-100"}`}>
+              <p className={`relative text-[11px] ${reached ? "text-ink-500" : "text-blue-100"}`}>
                 {patente.words} palavras
               </p>
 
-              {/* O estado é dito por palavra, não só pela cor da moldura. */}
+              {/* O estado é dito por palavra e por ícone, nunca só pela cor. */}
               <p
-                className={`mt-2 text-[11px] font-semibold ${
-                  current ? "text-accent-600" : reached ? "text-correct-700" : "text-blue-100"
-                }`}
+                className="relative mt-2.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1
+                           text-[11px] font-bold"
+                style={
+                  reached
+                    ? { background: soft, color: ink }
+                    : { background: "rgb(255 255 255 / 0.12)", color: "#dbe7fb" }
+                }
               >
+                {current ? (
+                  <FlameIcon className="size-3.5" />
+                ) : reached ? (
+                  <CheckIcon className="size-3.5" />
+                ) : (
+                  <LockIcon className="size-3" />
+                )}
                 {current ? "Você está aqui" : reached ? "Alcançada" : "Bloqueada"}
               </p>
             </li>
