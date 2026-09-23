@@ -14,6 +14,14 @@ const RAYS = [0, 45, 90, 135, 180, 225, 270, 315];
 export function BadgeAward({ insignia }: { insignia: Insignia }) {
   return (
     <div className="flex flex-col items-center">
+      {/* O rótulo anuncia antes do emblema chegar, como uma chamada. */}
+      <p
+        className="animate-rise-in mb-3 text-xs font-bold uppercase tracking-wide text-accent-600"
+        style={{ animationDelay: "120ms" }}
+      >
+        Nova insígnia
+      </p>
+
       <div className="relative flex items-center justify-center">
         <span
           aria-hidden
@@ -49,14 +57,8 @@ export function BadgeAward({ insignia }: { insignia: Insignia }) {
       </div>
 
       <p
-        className="animate-rise-in mt-2 text-xs font-bold uppercase tracking-wide text-accent-600"
-        style={{ animationDelay: "780ms" }}
-      >
-        Nova insígnia
-      </p>
-      <p
-        className="animate-rise-in mt-1 text-xl font-extrabold text-deep-900"
-        style={{ animationDelay: "900ms" }}
+        className="animate-rise-in mt-3 text-xl font-extrabold text-deep-900"
+        style={{ animationDelay: "820ms" }}
       >
         {insignia.name}
       </p>
