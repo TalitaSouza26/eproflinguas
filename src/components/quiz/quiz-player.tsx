@@ -60,8 +60,6 @@ export function QuizPlayer({
   const isLast = index === total - 1;
   const isCorrect = confirmed && selected === question.correctChoiceId;
   const correctCount = answers.filter((a) => a.correct).length;
-  // Tópicos errados alimentam o "o que praticar mais" da tela de resultado.
-  const weakTopics = [...new Set(answers.filter((a) => !a.correct).map((a) => a.topic))];
 
   function confirm() {
     if (!selected || confirmed) return;
@@ -256,9 +254,7 @@ export function QuizPlayer({
 
           {confirmed && isLast && (
             <Link
-              href={`/quizzes/resultado?acertos=${correctCount}&total=${total}&praticar=${encodeURIComponent(
-                weakTopics.join(","),
-              )}`}
+              href={`/quizzes/resultado?acertos=${correctCount}&total=${total}`}
               className={CTA}
             >
               Ver resultado

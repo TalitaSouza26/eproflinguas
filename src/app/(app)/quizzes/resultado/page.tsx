@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRightIcon, CheckIcon, TargetIcon } from "@/components/ui/icons";
+import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
 import { BadgeAward } from "@/components/quiz/badge-award";
 import { PatenteAward } from "@/components/quiz/patente-award";
 import { LATEST_INSIGNIA } from "@/lib/insignias";
@@ -38,16 +38,11 @@ function toInt(value: string | undefined, fallback: number) {
 export default async function ResultadoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ acertos?: string; total?: string; praticar?: string }>;
+  searchParams: Promise<{ acertos?: string; total?: string }>;
 }) {
   const sp = await searchParams;
   const total = toInt(sp.total, SEED_QUIZ.questions.length);
   const correct = Math.min(toInt(sp.acertos, 0), total);
-
-  const practice = (sp.praticar ?? "")
-    .split(",")
-    .map((t) => t.trim())
-    .filter(Boolean);
 
   // A insígnia conquistada assume o lugar do Bubo: o prêmio é o que o aluno
   // deve ver primeiro. Sem insígnia nova, o Bubo volta a receber a tela.
@@ -89,25 +84,6 @@ export default async function ResultadoPage({
           {correct} de {total}
         </p>
         <p className="mt-2 text-sm font-medium text-ink-500">respostas corretas</p>
-
-        {practice.length > 0 && (
-          <div className="mt-8 rounded-2xl bg-blue-50 px-6 py-5 text-left">
-            <p className="flex items-center gap-2.5 text-sm font-bold text-deep-900">
-              <TargetIcon className="size-5 text-accent-500" />
-              O que praticar mais
-            </p>
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {practice.map((topic) => (
-                <li
-                  key={topic}
-                  className="rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-deep-700"
-                >
-                  {topic}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
           {patente ? (

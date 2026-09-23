@@ -64,7 +64,8 @@ Referência de produto. Toda tela e toda geração de questão devem obedecer ao
 - Distratores plausíveis. Nada de opção absurda só para completar quatro.
 - Sem pegadinhas: verifica inglês, não interpretação capciosa do enunciado.
 - Idioma previsível: instrução da interface em português, conteúdo em inglês conforme o objetivo pedagógico.
-- Toda questão carrega um `topic`, que alimenta o "o que praticar mais" do resultado.
+- Toda questão carrega um `topic`. Ele é guardado com a resposta, mas não aparece
+  para o aluno: o resultado não lista pontos fracos, para não virar boletim.
 
 ## Formatos de questão
 

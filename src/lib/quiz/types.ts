@@ -23,7 +23,7 @@ export const choiceSchema = z.object({
 
 const baseQuestion = z.object({
   id: z.string().min(1),
-  /** Tema da questão, usado no resultado para apontar o que praticar mais. */
+  /** Tema da questão. Guardado na resposta para relatórios futuros. */
   topic: z.string().min(1).max(40),
   choices: z.array(choiceSchema).length(CHOICES_PER_QUESTION),
   correctChoiceId: z.string().min(1),

@@ -162,7 +162,7 @@ Valem junto com as regras já definidas em [spec-quiz.md](spec-quiz.md):
 2. Os **distratores saem do mesmo léxico da trilha** — plausíveis e do mesmo campo semântico. Nunca uma palavra absurda para completar quatro opções.
 3. As **2 questões de revisão** usam itens de fases anteriores **da mesma trilha**, nunca de trilhas bloqueadas.
 4. Em `sentence_gap`, a frase usa apenas vocabulário já visto pelo aluno, e o comprimento acompanha a faixa: até 6 palavras no 6º–7º, até 12 no 8º–9º.
-5. Toda questão carrega o `topic` igual ao nome da trilha, para alimentar o "o que praticar mais" da tela de resultado.
+5. Toda questão carrega o `topic` igual ao nome da trilha. Serve para relatório interno; o aluno não vê.
 6. `image_word` só para itens concretos e ilustráveis — substantivos do núcleo. Verbos, números e padrões de frase nunca usam imagem.
 
 ## Pendências
