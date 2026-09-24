@@ -32,9 +32,13 @@ export type StoryBeat =
 
 export type Story = {
   slug: string;
+  /** Posição da história na trilha, mostrada na capa. */
+  number: number;
   title: string;
   /** Uma linha sobre o que vai acontecer, dita na capa. */
   subtitle: string;
+  /** Ilustração da capa. A cena, não o mascote. */
+  cover: string;
   beats: StoryBeat[];
 };
 
@@ -51,8 +55,10 @@ export type Story = {
  */
 const NOVO_AMIGO: Story = {
   slug: "primeiras-palavras",
+  number: 1,
   title: "Um novo amigo",
-  subtitle: "A Sofia conhece um menino que não fala português.",
+  subtitle: "Sofia vai aprender as primeiras frases em inglês junto com você.",
+  cover: "/stories/novo-amigo-capa.webp",
   beats: [
     {
       kind: "narration",
@@ -103,4 +109,9 @@ const BY_TRACK: Record<string, Story> = { [NOVO_AMIGO.slug]: NOVO_AMIGO };
 
 export function storyForTrack(slug: string): Story | undefined {
   return BY_TRACK[slug];
+}
+
+/** Quantas expressões a história ensina — os momentos de "repita comigo". */
+export function phrasesInStory(story: Story): number {
+  return story.beats.filter((b) => b.kind === "lesson").length;
 }

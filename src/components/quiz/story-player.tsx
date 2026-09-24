@@ -3,9 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRightIcon, PlayIcon, SpeakerIcon } from "@/components/ui/icons";
+import { ArrowRightIcon, BookIcon, PlayIcon, SpeakerIcon } from "@/components/ui/icons";
 import { cancelSpeech, speakParts, splitBilingual } from "@/lib/speech";
-import type { Story } from "@/lib/quiz/stories";
+import { phrasesInStory, type Story } from "@/lib/quiz/stories";
 
 const CTA =
   "inline-flex items-center justify-center gap-3 rounded-full bg-accent-500 px-10 py-4 text-xl font-extrabold " +
@@ -43,6 +43,7 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
   // -1 é a capa; story.beats.length é o fim.
   const [index, setIndex] = useState(-1);
   const total = story.beats.length;
+  const phrases = phrasesInStory(story);
   const beat = index >= 0 && index < total ? story.beats[index] : undefined;
 
   const next = useCallback(() => setIndex((i) => i + 1), []);
@@ -69,50 +70,61 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
   return (
     <div
       className={`relative z-10 flex w-full flex-col items-center gap-6 text-center ${
-        index === -1 ? "max-w-5xl" : "max-w-xl"
+        index === -1 ? "max-w-4xl" : "max-w-xl"
       }`}
     >
-      {/* Capa: o único toque que a história pede antes de tocar.
-          O Bubo segura o livro e a fala sai dele — é o livro que está contando,
-          e a criança entende isso sem ler uma palavra. */}
+      {/* Capa: um cartão com a cena e o convite. É o único toque que a
+          história pede antes de tocar — daí em diante ela anda sozinha. */}
       {index === -1 && (
-        <div className="grid w-full items-center gap-4 sm:grid-cols-[1.25fr_1fr] sm:gap-0">
+        <div className="relative w-full">
+          <div className="grid overflow-hidden rounded-[2rem] bg-white shadow-2xl sm:grid-cols-[1.15fr_1fr]">
+            <Image
+              src={story.cover}
+              alt=""
+              width={1672}
+              height={941}
+              priority
+              className="h-48 w-full object-cover sm:h-full sm:rounded-r-[2rem]"
+            />
+
+            <div className="px-6 py-6 text-left sm:px-8 sm:py-9">
+              <p className="inline-flex rounded-full bg-blue-50 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-700">
+                História {story.number}
+              </p>
+
+              <h1 className="mt-4 text-3xl font-extrabold leading-tight text-deep-900 sm:text-4xl">
+                {story.title}
+              </h1>
+              <p className="mt-3 text-base leading-relaxed text-ink-700">{story.subtitle}</p>
+
+              {/* O que a criança leva daqui, contado pelas próprias cenas de
+                  ensino em vez de escrito à mão. */}
+              <p className="mt-5 inline-flex items-center gap-2.5 rounded-2xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700">
+                <BookIcon className="size-5" />
+                {phrases} frases em inglês
+              </p>
+
+              <button
+                type="button"
+                onClick={next}
+                className={`${CTA} animate-cta-call mt-5 w-full`}
+              >
+                <PlayIcon className="size-6" />
+                Começar a história
+              </button>
+            </div>
+          </div>
+
+          {/* O Bubo espia do canto: quem conta a história é ele, mas a cena é
+              da Sofia e do Ethan. */}
           <Image
             src="/bubo/bubo-lendo.webp"
             alt=""
             width={1122}
             height={1402}
             unoptimized
-            priority
-            className="animate-rise-in mx-auto h-72 w-auto drop-shadow-2xl sm:h-[30rem] lg:h-[36rem]"
+            className="pointer-events-none absolute -bottom-10 -left-12 hidden h-36 w-auto drop-shadow-2xl sm:block lg:-bottom-12 lg:-left-20 lg:h-48"
           />
-
-          <div
-            className="animate-rise-in relative rounded-3xl bg-white px-6 py-6 text-left shadow-2xl"
-            style={{ animationDelay: "120ms" }}
-          >
-            {/* Rabicho na altura do livro: apontando para cima no empilhado,
-                para a esquerda quando há espaço para as duas colunas. */}
-            <span
-              aria-hidden
-              className="absolute -top-2.5 left-1/2 size-5 -translate-x-1/2 rotate-45 rounded-sm bg-white
-                         sm:-left-2 sm:top-[58%] sm:translate-x-0"
-            />
-
-            <h1 className="text-3xl font-extrabold leading-tight text-deep-900 sm:text-4xl">
-              {story.title}
-            </h1>
-            <p className="mt-2 text-base text-ink-700">{story.subtitle}</p>
-
-            <button
-              type="button"
-              onClick={next}
-              className={`${CTA} animate-cta-call mt-6 w-full sm:w-auto`}
-            >
-              <PlayIcon className="size-6" />
-              Ouvir a história
-            </button>
-          </div>
         </div>
       )}
 
