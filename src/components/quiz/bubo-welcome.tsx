@@ -3,6 +3,7 @@ import { startJourney } from "@/app/bem-vindo/actions";
 import { SpeakButton } from "@/components/quiz/speak-button";
 import { HeartIcon, PlayIcon } from "@/components/ui/icons";
 import { quizForTrack } from "@/lib/quiz/catalog";
+import { storyForTrack } from "@/lib/quiz/stories";
 import { CURRENT_TRACK } from "@/lib/tracks";
 
 export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender juntos?";
@@ -21,6 +22,7 @@ export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender juntos?";
  */
 export function BuboWelcome() {
   const questions = quizForTrack(CURRENT_TRACK.slug).questions.length;
+  const hasStory = Boolean(storyForTrack(CURRENT_TRACK.slug));
 
   return (
     <div className="relative z-10 w-full max-w-5xl">
@@ -86,6 +88,11 @@ export function BuboWelcome() {
             </button>
 
             <p className="mt-3 text-sm font-semibold text-blue-100">
+              {hasStory && (
+                <>
+                  História <span className="px-1 text-blue-300">+</span>
+                </>
+              )}
               {questions} perguntas <span className="px-1 text-blue-300">•</span> No seu ritmo
             </p>
           </form>

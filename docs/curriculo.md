@@ -17,16 +17,17 @@ Isso realiza as diretrizes por faixa que já estavam definidas: vocabulário sim
 
 ## Quantidade
 
-- Toda fase tem **10 questões**.
-- Cada fase trabalha **8 itens do léxico**, sendo **2 questões de revisão** de fases anteriores da mesma trilha.
+- **1º–2º: 5 questões por fase.** A sessão tem história antes do quiz, e atenção sustentada aos 6 anos é de cinco a sete minutos — dez perguntas depois de uma história terminariam com a criança cansada.
+- **Das demais faixas em diante: 10 questões por fase.**
+- Cada fase trabalha **8 itens do léxico**, sendo **2 questões de revisão** de fases anteriores da mesma trilha. No 1º–2º são 4 itens e 1 de revisão.
 - Número de fases por trilha, por faixa:
 
-| Faixa | Fases | Questões por trilha |
-| --- | --- | --- |
-| 1º–2º | 4 | 40 |
-| 3º–5º | 6 | 60 |
-| 6º–7º | 8 | 80 |
-| 8º–9º | 10 | 100 |
+| Faixa | Fases | Questões por fase | Questões por trilha |
+| --- | --- | --- | --- |
+| 1º–2º | 4 | 5 | 20 |
+| 3º–5º | 6 | 10 | 60 |
+| 6º–7º | 8 | 10 | 80 |
+| 8º–9º | 10 | 10 | 100 |
 
 ## Trilhas disponíveis por faixa
 

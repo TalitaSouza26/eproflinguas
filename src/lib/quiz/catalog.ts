@@ -1,6 +1,7 @@
 import { ANIMAIS_QUIZ } from "@/lib/quiz/animais";
 import { GREETINGS_QUIZ } from "@/lib/quiz/greetings";
 import { SEED_QUIZ } from "@/lib/quiz/seed";
+import { QUESTIONS_PER_QUIZ } from "@/lib/quiz/types";
 
 /**
  * Qual quiz cada trilha serve.
@@ -17,5 +18,9 @@ const BY_TRACK: Record<string, typeof SEED_QUIZ> = {
 };
 
 export function quizForTrack(slug: string) {
-  return BY_TRACK[slug] ?? SEED_QUIZ;
+  const quiz = BY_TRACK[slug] ?? SEED_QUIZ;
+
+  // Os arquivos guardam mais questões do que uma fase usa. Cortar aqui deixa
+  // o excedente escrito para as fases seguintes, em vez de jogar fora.
+  return { ...quiz, questions: quiz.questions.slice(0, QUESTIONS_PER_QUIZ) };
 }

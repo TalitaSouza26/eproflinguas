@@ -27,7 +27,16 @@ export const MAX_CHOICES = 4;
 
 /** Padrão das faixas que já leem. */
 export const CHOICES_PER_QUESTION = MAX_CHOICES;
-export const QUESTIONS_PER_QUIZ = 10;
+/**
+ * Questões por fase.
+ *
+ * Cinco, não dez: no 1º–2º a sessão tem história antes do quiz, e atenção
+ * sustentada aos 6 anos é de cinco a sete minutos. Dez perguntas depois de uma
+ * história terminariam com a criança cansada — o pior jeito de terminar.
+ *
+ * TODO: vira um valor por faixa escolar. Das faixas que leem em diante, dez.
+ */
+export const QUESTIONS_PER_QUIZ = 5;
 
 export const choiceSchema = z.object({
   id: z.string().min(1),

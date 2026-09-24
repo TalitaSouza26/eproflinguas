@@ -14,6 +14,12 @@ import { questionSchema, type Question } from "@/lib/quiz/types";
  * Ethan fala e o aluno responde por ela. É o mesmo mundo, e não uma lista de
  * situações abstratas com gente sem nome.
  *
+ * A fase usa as cinco primeiras da lista (ver QUESTIONS_PER_QUIZ); as outras
+ * cinco ficam escritas esperando a fase 2. Por isso a ordem importa: as cinco
+ * de cima cobrem uma expressão cada — Hello, Good morning, Thank you,
+ * You're welcome e Goodbye. "My name is" fica para a fase seguinte, por ser
+ * frase e não palavra solta.
+ *
  * A fase sobe de duas alternativas para três na metade. Duas é o que uma
  * criança de 6 anos compara de uma vez, mas duas para sempre seria cara ou
  * coroa: quem chuta acertaria metade da fase.
@@ -55,37 +61,6 @@ const RAW: unknown[] = [
     correctChoiceId: "b",
     explanation: "Good morning é bom dia. Morning é a manhã.",
     hint: "Morning é parente de “manhã”: as duas começam com M.",
-  },
-  {
-    id: "g3",
-    format: "situation_reply",
-    topic: "Primeiras palavras",
-    prompt: "O Ethan cumprimentou a Sofia. O que ela responde?",
-    speaker: "Ethan",
-    speakerLine: "Good morning!",
-    audioText: "Good morning",
-    choices: [
-      { id: "a", label: "Good morning!" },
-      { id: "b", label: "Thank you!" },
-    ],
-    correctChoiceId: "a",
-    explanation: "Bom dia se responde com bom dia: Good morning!",
-    hint: "Na história, o Ethan disse isso e a Sofia devolveu igual.",
-  },
-  {
-    id: "g4",
-    format: "situation_reply",
-    topic: "Primeiras palavras",
-    prompt: "A Sofia quer dizer o nome dela para o Ethan.",
-    audioText: "My name is Sofia",
-    choices: [
-      { id: "a", label: "Thank you, Sofia" },
-      { id: "b", label: "My name is Sofia" },
-      { id: "c", label: "Goodbye, Sofia" },
-    ],
-    correctChoiceId: "b",
-    explanation: "My name is quer dizer meu nome é.",
-    hint: "Tem a palavra “name” dentro, que parece com “nome”.",
   },
   {
     id: "g5",
@@ -133,6 +108,37 @@ const RAW: unknown[] = [
     correctChoiceId: "c",
     explanation: "Goodbye é tchau.",
     hint: "Tem “bye” dentro, que todo mundo já disse acenando.",
+  },
+  {
+    id: "g3",
+    format: "situation_reply",
+    topic: "Primeiras palavras",
+    prompt: "O Ethan cumprimentou a Sofia. O que ela responde?",
+    speaker: "Ethan",
+    speakerLine: "Good morning!",
+    audioText: "Good morning",
+    choices: [
+      { id: "a", label: "Good morning!" },
+      { id: "b", label: "Thank you!" },
+    ],
+    correctChoiceId: "a",
+    explanation: "Bom dia se responde com bom dia: Good morning!",
+    hint: "Na história, o Ethan disse isso e a Sofia devolveu igual.",
+  },
+  {
+    id: "g4",
+    format: "situation_reply",
+    topic: "Primeiras palavras",
+    prompt: "A Sofia quer dizer o nome dela para o Ethan.",
+    audioText: "My name is Sofia",
+    choices: [
+      { id: "a", label: "Thank you, Sofia" },
+      { id: "b", label: "My name is Sofia" },
+      { id: "c", label: "Goodbye, Sofia" },
+    ],
+    correctChoiceId: "b",
+    explanation: "My name is quer dizer meu nome é.",
+    hint: "Tem a palavra “name” dentro, que parece com “nome”.",
   },
   {
     id: "g8",
