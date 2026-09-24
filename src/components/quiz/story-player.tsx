@@ -69,14 +69,14 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
   return (
     <div
       className={`relative z-10 flex w-full flex-col items-center gap-6 text-center ${
-        index === -1 ? "max-w-4xl" : "max-w-xl"
+        index === -1 ? "max-w-5xl" : "max-w-xl"
       }`}
     >
       {/* Capa: o único toque que a história pede antes de tocar.
           O Bubo segura o livro e a fala sai dele — é o livro que está contando,
           e a criança entende isso sem ler uma palavra. */}
       {index === -1 && (
-        <div className="grid w-full items-center gap-4 sm:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] sm:gap-2">
+        <div className="grid w-full items-center gap-4 sm:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] sm:gap-0">
           <Image
             src="/bubo/bubo-lendo.webp"
             alt=""
@@ -84,7 +84,7 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
             height={1402}
             unoptimized
             priority
-            className="animate-rise-in mx-auto h-56 w-auto drop-shadow-2xl sm:h-[22rem]"
+            className="animate-rise-in mx-auto h-72 w-auto drop-shadow-2xl sm:h-[30rem] lg:h-[36rem]"
           />
 
           <div
