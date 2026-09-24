@@ -54,7 +54,7 @@ export function ContinueCard() {
       </div>
 
       <Image
-        src={IS_NEW_STUDENT ? "/bubo/bubo-falando.webp" : "/bubo/bubo-aceno.webp"}
+        src="/bubo/bubo-aceno.webp"
         unoptimized
         alt=""
         width={1122}
