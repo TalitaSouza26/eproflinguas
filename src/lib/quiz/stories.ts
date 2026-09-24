@@ -95,42 +95,78 @@ const NOVO_AMIGO: Story = {
 };
 
 /**
- * Trilha "Primeiras palavras", fase 2.
+ * Fase 2 — o recreio.
  *
- * Continua o mesmo dia: o recreio e a despedida. Ensina Thank you,
- * You're welcome e Goodbye.
+ * O trio é o da boa educação, e ele se encadeia sozinho: pedir, agradecer,
+ * responder ao agradecimento. Ensina Please, Thank you e You're welcome.
  */
-const ATE_AMANHA: Story = {
+const NO_RECREIO: Story = {
   slug: "primeiras-palavras",
   phase: 2,
   number: 2,
-  title: "Até amanhã!",
-  subtitle: "No recreio, Sofia e Ethan viram amigos de verdade.",
+  title: "No recreio",
+  subtitle: "Ethan precisa de ajuda e Sofia aprende a ser educada em inglês.",
   cover: "/stories/novo-amigo-capa.webp",
   beats: [
     {
       kind: "narration",
-      text: "Na hora do recreio, Ethan dividiu o lanche dele com a Sofia e perguntou se podiam brincar juntos. Ela disse que sim, e ele ficou muito feliz: — *Thank you*, Sofia!",
+      text: "No recreio, Ethan precisava de uma borracha. Ele apontou para a da Sofia e pediu: — *Please*?",
+    },
+    { kind: "lesson", word: "Please", meaning: "Por favor" },
+    {
+      kind: "narration",
+      text: "Sofia emprestou na hora. Ethan sorriu e disse: — *Thank you*, Sofia!",
     },
     { kind: "lesson", word: "Thank you", meaning: "Obrigado, obrigada" },
     {
       kind: "narration",
-      text: "Sofia já sabia o que responder: — *You're welcome*, Ethan!",
+      text: "— De nada! — respondeu Sofia. Aí ela lembrou como se fala em inglês: — *You're welcome*!",
     },
     { kind: "lesson", word: "You're welcome", meaning: "De nada" },
     {
       kind: "narration",
-      text: "O sinal tocou. Antes de correr para a carteira, Ethan acenou: — *Goodbye*, Sofia!",
-    },
-    { kind: "lesson", word: "Goodbye", meaning: "Tchau" },
-    {
-      kind: "narration",
-      text: "Sofia acenou de volta: — *Goodbye*, Ethan! E assim, com um pouquinho de português e um pouquinho de inglês, Sofia fez um novo amigo.",
+      text: "Os dois terminaram o dever juntos e ainda deu tempo de brincar antes do sinal.",
     },
   ],
 };
 
-const STORIES: Story[] = [NOVO_AMIGO, ATE_AMANHA];
+/**
+ * Fase 3 — o fim do dia.
+ *
+ * Fecha o dia inteiro: o esbarrão, a despedida na porta e a hora de dormir.
+ * Ensina Sorry, Goodbye e Good night.
+ */
+const ATE_AMANHA: Story = {
+  slug: "primeiras-palavras",
+  phase: 3,
+  number: 3,
+  title: "Até amanhã!",
+  subtitle: "O dia acaba, e Sofia se despede do novo amigo.",
+  cover: "/stories/novo-amigo-capa.webp",
+  beats: [
+    {
+      kind: "narration",
+      text: "Correndo para a fila, Sofia esbarrou sem querer no Ethan. Ela parou na hora e disse: — *Sorry*!",
+    },
+    { kind: "lesson", word: "Sorry", meaning: "Desculpa" },
+    {
+      kind: "narration",
+      text: "— Tudo bem! — riu Ethan. O sinal tocou, e na porta da escola ele acenou: — *Goodbye*, Sofia!",
+    },
+    { kind: "lesson", word: "Goodbye", meaning: "Tchau" },
+    {
+      kind: "narration",
+      text: "À noite, Sofia contou tudo para a mãe e aprendeu mais uma: em inglês, boa noite é *Good night*.",
+    },
+    { kind: "lesson", word: "Good night", meaning: "Boa noite" },
+    {
+      kind: "narration",
+      text: "E assim, com um pouquinho de português e um pouquinho de inglês, Sofia fez um novo amigo.",
+    },
+  ],
+};
+
+const STORIES: Story[] = [NOVO_AMIGO, NO_RECREIO, ATE_AMANHA];
 
 export function storyForTrack(slug: string, phase = 1): Story | undefined {
   return STORIES.find((s) => s.slug === slug && s.phase === phase);

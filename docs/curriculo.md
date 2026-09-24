@@ -17,14 +17,14 @@ Isso realiza as diretrizes por faixa que já estavam definidas: vocabulário sim
 
 ## Quantidade
 
-- **1º–2º: 3 a 5 questões por fase.** A sessão tem história antes do quiz, e atenção sustentada aos 6 anos é de cinco a sete minutos. Nas trilhas com história por fase são 3, uma por expressão ensinada.
+- **1º–2º: 3 questões nas fases com história** (uma por expressão ensinada) e até 9 na fase de revisão, que não tem história. Atenção sustentada aos 6 anos é de cinco a sete minutos, e a narração já consome parte disso.
 - **Das demais faixas em diante: 10 questões por fase.**
 - Cada fase trabalha **8 itens do léxico**, sendo **2 questões de revisão** de fases anteriores da mesma trilha. No 1º–2º são 4 itens e 1 de revisão.
 - Número de fases por trilha, por faixa:
 
 | Faixa | Fases | Questões por fase | Questões por trilha |
 | --- | --- | --- | --- |
-| 1º–2º | 4 | 3 a 5 | 12 a 20 |
+| 1º–2º | 4 | 3 (9 na revisão) | 18 |
 | 3º–5º | 6 | 10 | 60 |
 | 6º–7º | 8 | 10 | 80 |
 | 8º–9º | 10 | 10 | 100 |
@@ -72,9 +72,11 @@ Cumprimento não é substantivo desenhável — um sol na tela poderia ser *sun*
 | Fase | História | Ensina | Questões |
 | --- | --- | --- | --- |
 | 1 | Um novo amigo | Hello, My name is, Good morning | 3 |
-| 2 | Até amanhã! | Thank you, You're welcome, Goodbye | 3 |
-| 3 | — | a definir | 3 |
-| 4 | — | a definir | 3 |
+| 2 | No recreio | Please, Thank you, You're welcome | 3 |
+| 3 | Até amanhã! | Sorry, Goodbye, Good night | 3 |
+| 4 | — | revisão das nove | 9 |
+
+A fase 4 não tem história: é a revisão que fecha a trilha. Sem narração dividindo o tempo, cabem as nove expressões com uma questão cada — dá o mesmo par de minutos de uma fase com história e três perguntas.
 
 O formato das questões é `meaning_word` com duas alternativas: significado em português, palavra em inglês. Duas é o que uma criança de 6 anos compara de uma vez; o risco de chute existe, e o que o compensa é a fase ser curta e a história vir antes.
 

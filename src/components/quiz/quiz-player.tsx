@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { recordQuizDone } from "@/app/(app)/quizzes/actions";
 import { ChoiceCard, type ChoiceState } from "@/components/quiz/choice-card";
 import { SpeakButton } from "@/components/quiz/speak-button";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
@@ -101,8 +102,15 @@ export function QuizPlayer({
 
     const delay = isCorrect ? ADVANCE_DELAY.correct : ADVANCE_DELAY.wrong;
     const timer = setTimeout(() => {
-      if (isLast) router.push(resultHref);
-      else advance();
+      if (isLast) {
+        // Conta para a missão do dia. Se falhar, o aluno segue para o
+        // resultado do mesmo jeito — perder a contagem é menos grave que
+        // prender a criança na última questão.
+        void recordQuizDone().catch(() => {});
+        router.push(resultHref);
+      } else {
+        advance();
+      }
     }, delay);
 
     return () => clearTimeout(timer);
