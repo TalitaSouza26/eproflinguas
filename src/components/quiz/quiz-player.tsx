@@ -23,10 +23,12 @@ function stateFor(
 /**
  * Quanto tempo o feedback fica na tela antes de avançar sozinho.
  *
- * O erro ganha mais que o dobro: é ali que está o aprendizado, e uma criança
- * do 2º ano não lê a explicação em um segundo.
+ * O acerto é quase imediato: o aluno já sabe que acertou no instante em que o
+ * card fica verde, e qualquer espera além disso é só ele olhando para uma
+ * tela parada. O erro continua com vários segundos — é ali que está o
+ * aprendizado, e uma criança do 2º ano não lê a explicação em um segundo.
  */
-const ADVANCE_DELAY = { correct: 1800, wrong: 4200 };
+const ADVANCE_DELAY = { correct: 800, wrong: 2600 };
 
 const CTA =
   "inline-flex items-center gap-2.5 rounded-full bg-accent-500 px-7 py-3.5 text-sm font-bold text-white " +
@@ -277,13 +279,11 @@ export function QuizPlayer({
           </p>
         )}
 
-        {/* O rodapé só existe depois de responder: antes disso não há nada
-            para o aluno acionar, e uma faixa vazia só empurraria a pergunta
-            para cima da dobra. */}
-        {confirmed && (
+        {/* O rodapé só existe quando tem o que mostrar: a espera do erro ou o
+            botão de resultado. No acerto ele fica de fora, senão sobraria uma
+            faixa vazia com linha e tudo por 800ms. */}
+        {confirmed && (isLast || !isCorrect) && (
           <div className="mt-6 flex justify-end border-t border-ink-100 pt-6">
-            {/* A barra mostra quanto falta em vez de deixar o aluno esperando
-                no escuro, e dá lugar ao CTA na última questão. */}
             {!isLast && (
               <div className="flex w-full flex-col items-end gap-2">
                 <p className="text-[13px] font-semibold text-ink-500">Próxima pergunta…</p>
