@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { ChoiceCard, type ChoiceState } from "@/components/quiz/choice-card";
 import { SpeakButton } from "@/components/quiz/speak-button";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
-import { ArrowLeftIcon, ArrowRightIcon, BulbIcon, SpeakerIcon } from "@/components/ui/icons";
+import { ArrowLeftIcon, BulbIcon, SpeakerIcon } from "@/components/ui/icons";
 import { FORMAT_INSTRUCTION, type Question } from "@/lib/quiz/types";
 
 type Answer = { questionId: string; topic: string; correct: boolean };
@@ -31,11 +32,6 @@ function stateFor(
  */
 const ADVANCE_DELAY = { correct: 800, wrong: 2600 };
 
-const CTA =
-  "inline-flex items-center gap-2.5 rounded-full bg-accent-500 px-7 py-3.5 text-sm font-bold text-white " +
-  "shadow-lg shadow-accent-500/25 transition hover:bg-accent-600 focus-visible:outline-2 " +
-  "focus-visible:outline-offset-2 focus-visible:outline-accent-600";
-
 export function QuizPlayer({
   trackTitle,
   phase,
@@ -51,6 +47,7 @@ export function QuizPlayer({
   context: string;
   questions: Question[];
 }) {
+  const router = useRouter();
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
@@ -63,6 +60,7 @@ export function QuizPlayer({
   const isCorrect = confirmed && selected === question.correctChoiceId;
   const isSituation = question.format === "situation_reply";
   const correctCount = answers.filter((a) => a.correct).length;
+  const resultHref = `/quizzes/resultado?acertos=${correctCount}&total=${total}`;
 
   /**
     * Tocar na alternativa já responde.
@@ -96,14 +94,19 @@ export function QuizPlayer({
     setHintOpen(false);
   }, []);
 
-  // Depois de confirmar, a próxima questão entra sozinha.
+  // Depois de confirmar, a próxima questão entra sozinha — e, na última, o
+  // resultado. Assim o quiz inteiro tem um gesto só: tocar na alternativa.
   useEffect(() => {
-    if (!confirmed || isLast) return;
+    if (!confirmed) return;
 
     const delay = isCorrect ? ADVANCE_DELAY.correct : ADVANCE_DELAY.wrong;
-    const timer = setTimeout(advance, delay);
+    const timer = setTimeout(() => {
+      if (isLast) router.push(resultHref);
+      else advance();
+    }, delay);
+
     return () => clearTimeout(timer);
-  }, [confirmed, isCorrect, isLast, advance]);
+  }, [confirmed, isCorrect, isLast, advance, router, resultHref]);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
@@ -294,31 +297,21 @@ export function QuizPlayer({
           </p>
         )}
 
-        {/* O rodapé só existe quando tem o que mostrar: a espera do erro ou o
-            botão de resultado. No acerto ele fica de fora, senão sobraria uma
-            faixa vazia com linha e tudo por 800ms. */}
-        {confirmed && (isLast || !isCorrect) && (
+        {/* O rodapé só existe para mostrar a espera do erro. No acerto ele fica
+            de fora, senão sobraria uma faixa vazia com linha e tudo por 800ms. */}
+        {confirmed && !isCorrect && (
           <div className="mt-6 flex justify-end border-t border-ink-100 pt-6">
-            {!isLast && (
-              <div className="flex w-full flex-col items-end gap-2">
-                <p className="text-[13px] font-semibold text-ink-500">Próxima pergunta…</p>
-                <div className="h-1.5 w-40 overflow-hidden rounded-full bg-ink-100">
-                  <div
-                    className="animate-advance h-full rounded-full bg-accent-500"
-                    style={{
-                      animationDuration: `${isCorrect ? ADVANCE_DELAY.correct : ADVANCE_DELAY.wrong}ms`,
-                    }}
-                  />
-                </div>
+            <div className="flex w-full flex-col items-end gap-2">
+              <p className="text-[13px] font-semibold text-ink-500">
+                {isLast ? "Ver resultado…" : "Próxima pergunta…"}
+              </p>
+              <div className="h-1.5 w-40 overflow-hidden rounded-full bg-ink-100">
+                <div
+                  className="animate-advance h-full rounded-full bg-accent-500"
+                  style={{ animationDuration: `${ADVANCE_DELAY.wrong}ms` }}
+                />
               </div>
-            )}
-
-            {isLast && (
-              <Link href={`/quizzes/resultado?acertos=${correctCount}&total=${total}`} className={CTA}>
-                Ver resultado
-                <ArrowRightIcon className="size-4" />
-              </Link>
-            )}
+            </div>
           </div>
         )}
       </section>
