@@ -4,34 +4,98 @@ import { questionSchema, type Question } from "@/lib/quiz/types";
  * Fase 1 da trilha "Primeiras palavras" — o quiz que vem logo depois da
  * história "Um novo amigo".
  *
- * Cobra **exatamente** as seis expressões que a história ensinou: Hello,
- * My name is, Good morning, Thank you, You're welcome e Goodbye. Nem uma a
- * mais. Antes ele pedia Please, Sorry, Good afternoon e Good night, que a
- * história nunca mostrou — e aí a criança saía de uma aula para uma prova de
- * outro assunto.
+ * A fase 1 são as cinco primeiras: significado em português, palavra em
+ * inglês, duas alternativas. É a checagem direta do que a história acabou de
+ * ensinar.
  *
- * As cenas continuam a história, com a Sofia e o Ethan. Metade é conversa: o
- * Ethan fala e o aluno responde por ela. É o mesmo mundo, e não uma lista de
- * situações abstratas com gente sem nome.
+ * ATENÇÃO: "friend" não aparece na história e pertence ao léxico da trilha
+ * Escola. O aluno encontra na questão 3 uma palavra que ninguém ensinou. Ou
+ * ela volta para a história (e sai de Escola, porque palavra não se repete
+ * entre trilhas), ou a questão troca por algo que a história ensina.
  *
- * A fase usa as cinco primeiras da lista (ver QUESTIONS_PER_QUIZ); as outras
- * cinco ficam escritas esperando a fase 2. Por isso a ordem importa: as cinco
- * de cima cobrem uma expressão cada — Hello, Good morning, Thank you,
- * You're welcome e Goodbye. "My name is" fica para a fase seguinte, por ser
- * frase e não palavra solta.
+ * Da sexta em diante ficam as cenas de conversa com a Sofia e o Ethan,
+ * guardadas para a fase 2.
  *
- * A fase sobe de duas alternativas para três na metade. Duas é o que uma
- * criança de 6 anos compara de uma vez, mas duas para sempre seria cara ou
- * coroa: quem chuta acertaria metade da fase.
- *
- * A primeira é de graça de propósito. Como o quiz responde no toque, o aluno
- * precisa descobrir isso em algum lugar, e o melhor lugar é onde errar não
- * custa nada.
+ * A fase usa as cinco primeiras da lista (ver QUESTIONS_PER_QUIZ), então a
+ * ordem do arquivo é a ordem da fase.
  *
  * TODO: sai daqui quando o banco entrar; passa exatamente pelas mesmas
  * validações que a saída da IA vai passar.
  */
 const RAW: unknown[] = [
+  // --- Fase 1: as cinco que o aluno joga depois da história. ---
+  {
+    id: "f1",
+    format: "meaning_word",
+    topic: "Primeiras palavras",
+    prompt: "Olá",
+    audioText: "Hello",
+    choices: [
+      { id: "a", label: "Hello" },
+      { id: "b", label: "Goodbye" },
+    ],
+    correctChoiceId: "a",
+    explanation: "Hello significa olá.",
+    hint: "É a primeira palavra que o Ethan falou na história.",
+  },
+  {
+    id: "f2",
+    format: "meaning_word",
+    topic: "Primeiras palavras",
+    prompt: "Bom dia",
+    audioText: "Good morning",
+    choices: [
+      { id: "a", label: "Thank you" },
+      { id: "b", label: "Good morning" },
+    ],
+    correctChoiceId: "b",
+    explanation: "Good morning significa bom dia.",
+    hint: "Morning é a manhã: as duas começam com M.",
+  },
+  {
+    id: "f3",
+    format: "meaning_word",
+    topic: "Primeiras palavras",
+    prompt: "Amigo",
+    audioText: "Friend",
+    choices: [
+      { id: "a", label: "Friend" },
+      { id: "b", label: "Hello" },
+    ],
+    correctChoiceId: "a",
+    explanation: "Friend significa amigo.",
+    hint: "Você já viu em “best friend”, que é melhor amigo.",
+  },
+  {
+    id: "f4",
+    format: "meaning_word",
+    topic: "Primeiras palavras",
+    prompt: "Obrigado",
+    audioText: "Thank you",
+    choices: [
+      { id: "a", label: "Thank you" },
+      { id: "b", label: "Good morning" },
+    ],
+    correctChoiceId: "a",
+    explanation: "Thank you significa obrigado.",
+    hint: "Você já ouviu em música: “thank you” fecha quase toda canção em inglês.",
+  },
+  {
+    id: "f5",
+    format: "meaning_word",
+    topic: "Primeiras palavras",
+    prompt: "Tchau",
+    audioText: "Goodbye",
+    choices: [
+      { id: "a", label: "Friend" },
+      { id: "b", label: "Goodbye" },
+    ],
+    correctChoiceId: "b",
+    explanation: "Goodbye significa tchau.",
+    hint: "Tem “bye” dentro, que todo mundo já disse acenando.",
+  },
+
+  // --- Reserva para a fase 2: as cenas de conversa com a Sofia e o Ethan. ---
   {
     id: "g1",
     format: "situation_reply",
