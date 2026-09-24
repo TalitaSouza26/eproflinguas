@@ -24,13 +24,13 @@ Referência de produto. Toda tela e toda geração de questão devem obedecer ao
 2. Progresso sempre visível: `Pergunta 3 de 10` + barra.
 3. A barra avança por questão concluída, não por acerto — ela indica posição, não desempenho.
 4. Não é possível voltar. Confirmou e avançou, a resposta está encerrada.
-5. Selecionar uma alternativa não envia nada. O envio é o clique em "Confirmar resposta".
-6. "Confirmar resposta" nasce desabilitado e só ativa com uma alternativa selecionada.
-7. Antes de confirmar, o aluno troca de alternativa livremente.
+5. Tocar na alternativa é responder. Não há botão de confirmar nem passo intermediário.
+6. A escolha é definitiva no toque: não dá para trocar depois. Em troca, os cards são grandes e bem separados, para o toque errado ser raro.
+7. A dica é o momento de pensar. Quem está em dúvida pede a dica antes de tocar.
 8. Feedback imediato e na própria tela. Sem modal.
 9. Acerto: alternativa correta em verde + ✓ + mensagem curta ("Muito bem! House significa casa.").
 10. Erro: escolha do aluno em vermelho + ×, correta em verde + ✓, mensagem acolhedora ("Quase! House significa casa."). Nunca "Você errou" nem linguagem punitiva.
-11. Depois de confirmar, as alternativas ficam travadas e o CTA vira "Continuar".
+11. Depois de responder, as alternativas ficam travadas e a próxima questão entra sozinha.
 12. Explicação de uma frase. O quiz não vira aula entre questões.
 
 ## Acessibilidade e movimento
@@ -111,7 +111,7 @@ A interface é construída sobre um union de formatos para aceitar novos sem ree
 O mock enviado divergia da especificação em quatro pontos; o que vale é:
 
 - **Sem botão "Anterior".** O mock trazia um; prevalece a regra 4 (não voltar).
-- **Fluxo Confirmar → feedback → Continuar.** O mock ia direto para "Próxima"; prevalece o feedback imediato.
+- **Resposta no toque → feedback → avanço automático.** O mock trazia "Próxima"; o feedback é imediato e o avanço não pede clique.
 - **Imagens entram no fluxo agora** (`image_word`), com acervo local em `public/quiz/`.
 - **Sem seletor de idioma** no topo do quiz: o produto é só de inglês.
 

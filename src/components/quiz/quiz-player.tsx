@@ -24,8 +24,7 @@ function stateFor(
  * Quanto tempo o feedback fica na tela antes de avançar sozinho.
  *
  * O erro ganha mais que o dobro: é ali que está o aprendizado, e uma criança
- * do 2º ano não lê a explicação em um segundo. O botão continua disponível
- * para quem quiser passar antes.
+ * do 2º ano não lê a explicação em um segundo.
  */
 const ADVANCE_DELAY = { correct: 1800, wrong: 4200 };
 
@@ -61,15 +60,25 @@ export function QuizPlayer({
   const isCorrect = confirmed && selected === question.correctChoiceId;
   const correctCount = answers.filter((a) => a.correct).length;
 
-  function confirm() {
-    if (!selected || confirmed) return;
+  /**
+    * Tocar na alternativa já responde.
+    *
+    * Não há passo de confirmar: para a criança que sabe a palavra, o botão era
+    * só um clique a mais entre ela e a resposta. Em troca, a escolha é
+    * definitiva no toque — por isso o card da alternativa é grande e bem
+    * separado dos vizinhos.
+    */
+  function answer(choiceId: string) {
+    if (confirmed) return;
+
+    setSelected(choiceId);
     setConfirmed(true);
     setAnswers((prev) => [
       ...prev,
       {
         questionId: question.id,
         topic: question.topic,
-        correct: selected === question.correctChoiceId,
+        correct: choiceId === question.correctChoiceId,
       },
     ]);
   }
@@ -182,7 +191,7 @@ export function QuizPlayer({
               label={choice.label}
               state={stateFor(choice.id, { confirmed, selected, correctId: question.correctChoiceId })}
               disabled={confirmed}
-              onSelect={() => setSelected(choice.id)}
+              onSelect={() => answer(choice.id)}
             />
           ))}
         </div>
@@ -225,43 +234,35 @@ export function QuizPlayer({
           </p>
         )}
 
-        <div className="mt-6 flex justify-end border-t border-ink-100 pt-6">
-          {!confirmed && (
-            <button
-              type="button"
-              onClick={confirm}
-              disabled={!selected}
-              className={`${CTA} disabled:cursor-not-allowed disabled:bg-ink-300 disabled:shadow-none`}
-            >
-              Confirmar resposta
-            </button>
-          )}
-
-          {/* Sem botão: a próxima questão entra sozinha. A barra ocupa o mesmo
-              espaço do CTA para os controles não pularem entre questões, e
-              mostra quanto falta em vez de deixar o aluno esperando no escuro. */}
-          {confirmed && !isLast && (
-            <div className="flex w-full flex-col items-end gap-2">
-              <p className="text-[13px] font-semibold text-ink-500">Próxima pergunta…</p>
-              <div className="h-1.5 w-40 overflow-hidden rounded-full bg-ink-100">
-                <div
-                  className="animate-advance h-full rounded-full bg-accent-500"
-                  style={{ animationDuration: `${isCorrect ? ADVANCE_DELAY.correct : ADVANCE_DELAY.wrong}ms` }}
-                />
+        {/* O rodapé só existe depois de responder: antes disso não há nada
+            para o aluno acionar, e uma faixa vazia só empurraria a pergunta
+            para cima da dobra. */}
+        {confirmed && (
+          <div className="mt-6 flex justify-end border-t border-ink-100 pt-6">
+            {/* A barra mostra quanto falta em vez de deixar o aluno esperando
+                no escuro, e dá lugar ao CTA na última questão. */}
+            {!isLast && (
+              <div className="flex w-full flex-col items-end gap-2">
+                <p className="text-[13px] font-semibold text-ink-500">Próxima pergunta…</p>
+                <div className="h-1.5 w-40 overflow-hidden rounded-full bg-ink-100">
+                  <div
+                    className="animate-advance h-full rounded-full bg-accent-500"
+                    style={{
+                      animationDuration: `${isCorrect ? ADVANCE_DELAY.correct : ADVANCE_DELAY.wrong}ms`,
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {confirmed && isLast && (
-            <Link
-              href={`/quizzes/resultado?acertos=${correctCount}&total=${total}`}
-              className={CTA}
-            >
-              Ver resultado
-              <ArrowRightIcon className="size-4" />
-            </Link>
-          )}
-        </div>
+            {isLast && (
+              <Link href={`/quizzes/resultado?acertos=${correctCount}&total=${total}`} className={CTA}>
+                Ver resultado
+                <ArrowRightIcon className="size-4" />
+              </Link>
+            )}
+          </div>
+        )}
       </section>
     </div>
   );
