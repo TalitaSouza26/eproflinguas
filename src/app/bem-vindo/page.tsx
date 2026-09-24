@@ -14,8 +14,8 @@ export const metadata: Metadata = { title: "Oi! — eProf Línguas" };
  */
 export default function BemVindoPage() {
   return (
-    <main className="relative isolate flex min-h-screen flex-col items-center justify-center gap-6
-                     bg-gradient-to-b from-[#1c49cc] via-[#143a9e] to-[#0e2a72] px-5 py-10">
+    <main className="relative isolate flex min-h-screen flex-col items-center gap-4
+                     bg-gradient-to-b from-[#1c49cc] via-[#143a9e] to-[#0e2a72] px-5 pb-10 pt-6 sm:pt-8">
       <WelcomeBackdrop />
 
       <Image

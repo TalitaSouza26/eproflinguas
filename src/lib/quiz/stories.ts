@@ -39,7 +39,7 @@ export type Story = {
 };
 
 /**
- * Trilha "Falando com pessoas".
+ * Trilha "Primeiras palavras".
  *
  * A premissa faz o trabalho pesado: Ethan não fala português. O inglês não
  * aparece porque o app mandou, aparece porque é o único jeito de duas crianças
@@ -50,7 +50,7 @@ export type Story = {
  * manhã na escola, e enfiar as duas ali seria forçar. Elas aparecem nas fases.
  */
 const NOVO_AMIGO: Story = {
-  slug: "falando-com-pessoas",
+  slug: "primeiras-palavras",
   title: "Um novo amigo",
   subtitle: "A Sofia conhece um menino que não fala português.",
   beats: [

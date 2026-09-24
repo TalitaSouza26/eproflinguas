@@ -30,13 +30,13 @@ Isso realiza as diretrizes por faixa que já estavam definidas: vocabulário sim
 
 ## Trilhas disponíveis por faixa
 
-"Falando com pessoas" abre a jornada em todas as faixas: é o único inglês que o aluno usa no mesmo dia, e serve de tutorial — como o quiz responde no toque, ele descobre isso onde errar não custa nada.
+"Primeiras palavras" abre a jornada em todas as faixas: é o único inglês que o aluno usa no mesmo dia, e serve de tutorial — como o quiz responde no toque, ele descobre isso onde errar não custa nada.
 
 As duas últimas trilhas são estruturais e pressupõem leitura. **Não valem para o 1º–2º**, que fica com seis trilhas:
 
 | Trilha | 1º–2º | 3º–5º | 6º–7º | 8º–9º |
 | --- | :---: | :---: | :---: | :---: |
-| 1. Falando com pessoas | ✓ | ✓ | ✓ | ✓ |
+| 1. Primeiras palavras | ✓ | ✓ | ✓ | ✓ |
 | 2. Casa e família | ✓ | ✓ | ✓ | ✓ |
 | 3. Escola | ✓ | ✓ | ✓ | ✓ |
 | 4. Animais | ✓ | ✓ | ✓ | ✓ |
@@ -62,7 +62,7 @@ A escada é a mesma em todas as trilhas; muda o léxico.
 
 Sem `meaning_word` e sem `sentence_gap`: nesta faixa o aluno ainda não produz escrita em inglês.
 
-#### Exceção: "Falando com pessoas"
+#### Exceção: "Primeiras palavras"
 
 Cumprimento não é substantivo desenhável — um sol na tela poderia ser *sun*, *day* ou *morning*, e a questão teria mais de uma resposta defensável. Esta trilha roda em `situation_reply`, e a escada mede outra coisa: reconhecer a fala, escolher a fala certa para a situação, responder alguém.
 
@@ -124,7 +124,7 @@ A partir do 8º–9º, `sentence_gap` responde por 6 das 10 fases — é o "mais
 
 Nenhuma palavra se repete entre trilhas, e nenhuma trilha tem duas palavras com a mesma tradução — senão a questão teria duas alternativas corretas. Por isso ficaram de fora `home` (colide com `house`), `class` (com `classroom`) e `room` (com `bedroom`); e `fish`, `chicken` e `orange` aparecem em uma trilha só.
 
-### 1. Falando com pessoas
+### 1. Primeiras palavras
 
 Trilha de expressões, não de palavras soltas: o item é a fala inteira.
 

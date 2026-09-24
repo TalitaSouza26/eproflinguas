@@ -19,7 +19,7 @@ export const ONBOARDING_COOKIE = "linguas_comecou";
  * A fase vai explícita na URL para o recém-chegado nunca cair no meio da
  * trilha, seja qual for o estado do mock.
  */
-export const FIRST_QUIZ_PATH = "/quizzes/falando-com-pessoas/historia?fase=1";
+export const FIRST_QUIZ_PATH = "/quizzes/primeiras-palavras/historia?fase=1";
 
 export async function hasStarted(): Promise<boolean> {
   const store = await cookies();

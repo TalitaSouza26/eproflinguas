@@ -45,8 +45,8 @@ const RAW: Omit<Track, "phases">[] = [
   // A primeira trilha é a porta de entrada: ensina a falar com alguém e, de
   // quebra, ensina o próprio quiz — errar ali não custa nada.
   {
-    slug: "falando-com-pessoas",
-    title: "Falando com pessoas",
+    slug: "primeiras-palavras",
+    title: "Primeiras palavras",
     icon: TalkIcon,
     completedPhases: 0,
   },

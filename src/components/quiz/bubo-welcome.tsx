@@ -33,7 +33,7 @@ export function BuboWelcome() {
         </h1>
       </header>
 
-      <div className="mt-4 grid items-center gap-2 sm:mt-6 sm:grid-cols-[1.05fr_1fr]">
+      <div className="mt-2 grid items-center gap-2 sm:mt-4 sm:grid-cols-[1.15fr_1fr] sm:gap-0">
         <Image
           src="/bubo/bubo-boas-vindas.webp"
           alt=""
@@ -41,10 +41,12 @@ export function BuboWelcome() {
           height={539}
           unoptimized
           priority
-          className="animate-rise-in mx-auto h-64 w-auto drop-shadow-2xl sm:h-[26rem]"
+          className="animate-rise-in mx-auto h-72 w-auto drop-shadow-2xl sm:h-[30rem] lg:h-[34rem]"
         />
 
-        <div className="animate-rise-in" style={{ animationDelay: "120ms" }}>
+        {/* A fala encosta no Bubo: o recorte tem ar sobrando dos dois lados,
+            então sem a margem negativa o rabicho ficaria apontando para o vazio. */}
+        <div className="animate-rise-in sm:-ml-10 lg:-ml-14" style={{ animationDelay: "120ms" }}>
           {/* A fala sai na direção do Bubo: no empilhado o rabicho aponta para
               cima, e a partir de sm ele vira para a esquerda. */}
           <div className="relative rounded-3xl bg-white px-6 py-6 text-center shadow-2xl">

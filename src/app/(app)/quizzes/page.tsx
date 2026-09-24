@@ -16,7 +16,7 @@ export default function QuizzesPage() {
   if (!IS_NEW_STUDENT) redirect(`/quizzes/${CURRENT_TRACK.slug}`);
 
   return (
-    <div className="relative isolate flex min-h-[calc(100vh-5rem)] items-center justify-center px-5 py-10">
+    <div className="relative isolate flex min-h-[calc(100vh-5rem)] justify-center px-5 pb-10 pt-6 sm:pt-8">
       <WelcomeBackdrop />
       <BuboWelcome />
     </div>

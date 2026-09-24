@@ -1,7 +1,7 @@
 import { questionSchema, type Question } from "@/lib/quiz/types";
 
 /**
- * Fase 1 da trilha "Falando com pessoas" — o quiz que vem logo depois da
+ * Fase 1 da trilha "Primeiras palavras" — o quiz que vem logo depois da
  * história "Um novo amigo".
  *
  * Cobra **exatamente** as seis expressões que a história ensinou: Hello,
@@ -29,7 +29,7 @@ const RAW: unknown[] = [
   {
     id: "g1",
     format: "situation_reply",
-    topic: "Falando com pessoas",
+    topic: "Primeiras palavras",
     prompt: "O Ethan chegou perto da Sofia. O que ela responde?",
     speaker: "Ethan",
     speakerLine: "Hello!",
@@ -45,7 +45,7 @@ const RAW: unknown[] = [
   {
     id: "g2",
     format: "situation_reply",
-    topic: "Falando com pessoas",
+    topic: "Primeiras palavras",
     prompt: "É de manhã e a Sofia encontra o Ethan no portão da escola.",
     audioText: "Good morning",
     choices: [
@@ -59,7 +59,7 @@ const RAW: unknown[] = [
   {
     id: "g3",
     format: "situation_reply",
-    topic: "Falando com pessoas",
+    topic: "Primeiras palavras",
     prompt: "O Ethan cumprimentou a Sofia. O que ela responde?",
     speaker: "Ethan",
     speakerLine: "Good morning!",
@@ -75,7 +75,7 @@ const RAW: unknown[] = [
   {
     id: "g4",
     format: "situation_reply",
-    topic: "Falando com pessoas",
+    topic: "Primeiras palavras",
     prompt: "A Sofia quer dizer o nome dela para o Ethan.",
     audioText: "My name is Sofia",
     choices: [
@@ -90,7 +90,7 @@ const RAW: unknown[] = [
   {
     id: "g5",
     format: "situation_reply",
-    topic: "Falando com pessoas",
+    topic: "Primeiras palavras",
     prompt: "No recreio, o Ethan divide o lanche dele com a Sofia.",
     audioText: "Thank you",
     choices: [
@@ -105,7 +105,7 @@ const RAW: unknown[] = [
   {
     id: "g6",
     format: "situation_reply",
-    topic: "Falando com pessoas",
+    topic: "Primeiras palavras",
     prompt: "A Sofia emprestou a borracha dela. O Ethan agradeceu. O que ela responde?",
     speaker: "Ethan",
     speakerLine: "Thank you!",
@@ -122,7 +122,7 @@ const RAW: unknown[] = [
   {
     id: "g7",
     format: "situation_reply",
-    topic: "Falando com pessoas",
+    topic: "Primeiras palavras",
     prompt: "O sinal tocou. O Ethan vai para a carteira dele e acena.",
     audioText: "Goodbye",
     choices: [
@@ -137,7 +137,7 @@ const RAW: unknown[] = [
   {
     id: "g8",
     format: "situation_reply",
-    topic: "Falando com pessoas",
+    topic: "Primeiras palavras",
     prompt: "O Ethan está indo embora. O que a Sofia responde?",
     speaker: "Ethan",
     speakerLine: "Goodbye!",
@@ -154,7 +154,7 @@ const RAW: unknown[] = [
   {
     id: "g9",
     format: "situation_reply",
-    topic: "Falando com pessoas",
+    topic: "Primeiras palavras",
     prompt: "No dia seguinte, a Sofia vê o Ethan de longe e acena para ele.",
     audioText: "Hello",
     choices: [
@@ -169,7 +169,7 @@ const RAW: unknown[] = [
   {
     id: "g10",
     format: "situation_reply",
-    topic: "Falando com pessoas",
+    topic: "Primeiras palavras",
     prompt: "A Sofia ajudou o Ethan a achar a sala. O que ela responde para ele?",
     speaker: "Ethan",
     speakerLine: "Thank you, Sofia!",
@@ -188,7 +188,7 @@ const RAW: unknown[] = [
 export const GREETINGS_QUESTIONS: Question[] = RAW.map((q) => questionSchema.parse(q));
 
 export const GREETINGS_QUIZ = {
-  slug: "falando-com-pessoas",
-  title: "Falando com pessoas",
+  slug: "primeiras-palavras",
+  title: "Primeiras palavras",
   questions: GREETINGS_QUESTIONS,
 };
