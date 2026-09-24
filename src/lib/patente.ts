@@ -72,8 +72,14 @@ export const PATENTES: Patente[] = [
   },
 ];
 
-/** Quantas palavras o aluno já aprendeu. */
-export const WORDS_LEARNED = 240;
+/**
+ * Quantas palavras o aluno já aprendeu.
+ *
+ * Zero: o aluno do protótipo está chegando agora. Com isso não há patente
+ * conquistada, e as telas mostram a Bronze I apagada com o que falta para
+ * acendê-la.
+ */
+export const WORDS_LEARNED = 0;
 
 /** Índice da patente atual, ou -1 se ainda não alcançou a primeira. */
 export const CURRENT_INDEX = PATENTES.reduce(

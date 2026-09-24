@@ -1,13 +1,22 @@
 import { redirect } from "next/navigation";
-import { CURRENT_TRACK } from "@/lib/tracks";
+import { BuboWelcome } from "@/components/quiz/bubo-welcome";
+import { CURRENT_TRACK, IS_NEW_STUDENT } from "@/lib/tracks";
 
 /**
- * Não existe lista de quizzes ainda: a entrada do menu leva direto ao quiz
- * atual do aluno, para nunca cair numa tela vazia.
+ * Entrada de estudo pelo menu.
  *
- * TODO: quando houver trilhas de verdade, esta rota vira a listagem e o
- * "Voltar" do quiz deve apontar para cá de novo.
+ * Quem já estudou vai direto para onde parou — não existe lista de quizzes, e
+ * cair numa tela vazia seria pior. Quem é novo encontra o Bubo primeiro: a
+ * criança precisa ser recebida antes de ver uma pergunta.
+ *
+ * TODO: quando houver escolha de trilha, esta rota vira a listagem.
  */
 export default function QuizzesPage() {
-  redirect(`/quizzes/${CURRENT_TRACK.slug}`);
+  if (!IS_NEW_STUDENT) redirect(`/quizzes/${CURRENT_TRACK.slug}`);
+
+  return (
+    <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center px-5 py-10">
+      <BuboWelcome />
+    </div>
+  );
 }

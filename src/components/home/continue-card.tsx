@@ -42,8 +42,10 @@ export function ContinueCard() {
         <p className="mt-1.5 font-bold text-white">{COPY.lead}</p>
         <p className="mt-1.5 text-sm leading-relaxed text-blue-100">{COPY.body}</p>
 
+        {/* O recém-chegado passa pelo Bubo antes da primeira pergunta; quem
+            já estudou volta direto para onde parou. */}
         <Link
-          href={`/quizzes/${CURRENT_TRACK.slug}?fase=${CURRENT_PHASE}`}
+          href={IS_NEW_STUDENT ? "/quizzes" : `/quizzes/${CURRENT_TRACK.slug}?fase=${CURRENT_PHASE}`}
           className="mt-6 inline-flex items-center gap-2.5 rounded-full bg-accent-500 px-6 py-3 text-sm font-bold
                      text-white shadow-lg shadow-black/20 transition hover:bg-accent-600
                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"

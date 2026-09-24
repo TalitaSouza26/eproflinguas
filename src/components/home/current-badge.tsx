@@ -21,8 +21,10 @@ export function CurrentBadge() {
       <CardBackdrop />
 
       <div className="relative">
+        {/* Sem patente conquistada o card muda de assunto: não há "atual"
+            para mostrar, então ele aponta a próxima e o que ela custa. */}
         <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-200">
-          Patente atual
+          {CURRENT_PATENTE ? "Patente atual" : "Próxima patente"}
         </p>
 
         {/* Só a patente conquistada pega fogo: a que falta fica apagada. */}
@@ -41,10 +43,12 @@ export function CurrentBadge() {
           />
         </div>
 
-        <p className="mt-3 text-xl font-extrabold">
-          {CURRENT_PATENTE ? CURRENT_PATENTE.name : "Sem patente ainda"}
+        <p className="mt-3 text-xl font-extrabold">{shown.name}</p>
+        <p className="mt-1 text-xs text-blue-100">
+          {CURRENT_PATENTE
+            ? `${WORDS_LEARNED} palavras aprendidas`
+            : `Aprenda ${shown.words} palavras para conquistar`}
         </p>
-        <p className="mt-1 text-xs text-blue-100">{WORDS_LEARNED} palavras aprendidas</p>
 
         {NEXT_PATENTE ? (
           <>
@@ -62,7 +66,9 @@ export function CurrentBadge() {
               />
             </div>
             <p className="mt-2 text-xs leading-relaxed text-blue-100">
-              Faltam {WORDS_TO_NEXT} palavras para {NEXT_PATENTE.name}.
+              {CURRENT_PATENTE
+                ? `Faltam ${WORDS_TO_NEXT} palavras para ${NEXT_PATENTE.name}.`
+                : "Cada palavra que você acerta conta."}
             </p>
           </>
         ) : (
