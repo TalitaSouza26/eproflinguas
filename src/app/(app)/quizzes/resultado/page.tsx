@@ -65,7 +65,11 @@ export default async function ResultadoPage({
           />
         )}
 
-        <h2 className="mt-4 text-2xl font-extrabold text-deep-900">Quiz concluído!</h2>
+        {/* Separa o prêmio do balanço da fase: são dois assuntos, e sem a
+            linha "Conclua seu primeiro quiz" parecia legenda do título. */}
+        <hr className="mt-6 border-t border-ink-100" />
+
+        <h2 className="mt-6 text-2xl font-extrabold text-deep-900">Quiz concluído!</h2>
         <p className="mt-1.5 text-[15px] text-ink-700">{buboMessage(correct, total)}</p>
 
         {/* O destaque é quanto o aluno acertou, não uma nota ou posição. */}
