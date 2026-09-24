@@ -51,6 +51,10 @@ export type Story = {
  * aparece porque o app mandou, aparece porque é o único jeito de duas crianças
  * se entenderem — e isso uma criança de 6 anos entende de imediato.
  *
+ * Abre com o encontro, e não com a Sofia chegando à escola: assim a primeira
+ * palavra em inglês chega na primeira tela, em vez de depois de duas telas de
+ * texto puro. Criança de 6 anos não espera duas telas.
+ *
  * Ensina Hello, My name is, Good morning, Thank you, You're welcome e Goodbye.
  * "Good afternoon" e "Good night" ficam de fora de propósito: a cena é uma
  * manhã na escola, e enfiar as duas ali seria forçar. Elas aparecem nas fases.
@@ -64,18 +68,18 @@ const NOVO_AMIGO: Story = {
   beats: [
     {
       kind: "narration",
-      text: "Era uma manhã de aula quando Sofia chegou à escola. Perto da porta da sala, ela viu um menino que ainda não conhecia.",
+      text: "Era uma manhã de aula. Na porta da escola, Sofia viu um menino que ainda não conhecia. Ele sorriu e acenou: — *Hello*!",
+      image: "/stories/novo-amigo-hello.webp",
     },
+    { kind: "lesson", word: "Hello", meaning: "Oi, olá" },
     {
       kind: "narration",
       text: "A professora contou que ele se chamava Ethan. Ele tinha vindo dos Estados Unidos e ainda estava aprendendo a falar português.",
     },
     {
       kind: "narration",
-      text: "Sofia se aproximou e disse: — Oi! Meu nome é Sofia. Ethan sorriu e respondeu: — *Hello*, Sofia! *My name is* Ethan!",
-      image: "/stories/novo-amigo-hello.webp",
+      text: "Sofia se apresentou: — Oi! Meu nome é Sofia. E ele respondeu: — *My name is* Ethan!",
     },
-    { kind: "lesson", word: "Hello", meaning: "Oi, olá" },
     { kind: "lesson", word: "My name is…", meaning: "Meu nome é…" },
     {
       kind: "narration",
@@ -104,7 +108,7 @@ const NOVO_AMIGO: Story = {
     {
       kind: "narration",
       text: "Sofia acenou de volta: — *Goodbye*, Ethan! E assim, com um pouquinho de português e um pouquinho de inglês, Sofia fez um novo amigo.",
-    },
+    }
   ],
 };
 
