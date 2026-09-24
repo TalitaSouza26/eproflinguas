@@ -4,8 +4,7 @@ import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
 import { BadgeAward } from "@/components/quiz/badge-award";
 import { PatenteAward } from "@/components/quiz/patente-award";
-import { LATEST_INSIGNIA } from "@/lib/insignias";
-import { CURRENT_PATENTE, WORDS_LEARNED } from "@/lib/patente";
+import { AWARDED_INSIGNIA, AWARDED_PATENTE, AWARDED_WORDS } from "@/lib/quiz/rewards";
 import { SEED_QUIZ } from "@/lib/quiz/seed";
 import { CURRENT_TRACK } from "@/lib/tracks";
 
@@ -45,16 +44,9 @@ export default async function ResultadoPage({
   const correct = Math.min(toInt(sp.acertos, 0), total);
 
   // A insígnia conquistada assume o lugar do Bubo: o prêmio é o que o aluno
-  // deve ver primeiro. Sem insígnia nova, o Bubo volta a receber a tela.
-  // TODO: hoje mostra sempre a última conquistada. Com banco, só aparece
-  // quando a fase realmente destravar uma.
-  const badge = LATEST_INSIGNIA;
-
-  // As palavras deste quiz podem ter fechado uma patente. Quando isso
-  // acontece, seguir a trilha passa antes pela entrega do emblema.
-  // TODO: com banco, comparar a patente de antes e a de depois da fase em vez
-  // de comemorar a atual em toda conclusão.
-  const patente = CURRENT_PATENTE;
+  // deve ver primeiro. O que a fase rendeu vem de lib/quiz/rewards.
+  const badge = AWARDED_INSIGNIA;
+  const patente = AWARDED_PATENTE;
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-10">
@@ -89,7 +81,7 @@ export default async function ResultadoPage({
           {patente ? (
             <PatenteAward
               patente={patente}
-              words={WORDS_LEARNED}
+              words={AWARDED_WORDS}
               href={`/quizzes/${CURRENT_TRACK.slug}`}
               className={CTA_PRIMARY}
             >

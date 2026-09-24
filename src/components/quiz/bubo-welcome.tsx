@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { startJourney } from "@/app/bem-vindo/actions";
 import { SpeakButton } from "@/components/quiz/speak-button";
+import { WelcomeBackdrop } from "@/components/quiz/welcome-backdrop";
 import { PlayIcon } from "@/components/ui/icons";
 
 export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender inglês?";
@@ -17,9 +18,11 @@ export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender inglês?";
  */
 export function BuboWelcome() {
   return (
-    <div className="flex flex-col items-center gap-6 text-center">
+    <div className="relative flex w-full flex-col items-center gap-6 text-center">
+      <WelcomeBackdrop />
+
       {/* A fala vem antes do mascote: é ela que abre a conversa. */}
-      <div className="animate-rise-in relative max-w-md rounded-3xl bg-white px-6 py-5 shadow-2xl">
+      <div className="animate-rise-in relative z-10 max-w-md rounded-3xl bg-white px-6 py-5 shadow-2xl">
         <div className="flex items-center gap-4">
           <p className="text-2xl font-extrabold leading-snug text-deep-900 sm:text-[28px]">
             Oi! Eu sou o Bubo.
@@ -42,7 +45,7 @@ export function BuboWelcome() {
         />
       </div>
 
-      <div className="relative flex items-center justify-center">
+      <div className="relative z-10 flex items-center justify-center">
         <span
           aria-hidden
           className="animate-patente-glow absolute size-52 rounded-full bg-accent-500/40 blur-3xl"
@@ -60,7 +63,7 @@ export function BuboWelcome() {
       </div>
 
       {/* Um botão só, do tamanho de uma mão pequena. */}
-      <form action={startJourney}>
+      <form action={startJourney} className="relative z-10">
         <button
           type="submit"
           className="animate-cta-call inline-flex items-center gap-3 rounded-full bg-accent-500 px-12 py-5

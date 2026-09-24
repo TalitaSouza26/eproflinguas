@@ -7,6 +7,10 @@ import { questionSchema, type Question } from "@/lib/quiz/types";
  * que é como cumprimento se aprende. Repetir "Good morning" em dois momentos
  * do dia não é a mesma questão duas vezes.
  *
+ * A fase sobe de duas alternativas para três na metade. Duas é o que uma
+ * criança de 6 anos consegue comparar de uma vez, mas duas para sempre seria
+ * cara ou coroa: quem chuta acertaria metade da fase.
+ *
  * A primeira é de graça de propósito. Como o quiz responde no toque, o aluno
  * precisa descobrir isso em algum lugar, e o melhor lugar é onde errar não
  * custa nada.
@@ -24,9 +28,7 @@ const RAW: unknown[] = [
     audioText: "Hello",
     choices: [
       { id: "a", label: "Hello!" },
-      { id: "b", label: "Thank you!" },
-      { id: "c", label: "Sorry!" },
-      { id: "d", label: "Goodbye!" },
+      { id: "b", label: "Goodbye!" },
     ],
     correctChoiceId: "a",
     explanation: "Hello é oi. Quando alguém diz Hello, você responde Hello.",
@@ -41,8 +43,6 @@ const RAW: unknown[] = [
     choices: [
       { id: "a", label: "Good night" },
       { id: "b", label: "Good morning" },
-      { id: "c", label: "Goodbye" },
-      { id: "d", label: "Thank you" },
     ],
     correctChoiceId: "b",
     explanation: "Good morning é bom dia. Morning é a manhã.",
@@ -56,11 +56,9 @@ const RAW: unknown[] = [
     audioText: "Thank you",
     choices: [
       { id: "a", label: "Please" },
-      { id: "b", label: "Sorry" },
-      { id: "c", label: "Thank you" },
-      { id: "d", label: "Good night" },
+      { id: "b", label: "Thank you" },
     ],
-    correctChoiceId: "c",
+    correctChoiceId: "b",
     explanation: "Thank you é obrigado.",
     hint: "Você já ouviu em música: “thank you” fecha quase toda canção em inglês.",
   },
@@ -74,7 +72,6 @@ const RAW: unknown[] = [
       { id: "a", label: "Good morning" },
       { id: "b", label: "Good afternoon" },
       { id: "c", label: "Good night" },
-      { id: "d", label: "Please" },
     ],
     correctChoiceId: "b",
     explanation: "Good afternoon é boa tarde. Afternoon é depois (after) do meio-dia (noon).",
@@ -88,9 +85,8 @@ const RAW: unknown[] = [
     audioText: "Please",
     choices: [
       { id: "a", label: "Please" },
-      { id: "b", label: "Hello" },
-      { id: "c", label: "Goodbye" },
-      { id: "d", label: "Good morning" },
+      { id: "b", label: "Thank you" },
+      { id: "c", label: "Sorry" },
     ],
     correctChoiceId: "a",
     explanation: "Please é por favor.",
@@ -106,7 +102,6 @@ const RAW: unknown[] = [
       { id: "a", label: "Thank you" },
       { id: "b", label: "Hello" },
       { id: "c", label: "Sorry" },
-      { id: "d", label: "Good afternoon" },
     ],
     correctChoiceId: "c",
     explanation: "Sorry é desculpa.",
@@ -120,11 +115,10 @@ const RAW: unknown[] = [
     audioText: "Goodbye",
     choices: [
       { id: "a", label: "Hello" },
-      { id: "b", label: "Good morning" },
-      { id: "c", label: "Please" },
-      { id: "d", label: "Goodbye" },
+      { id: "b", label: "Please" },
+      { id: "c", label: "Goodbye" },
     ],
-    correctChoiceId: "d",
+    correctChoiceId: "c",
     explanation: "Goodbye é tchau.",
     hint: "Tem “bye” dentro, que todo mundo já disse acenando.",
   },
@@ -138,8 +132,7 @@ const RAW: unknown[] = [
     choices: [
       { id: "a", label: "Thank you!" },
       { id: "b", label: "Sorry!" },
-      { id: "c", label: "Good night!" },
-      { id: "d", label: "Hello!" },
+      { id: "c", label: "Hello!" },
     ],
     correctChoiceId: "a",
     explanation: "Responder Thank you também funciona: os dois agradecem.",
@@ -155,7 +148,6 @@ const RAW: unknown[] = [
       { id: "a", label: "Good afternoon" },
       { id: "b", label: "Good night" },
       { id: "c", label: "Good morning" },
-      { id: "d", label: "Sorry" },
     ],
     correctChoiceId: "b",
     explanation: "Good night é boa noite, dita na hora de dormir.",
@@ -170,11 +162,10 @@ const RAW: unknown[] = [
     audioText: "Goodbye",
     choices: [
       { id: "a", label: "Good morning!" },
-      { id: "b", label: "Please!" },
-      { id: "c", label: "Goodbye!" },
-      { id: "d", label: "Thank you!" },
+      { id: "b", label: "Goodbye!" },
+      { id: "c", label: "Thank you!" },
     ],
-    correctChoiceId: "c",
+    correctChoiceId: "b",
     explanation: "Goodbye responde Goodbye. Até a próxima fase!",
     hint: "Despedida se responde com despedida.",
   },

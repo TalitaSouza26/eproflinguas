@@ -220,7 +220,14 @@ export function QuizPlayer({
           />
         )}
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        {/* A grade acompanha a quantidade: duas ou quatro em pares, três lado
+            a lado. Sobrar meia coluna faria a última alternativa parecer
+            diferente das outras. */}
+        <div
+          className={`mt-6 grid gap-3 ${
+            question.choices.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"
+          }`}
+        >
           {question.choices.map((choice) => (
             <ChoiceCard
               key={choice.id}

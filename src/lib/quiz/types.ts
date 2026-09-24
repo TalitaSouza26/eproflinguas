@@ -14,7 +14,19 @@ export const QUESTION_FORMATS = [
 
 export type QuestionFormat = (typeof QUESTION_FORMATS)[number];
 
-export const CHOICES_PER_QUESTION = 4;
+/**
+ * Quantas alternativas uma questão pode ter.
+ *
+ * Deixou de ser fixo em 4 por causa do 1º–2º ano: quatro textos em inglês são
+ * ruído para quem ainda está sendo alfabetizado. Duas alternativas, porém, são
+ * cara ou coroa — quem chuta acerta metade —, então a fase sobe para três
+ * depois que o aluno pegou o jeito.
+ */
+export const MIN_CHOICES = 2;
+export const MAX_CHOICES = 4;
+
+/** Padrão das faixas que já leem. */
+export const CHOICES_PER_QUESTION = MAX_CHOICES;
 export const QUESTIONS_PER_QUIZ = 10;
 
 export const choiceSchema = z.object({
@@ -26,7 +38,7 @@ const baseQuestion = z.object({
   id: z.string().min(1),
   /** Tema da questão. Guardado na resposta para relatórios futuros. */
   topic: z.string().min(1).max(40),
-  choices: z.array(choiceSchema).length(CHOICES_PER_QUESTION),
+  choices: z.array(choiceSchema).min(MIN_CHOICES).max(MAX_CHOICES),
   correctChoiceId: z.string().min(1),
   /** Frase curta mostrada no feedback, ex.: "House significa casa." */
   explanation: z.string().min(1).max(140),
@@ -83,7 +95,7 @@ export const questionSchema = z
     message: "correctChoiceId precisa apontar para uma alternativa existente",
   })
   .refine(
-    (q) => new Set(q.choices.map((c) => c.label.trim().toLowerCase())).size === CHOICES_PER_QUESTION,
+    (q) => new Set(q.choices.map((c) => c.label.trim().toLowerCase())).size === q.choices.length,
     { message: "as alternativas não podem se repetir" },
   );
 
