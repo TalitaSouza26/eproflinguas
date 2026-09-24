@@ -369,3 +369,26 @@ body {
     filter: none;
   }
 }
+
+/* Chamada do botão único da tela de boas-vindas.
+   Respira devagar para convidar o toque de quem ainda não lê a palavra
+   "Começar" — e para na primeira interação de quem pede menos movimento. */
+@keyframes cta-call {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+.animate-cta-call {
+  animation: cta-call 2400ms ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-cta-call {
+    animation: none;
+  }
+}

@@ -315,6 +315,14 @@ export function AppleIcon({ className }: IconProps) {
   );
 }
 
+export function PlayIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+      <path d="M8 5.5a1 1 0 0 1 1.54-.84l8.2 5.3a1.2 1.2 0 0 1 0 2.02l-8.2 5.32A1 1 0 0 1 8 16.46Z" />
+    </svg>
+  );
+}
+
 /** Duas falas: a trilha de conversa. */
 export function TalkIcon({ className }: IconProps) {
   return (

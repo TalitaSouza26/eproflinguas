@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { ContinueCard } from "@/components/home/continue-card";
 import { CurrentBadge } from "@/components/home/current-badge";
 import { DailyMission } from "@/components/home/daily-mission";
@@ -6,6 +7,7 @@ import { PatenteInline } from "@/components/home/patente-inline";
 import { RecentBadges } from "@/components/home/recent-badges";
 import { TrackProgress } from "@/components/home/track-progress";
 import { CURRENT_STUDENT } from "@/lib/home-data";
+import { hasStarted } from "@/lib/onboarding";
 
 export const metadata: Metadata = { title: "Início — eProf Línguas" };
 
@@ -18,7 +20,12 @@ export const metadata: Metadata = { title: "Início — eProf Línguas" };
  * dela fica a patente compacta na linha da saudação, e as insígnias seguem em
  * Conquistas.
  */
-export default function InicioPage() {
+export default async function InicioPage() {
+  // A Home é a primeira parada depois do login, então é aqui que a primeira
+  // vez é interceptada — a criança conhece o Bubo antes de ver seis blocos de
+  // texto que ela ainda não lê.
+  if (!(await hasStarted())) redirect("/bem-vindo");
+
   return (
     <div className="grid items-start gap-5 px-4 pb-10 pt-4 sm:gap-6 sm:px-8 xl:grid-cols-[1fr_19rem]">
       <div className="flex items-center justify-between gap-3 xl:col-start-1 xl:row-start-1">

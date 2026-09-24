@@ -93,9 +93,13 @@ export function remainingPhases(track: Track): number {
  * Frase de contexto mostrada no quiz: onde o aluno está e o que falta para
  * destravar a próxima trilha.
  */
-export function trackContextLine(track: Track): string {
+export function trackContextLine(track: Track, phase?: number): string {
   const remaining = remainingPhases(track);
   const next = nextTrackOf(track.slug);
+
+  // Na primeira fase da primeira trilha o aluno é novo: nada de cobrar o que
+  // falta para destravar, ele ainda não sabe que existem trilhas.
+  if (phase === 1 && track.slug === TRACKS[0].slug) return "Sua primeira fase. Vamos lá!";
 
   if (remaining === 0) return `Trilha ${track.title} concluída.`;
   if (!next) return `Última trilha da sua faixa · ${remaining === 1 ? "falta 1 quiz" : `faltam ${remaining} quizzes`} para concluir.`;
