@@ -89,6 +89,8 @@ export const questionSchema = z
       prompt: z.string().min(1).max(160),
       /** O que a outra pessoa disse, quando a situação é uma conversa. */
       speakerLine: z.string().min(1).max(80).optional(),
+      /** Quem falou. Sem isso, quem aparece na bolha é o Bubo. */
+      speaker: z.string().min(1).max(20).optional(),
     }),
   ])
   .refine((q) => q.choices.some((c) => c.id === q.correctChoiceId), {

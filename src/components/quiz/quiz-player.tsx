@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ChoiceCard, type ChoiceState } from "@/components/quiz/choice-card";
+import { SpeakButton } from "@/components/quiz/speak-button";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
 import { ArrowLeftIcon, ArrowRightIcon, BulbIcon, SpeakerIcon } from "@/components/ui/icons";
 import { FORMAT_INSTRUCTION, type Question } from "@/lib/quiz/types";
@@ -186,28 +187,42 @@ export function QuizPlayer({
         {/* A fala da outra pessoa vem numa bolha: é ela que o aluno responde,
             e ver quem falou é metade do enunciado. */}
         {isSituation && question.speakerLine && (
-          <div className="mx-auto mt-5 flex max-w-md items-center gap-3 rounded-2xl bg-blue-50 px-4 py-3">
-            <Image
-              src="/bubo/bubo-falando.webp"
-              alt="Bubo"
-              width={1122}
-              height={1402}
-              unoptimized
-              className="h-20 w-auto shrink-0 object-contain"
-            />
-            <p className="flex items-center gap-2 text-xl font-extrabold text-deep-900">
-              “{question.speakerLine}”
-              {question.audioText && (
-                <button
-                  type="button"
-                  aria-label={`Ouvir a pronúncia de ${question.audioText}`}
-                  className="shrink-0 rounded-full p-1.5 text-blue-600 transition hover:bg-white
-                             focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-                >
-                  <SpeakerIcon className="size-5" />
-                </button>
-              )}
-            </p>
+          <div className="mx-auto mt-5 flex max-w-md items-center gap-3 rounded-2xl bg-blue-50 px-4 py-3 text-left">
+            {question.speaker ? (
+              // Personagem da história: círculo com a inicial até existir arte
+              // da Sofia e do Ethan.
+              <span
+                aria-hidden
+                className="flex size-14 shrink-0 items-center justify-center rounded-full bg-blue-600
+                           text-xl font-extrabold text-white"
+              >
+                {question.speaker.charAt(0)}
+              </span>
+            ) : (
+              <Image
+                src="/bubo/bubo-falando.webp"
+                alt="Bubo"
+                width={1122}
+                height={1402}
+                unoptimized
+                className="h-20 w-auto shrink-0 object-contain"
+              />
+            )}
+
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
+                {question.speaker ?? "Bubo"}
+              </p>
+              <p className="flex items-center gap-2 text-xl font-extrabold text-deep-900">
+                “{question.speakerLine}”
+                <SpeakButton
+                  text={question.speakerLine}
+                  lang="en-US"
+                  label={`Ouvir ${question.speakerLine}`}
+                  className="shrink-0 p-1 text-blue-600 hover:bg-white focus-visible:outline-blue-500"
+                />
+              </p>
+            </div>
           </div>
         )}
 
