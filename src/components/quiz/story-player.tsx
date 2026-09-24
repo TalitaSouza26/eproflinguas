@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRightIcon, BookIcon, PlayIcon, SpeakerIcon } from "@/components/ui/icons";
+import { ArrowRightIcon, BookIcon, PlayIcon, ReplayIcon, SpeakerIcon } from "@/components/ui/icons";
 import { cancelSpeech, speakParts, splitBilingual } from "@/lib/speech";
 import { phrasesInStory, type Story } from "@/lib/quiz/stories";
 
@@ -18,7 +18,10 @@ function Narration({ text }: { text: string }) {
     <p className="text-xl font-semibold leading-relaxed text-deep-900 sm:text-2xl sm:leading-relaxed">
       {text.split(/\*([^*]+)\*/g).map((piece, i) =>
         i % 2 === 1 ? (
-          <strong key={i} className="font-extrabold text-accent-600">
+          <strong
+            key={i}
+            className="mx-0.5 inline-block rounded-xl bg-blue-100 px-2.5 py-0.5 font-extrabold text-blue-800"
+          >
             {piece}
           </strong>
         ) : (
@@ -48,24 +51,21 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
 
   const next = useCallback(() => setIndex((i) => i + 1), []);
 
-  // Cada cena fala ao entrar. A narrada segue sozinha no fim da fala; a de
-  // ensino fica esperando, porque é a vez da criança.
+  const partsFor = useCallback(
+    (b: NonNullable<typeof beat>) =>
+      b.kind === "narration" ? splitBilingual(b.text) : [{ text: b.word, lang: "en-US" as const }],
+    [],
+  );
+
+  // Cada cena fala ao entrar e depois espera. Avançar é sempre do aluno: um
+  // avanço automático tiraria dele o "ouvir de novo", que é o botão que mais
+  // importa para quem ainda está pegando o som das palavras.
   useEffect(() => {
     if (!beat) return;
-
-    const parts =
-      beat.kind === "narration"
-        ? splitBilingual(beat.text)
-        : [{ text: beat.word, lang: "en-US" as const }];
-
-    return speakParts(parts, beat.kind === "narration" ? next : undefined);
-  }, [beat, next]);
+    return speakParts(partsFor(beat));
+  }, [beat, partsFor]);
 
   useEffect(() => cancelSpeech, []);
-
-  function repeatWord(word: string) {
-    speakParts([{ text: word, lang: "en-US" }]);
-  }
 
   return (
     <div
@@ -146,7 +146,21 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
             ))}
           </div>
 
-          <div className="w-full rounded-3xl bg-white px-6 py-8 shadow-2xl sm:px-10">
+          <div className="relative w-full overflow-hidden rounded-[2rem] bg-white shadow-2xl">
+            {beat.kind === "narration" && beat.image && (
+              <div className="p-3 pb-0 sm:p-4 sm:pb-0">
+                <Image
+                  src={beat.image}
+                  alt=""
+                  width={2000}
+                  height={727}
+                  priority
+                  className="h-44 w-full rounded-[1.4rem] object-cover sm:h-56"
+                />
+              </div>
+            )}
+
+            <div className="px-6 py-7 sm:px-10">
             {beat.kind === "narration" ? (
               <Narration text={beat.text} />
             ) : (
@@ -157,7 +171,7 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
 
                 <button
                   type="button"
-                  onClick={() => repeatWord(beat.word)}
+                  onClick={() => speakParts(partsFor(beat))}
                   aria-label={`Ouvir ${beat.word} de novo`}
                   className="flex items-center gap-3 rounded-2xl px-4 py-2 text-4xl font-extrabold
                              text-deep-900 transition hover:bg-blue-50 focus-visible:outline-2
@@ -174,14 +188,28 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
                 <p className="mt-2 text-base font-bold text-accent-600">Repita comigo!</p>
               </div>
             )}
-          </div>
 
-          {/* A cena narrada anda sozinha; o botão fica para quem quiser passar
-              antes, e é o único caminho na cena de ensino. */}
-          <button type="button" onClick={next} className={CTA}>
-            {beat.kind === "lesson" ? "Eu falei!" : "Continuar"}
-            <ArrowRightIcon className="size-5" />
-          </button>
+            {/* Ouvir de novo antes de continuar: a ordem na tela é a ordem em
+                que a criança usa. */}
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => beat && speakParts(partsFor(beat))}
+                className="inline-flex items-center gap-2.5 rounded-full bg-blue-50 px-6 py-3.5 text-base
+                           font-bold text-blue-700 transition hover:bg-blue-100 focus-visible:outline-2
+                           focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+              >
+                <ReplayIcon className="size-5" />
+                Ouvir de novo
+              </button>
+
+              <button type="button" onClick={next} className={CTA}>
+                {beat.kind === "lesson" ? "Eu falei!" : "Continuar"}
+                <ArrowRightIcon className="size-5" />
+              </button>
+            </div>
+            </div>
+          </div>
         </>
       )}
 

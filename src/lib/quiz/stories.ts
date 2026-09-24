@@ -21,6 +21,8 @@ export type StoryBeat =
       kind: "narration";
       /** Português com os trechos em inglês entre asteriscos. */
       text: string;
+      /** Ilustração da cena, quando existe. Sem ela, entra só o texto. */
+      image?: string;
     }
   | {
       kind: "lesson";
@@ -71,6 +73,7 @@ const NOVO_AMIGO: Story = {
     {
       kind: "narration",
       text: "Sofia se aproximou e disse: — Oi! Meu nome é Sofia. Ethan sorriu e respondeu: — *Hello*, Sofia! *My name is* Ethan!",
+      image: "/stories/novo-amigo-hello.webp",
     },
     { kind: "lesson", word: "Hello", meaning: "Oi, olá" },
     { kind: "lesson", word: "My name is…", meaning: "Meu nome é…" },
