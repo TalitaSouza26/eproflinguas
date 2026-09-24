@@ -51,10 +51,10 @@ export function BuboWelcome() {
           className="animate-patente-glow absolute size-52 rounded-full bg-accent-500/40 blur-3xl"
         />
         <Image
-          src="/bubo/bubo-falando.webp"
+          src="/bubo/bubo-boas-vindas.webp"
           alt=""
-          width={1122}
-          height={1402}
+          width={346}
+          height={539}
           unoptimized
           priority
           className="animate-rise-in relative h-64 w-auto drop-shadow-2xl sm:h-72"
