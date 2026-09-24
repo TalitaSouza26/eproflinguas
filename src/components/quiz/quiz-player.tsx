@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { recordQuizDone } from "@/app/(app)/quizzes/actions";
 import { ChoiceCard, type ChoiceState } from "@/components/quiz/choice-card";
 import { SpeakButton } from "@/components/quiz/speak-button";
@@ -49,6 +49,10 @@ export function QuizPlayer({
   questions: Question[];
 }) {
   const router = useRouter();
+  // O fim do quiz acontece uma vez só. Sem esta trava o efeito registrava a
+  // conclusão duas vezes — e a missão do dia, que pede dois quizzes, fechava
+  // com um só.
+  const finished = useRef(false);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
@@ -102,15 +106,19 @@ export function QuizPlayer({
 
     const delay = isCorrect ? ADVANCE_DELAY.correct : ADVANCE_DELAY.wrong;
     const timer = setTimeout(() => {
-      if (isLast) {
-        // Conta para a missão do dia. Se falhar, o aluno segue para o
-        // resultado do mesmo jeito — perder a contagem é menos grave que
-        // prender a criança na última questão.
-        void recordQuizDone().catch(() => {});
-        router.push(resultHref);
-      } else {
+      if (!isLast) {
         advance();
+        return;
       }
+
+      if (finished.current) return;
+      finished.current = true;
+
+      // Conta para a missão do dia. Se falhar, o aluno segue para o resultado
+      // do mesmo jeito — perder a contagem é menos grave que prender a criança
+      // na última questão.
+      void recordQuizDone().catch(() => {});
+      router.push(resultHref);
     }, delay);
 
     return () => clearTimeout(timer);
