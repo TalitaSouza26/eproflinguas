@@ -27,7 +27,8 @@ export type DailyMission = {
 export const DAILY_MISSION: DailyMission = {
   title: "Missão do dia",
   description: "Complete 2 quizzes hoje",
-  done: 1,
+  // Zero: o aluno do protótipo está chegando agora e ainda não fez nada hoje.
+  done: 0,
   goal: 2,
   reward: "Mantém sua sequência de dias",
 };
