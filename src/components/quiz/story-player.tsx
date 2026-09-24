@@ -78,16 +78,20 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
       {index === -1 && (
         <div className="relative w-full">
           <div className="grid overflow-hidden rounded-[2rem] bg-white shadow-2xl sm:grid-cols-[1.15fr_1fr]">
-            <Image
-              src={story.cover}
-              alt=""
-              width={1672}
-              height={941}
-              priority
-              className="h-48 w-full object-cover sm:h-full sm:rounded-r-[2rem]"
-            />
+            {/* A cena fica emoldurada, com o branco do cartão em volta — ela
+                não encosta na borda nem é cortada pelo canto arredondado. */}
+            <div className="p-3 sm:p-4">
+              <Image
+                src={story.cover}
+                alt=""
+                width={1672}
+                height={941}
+                priority
+                className="h-44 w-full rounded-[1.4rem] object-cover sm:h-full"
+              />
+            </div>
 
-            <div className="px-6 py-6 text-left sm:px-8 sm:py-9">
+            <div className="px-6 pb-6 pt-2 text-left sm:py-8 sm:pl-4 sm:pr-8">
               <p className="inline-flex rounded-full bg-blue-50 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-700">
                 História {story.number}
               </p>
