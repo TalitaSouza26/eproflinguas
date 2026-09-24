@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { startJourney } from "@/app/bem-vindo/actions";
 import { SpeakButton } from "@/components/quiz/speak-button";
-import { WelcomeBackdrop } from "@/components/quiz/welcome-backdrop";
 import { PlayIcon } from "@/components/ui/icons";
 
 export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender inglês?";
@@ -19,8 +18,6 @@ export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender inglês?";
 export function BuboWelcome() {
   return (
     <div className="relative flex w-full flex-col items-center gap-6 text-center">
-      <WelcomeBackdrop />
-
       {/* A fala vem antes do mascote: é ela que abre a conversa. */}
       <div className="animate-rise-in relative z-10 max-w-md rounded-3xl bg-white px-6 py-5 shadow-2xl">
         <div className="flex items-center gap-4">

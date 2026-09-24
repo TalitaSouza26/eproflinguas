@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { BuboWelcome } from "@/components/quiz/bubo-welcome";
+import { WelcomeBackdrop } from "@/components/quiz/welcome-backdrop";
 import { CURRENT_TRACK, IS_NEW_STUDENT } from "@/lib/tracks";
 
 /**
@@ -15,7 +16,8 @@ export default function QuizzesPage() {
   if (!IS_NEW_STUDENT) redirect(`/quizzes/${CURRENT_TRACK.slug}`);
 
   return (
-    <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center px-5 py-10">
+    <div className="relative isolate flex min-h-[calc(100vh-5rem)] items-center justify-center px-5 py-10">
+      <WelcomeBackdrop />
       <BuboWelcome />
     </div>
   );
