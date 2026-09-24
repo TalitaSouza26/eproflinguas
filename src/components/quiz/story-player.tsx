@@ -76,7 +76,7 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
           O Bubo segura o livro e a fala sai dele — é o livro que está contando,
           e a criança entende isso sem ler uma palavra. */}
       {index === -1 && (
-        <div className="grid w-full items-center gap-4 sm:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] sm:gap-0">
+        <div className="grid w-full items-center gap-4 sm:grid-cols-[1.25fr_1fr] sm:gap-0">
           <Image
             src="/bubo/bubo-lendo.webp"
             alt=""

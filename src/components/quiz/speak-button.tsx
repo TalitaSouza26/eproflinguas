@@ -22,6 +22,8 @@ export function SpeakButton({
   lang = "pt-BR",
   label,
   className = "",
+  iconClassName = "size-7",
+  children,
 }: {
   text: string;
   /** "pt-BR" para a instrução, "en-US" para a palavra ensinada. */
@@ -29,6 +31,9 @@ export function SpeakButton({
   /** Nome do botão para quem usa leitor de tela. */
   label: string;
   className?: string;
+  iconClassName?: string;
+  /** Rótulo visível ao lado do ícone, quando o alto-falante sozinho não basta. */
+  children?: React.ReactNode;
 }) {
   const [speaking, setSpeaking] = useState(false);
 
@@ -61,7 +66,8 @@ export function SpeakButton({
                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white
                   ${speaking ? "animate-cta-call" : ""} ${className}`}
     >
-      <SpeakerIcon className="size-7" />
+      <SpeakerIcon className={iconClassName} />
+      {children}
     </button>
   );
 }

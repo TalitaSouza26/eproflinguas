@@ -1,9 +1,11 @@
 import Image from "next/image";
 import { startJourney } from "@/app/bem-vindo/actions";
 import { SpeakButton } from "@/components/quiz/speak-button";
-import { PlayIcon } from "@/components/ui/icons";
+import { HeartIcon, PlayIcon } from "@/components/ui/icons";
+import { quizForTrack } from "@/lib/quiz/catalog";
+import { CURRENT_TRACK } from "@/lib/tracks";
 
-export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender inglês?";
+export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender juntos?";
 
 /**
  * O Bubo se apresenta.
@@ -12,41 +14,26 @@ export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender inglês?";
  * abertura do app, no "Começar agora" da Home e no Quizzes do menu —, porque
  * nenhuma delas pode largar uma criança de 6 anos direto numa questão.
  *
- * A frase tem botão de ouvir do lado: ela ainda está sendo alfabetizada e não
- * lê nada disso.
+ * A tela diz o nome da trilha, quantas perguntas vêm e que dá para errar sem
+ * problema. Nada disso é para a criança, que ainda não lê: é para o adulto ao
+ * lado, que precisa saber em quanto tempo isso acaba. Para ela vale o Bubo, o
+ * botão de ouvir e o botão grande.
  */
 export function BuboWelcome() {
+  const questions = quizForTrack(CURRENT_TRACK.slug).questions.length;
+
   return (
-    <div className="relative flex w-full flex-col items-center gap-6 text-center">
-      {/* A fala vem antes do mascote: é ela que abre a conversa. */}
-      <div className="animate-rise-in relative z-10 max-w-md rounded-3xl bg-white px-6 py-5 shadow-2xl">
-        <div className="flex items-center gap-4">
-          <p className="text-2xl font-extrabold leading-snug text-deep-900 sm:text-[28px]">
-            Oi! Eu sou o Bubo.
-            <br />
-            Vamos aprender inglês?
-          </p>
+    <div className="relative z-10 w-full max-w-5xl">
+      <header className="text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-200 sm:text-sm">
+          Minha primeira trilha
+        </p>
+        <h1 className="mt-2 text-4xl font-extrabold leading-tight text-white drop-shadow sm:text-5xl">
+          {CURRENT_TRACK.title}
+        </h1>
+      </header>
 
-          <SpeakButton
-            text={WELCOME_LINE}
-            label="Ouvir o Bubo"
-            className="size-14 shrink-0 bg-blue-50 text-blue-600 hover:bg-blue-100
-                       focus-visible:outline-blue-500"
-          />
-        </div>
-
-        {/* Rabicho da bolha, apontando para o Bubo. */}
-        <span
-          aria-hidden
-          className="absolute -bottom-2.5 left-1/2 size-5 -translate-x-1/2 rotate-45 rounded-sm bg-white"
-        />
-      </div>
-
-      <div className="relative z-10 flex items-center justify-center">
-        <span
-          aria-hidden
-          className="animate-patente-glow absolute size-52 rounded-full bg-accent-500/40 blur-3xl"
-        />
+      <div className="mt-4 grid items-center gap-2 sm:mt-6 sm:grid-cols-[1.05fr_1fr]">
         <Image
           src="/bubo/bubo-boas-vindas.webp"
           alt=""
@@ -54,24 +41,61 @@ export function BuboWelcome() {
           height={539}
           unoptimized
           priority
-          className="animate-rise-in relative h-64 w-auto drop-shadow-2xl sm:h-72"
-          style={{ animationDelay: "180ms" }}
+          className="animate-rise-in mx-auto h-64 w-auto drop-shadow-2xl sm:h-[26rem]"
         />
+
+        <div className="animate-rise-in" style={{ animationDelay: "120ms" }}>
+          {/* A fala sai na direção do Bubo: no empilhado o rabicho aponta para
+              cima, e a partir de sm ele vira para a esquerda. */}
+          <div className="relative rounded-3xl bg-white px-6 py-6 text-center shadow-2xl">
+            <span
+              aria-hidden
+              className="absolute -top-2.5 left-1/2 size-5 -translate-x-1/2 rotate-45 rounded-sm bg-white
+                         sm:-left-2 sm:top-[42%] sm:translate-x-0"
+            />
+
+            <p className="text-2xl font-extrabold leading-snug text-deep-900 sm:text-3xl">
+              Oi! Eu sou o Bubo.
+              <br />
+              Vamos aprender juntos?
+            </p>
+
+            <SpeakButton
+              text={WELCOME_LINE}
+              label="Ouvir o Bubo"
+              iconClassName="size-6"
+              className="mt-4 gap-2.5 rounded-full bg-blue-50 px-6 py-3 text-lg font-bold text-blue-700
+                         hover:bg-blue-100 focus-visible:outline-blue-500"
+            >
+              Ouvir
+            </SpeakButton>
+          </div>
+
+          <form action={startJourney} className="mt-6 text-center">
+            <button
+              type="submit"
+              className="animate-cta-call inline-flex w-full items-center justify-center gap-3 rounded-full
+                         bg-accent-500 px-10 py-5 text-2xl font-extrabold text-white shadow-2xl
+                         shadow-black/30 transition hover:bg-accent-600 focus-visible:outline-4
+                         focus-visible:outline-offset-4 focus-visible:outline-white sm:w-auto sm:px-14"
+            >
+              <PlayIcon className="size-7" />
+              Vamos começar
+            </button>
+
+            <p className="mt-3 text-sm font-semibold text-blue-100">
+              {questions} perguntas <span className="px-1 text-blue-300">•</span> No seu ritmo
+            </p>
+          </form>
+        </div>
       </div>
 
-      {/* Um botão só, do tamanho de uma mão pequena. */}
-      <form action={startJourney} className="relative z-10">
-        <button
-          type="submit"
-          className="animate-cta-call inline-flex items-center gap-3 rounded-full bg-accent-500 px-12 py-5
-                     text-2xl font-extrabold text-white shadow-2xl shadow-black/30 transition
-                     hover:bg-accent-600 focus-visible:outline-4 focus-visible:outline-offset-4
-                     focus-visible:outline-white"
-        >
-          <PlayIcon className="size-7" />
-          Começar
-        </button>
-      </form>
+      {/* A promessa que tira o medo de errar, e que o quiz cumpre: nenhuma
+          questão pune, e dá para refazer a fase quantas vezes quiser. */}
+      <p className="mt-6 flex flex-col items-center gap-1.5 text-center text-sm italic text-blue-100">
+        <HeartIcon className="size-6 not-italic" />
+        Pode tentar de novo. Eu te ajudo!
+      </p>
     </div>
   );
 }
