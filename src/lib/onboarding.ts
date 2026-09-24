@@ -13,13 +13,13 @@ import { cookies } from "next/headers";
 export const ONBOARDING_COOKIE = "linguas_comecou";
 
 /**
- * Onde a primeira sessão acontece: fase 1 da trilha de entrada.
+ * Onde a primeira sessão acontece: a história que abre a trilha de entrada,
+ * que por sua vez emenda na fase 1.
  *
- * A fase vai explícita na URL porque o mock desta trilha está concluído, para
- * a Home poder demonstrar um aluno adiantado. Sem isso o recém-chegado cairia
- * na fase 4.
+ * A fase vai explícita na URL para o recém-chegado nunca cair no meio da
+ * trilha, seja qual for o estado do mock.
  */
-export const FIRST_QUIZ_PATH = "/quizzes/falando-com-pessoas?fase=1";
+export const FIRST_QUIZ_PATH = "/quizzes/falando-com-pessoas/historia?fase=1";
 
 export async function hasStarted(): Promise<boolean> {
   const store = await cookies();
