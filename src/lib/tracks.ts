@@ -33,6 +33,14 @@ export type Track = {
 
 const PHASES_PER_TRACK = 4;
 
+/**
+ * O aluno do protótipo está no começo de tudo: primeira trilha, primeira fase.
+ *
+ * Antes ele aparecia adiantado, com duas trilhas fechadas — e aí a tela de
+ * boas-vindas levava um recém-chegado para a fase 4 de uma trilha marcada como
+ * concluída. Como as trilhas seguintes só abrem quando a anterior fecha, todas
+ * ficam zeradas e bloqueadas.
+ */
 const RAW: Omit<Track, "phases">[] = [
   // A primeira trilha é a porta de entrada: ensina a falar com alguém e, de
   // quebra, ensina o próprio quiz — errar ali não custa nada.
@@ -40,10 +48,10 @@ const RAW: Omit<Track, "phases">[] = [
     slug: "falando-com-pessoas",
     title: "Falando com pessoas",
     icon: TalkIcon,
-    completedPhases: 4,
+    completedPhases: 0,
   },
-  { slug: "casa-familia", title: "Casa e família", icon: FamilyIcon, completedPhases: 4 },
-  { slug: "escola", title: "Escola", icon: SchoolIcon, completedPhases: 3 },
+  { slug: "casa-familia", title: "Casa e família", icon: FamilyIcon, completedPhases: 0 },
+  { slug: "escola", title: "Escola", icon: SchoolIcon, completedPhases: 0 },
   { slug: "animais", title: "Animais", icon: PawIcon, completedPhases: 0 },
   { slug: "cores-numeros", title: "Cores e números", icon: PaletteIcon, completedPhases: 0 },
   { slug: "comida", title: "Comida", icon: AppleIcon, completedPhases: 0 },
