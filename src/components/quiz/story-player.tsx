@@ -67,31 +67,53 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
   }
 
   return (
-    <div className="relative z-10 flex w-full max-w-xl flex-col items-center gap-6 text-center">
-      {/* Capa: o único toque que a história pede antes de tocar. */}
+    <div
+      className={`relative z-10 flex w-full flex-col items-center gap-6 text-center ${
+        index === -1 ? "max-w-4xl" : "max-w-xl"
+      }`}
+    >
+      {/* Capa: o único toque que a história pede antes de tocar.
+          O Bubo segura o livro e a fala sai dele — é o livro que está contando,
+          e a criança entende isso sem ler uma palavra. */}
       {index === -1 && (
-        <>
+        <div className="grid w-full items-center gap-4 sm:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] sm:gap-2">
           <Image
-            src="/bubo/bubo-boas-vindas.webp"
+            src="/bubo/bubo-lendo.webp"
             alt=""
-            width={346}
-            height={539}
+            width={1122}
+            height={1402}
             unoptimized
             priority
-            className="animate-rise-in h-56 w-auto drop-shadow-2xl"
+            className="animate-rise-in mx-auto h-56 w-auto drop-shadow-2xl sm:h-[22rem]"
           />
 
-          <div className="animate-rise-in" style={{ animationDelay: "120ms" }}>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-200">História</p>
-            <h1 className="mt-2 text-3xl font-extrabold text-white sm:text-4xl">{story.title}</h1>
-            <p className="mt-2 text-base text-blue-100">{story.subtitle}</p>
-          </div>
+          <div
+            className="animate-rise-in relative rounded-3xl bg-white px-6 py-6 text-left shadow-2xl"
+            style={{ animationDelay: "120ms" }}
+          >
+            {/* Rabicho na altura do livro: apontando para cima no empilhado,
+                para a esquerda quando há espaço para as duas colunas. */}
+            <span
+              aria-hidden
+              className="absolute -top-2.5 left-1/2 size-5 -translate-x-1/2 rotate-45 rounded-sm bg-white
+                         sm:-left-2 sm:top-[58%] sm:translate-x-0"
+            />
 
-          <button type="button" onClick={next} className={`${CTA} animate-cta-call`}>
-            <PlayIcon className="size-6" />
-            Ouvir a história
-          </button>
-        </>
+            <h1 className="text-3xl font-extrabold leading-tight text-deep-900 sm:text-4xl">
+              {story.title}
+            </h1>
+            <p className="mt-2 text-base text-ink-700">{story.subtitle}</p>
+
+            <button
+              type="button"
+              onClick={next}
+              className={`${CTA} animate-cta-call mt-6 w-full sm:w-auto`}
+            >
+              <PlayIcon className="size-6" />
+              Ouvir a história
+            </button>
+          </div>
+        </div>
       )}
 
       {beat && (
