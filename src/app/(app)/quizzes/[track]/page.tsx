@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { QuizPlayer } from "@/components/quiz/quiz-player";
-import { GREETINGS_QUIZ } from "@/lib/quiz/greetings";
-import { SEED_QUIZ } from "@/lib/quiz/seed";
+import { quizForTrack } from "@/lib/quiz/catalog";
 import { CURRENT_PHASE, trackBySlug, trackContextLine } from "@/lib/tracks";
 
 export const metadata: Metadata = { title: "Quiz — eProf Línguas" };
@@ -27,10 +26,7 @@ export default async function QuizPage({
   const phase =
     Number.isInteger(asked) && asked >= 1 && asked <= track.phases ? asked : CURRENT_PHASE;
 
-  // A trilha de entrada tem questões próprias; as outras ainda dividem o
-  // mesmo quiz de vocabulário.
-  // TODO: com banco, todas vêm do léxico da trilha e da fase (docs/curriculo.md).
-  const quiz = slug === GREETINGS_QUIZ.slug ? GREETINGS_QUIZ : SEED_QUIZ;
+  const quiz = quizForTrack(slug);
 
   return (
     <QuizPlayer
