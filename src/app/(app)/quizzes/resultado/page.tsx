@@ -8,6 +8,7 @@ import {
   AWARDED_INSIGNIA,
   AWARDED_PATENTE,
   AWARDED_WORDS,
+  NEXT_PHASE_PATH,
   TRACK_PHASES_DONE,
   TRACK_PHASES_LEFT,
 } from "@/lib/quiz/rewards";
@@ -127,14 +128,14 @@ export default async function ResultadoPage({
             <PatenteAward
               patente={patente}
               words={AWARDED_WORDS}
-              href={`/quizzes/${CURRENT_TRACK.slug}`}
+              href={NEXT_PHASE_PATH}
               className={CTA_PRIMARY}
             >
               Continuar trilha
               <ArrowRightIcon className="size-4" />
             </PatenteAward>
           ) : (
-            <Link href={`/quizzes/${CURRENT_TRACK.slug}`} className={CTA_PRIMARY}>
+            <Link href={NEXT_PHASE_PATH} className={CTA_PRIMARY}>
               Continuar trilha
               <ArrowRightIcon className="size-4" />
             </Link>

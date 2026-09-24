@@ -26,7 +26,7 @@ export default async function QuizPage({
   const phase =
     Number.isInteger(asked) && asked >= 1 && asked <= track.phases ? asked : CURRENT_PHASE;
 
-  const quiz = quizForTrack(slug);
+  const quiz = quizForTrack(slug, phase);
 
   return (
     <QuizPlayer

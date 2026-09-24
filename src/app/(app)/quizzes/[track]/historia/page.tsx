@@ -26,8 +26,9 @@ export default async function HistoriaPage({
 
   if (!track) notFound();
 
-  const quizHref = `/quizzes/${slug}?fase=${fase ?? 1}`;
-  const story = storyForTrack(slug);
+  const phase = Number(fase) >= 1 ? Number(fase) : 1;
+  const quizHref = `/quizzes/${slug}?fase=${phase}`;
+  const story = storyForTrack(slug, phase);
 
   if (!story) redirect(quizHref);
 

@@ -41,3 +41,9 @@ export const TRACK_PHASES_DONE = Math.min(
 );
 
 export const TRACK_PHASES_LEFT = CURRENT_TRACK.phases - TRACK_PHASES_DONE;
+
+/** Para onde "Continuar trilha" leva: a história da fase seguinte. */
+export const NEXT_PHASE_PATH = `/quizzes/${CURRENT_TRACK.slug}/historia?fase=${Math.min(
+  TRACK_PHASES_DONE + 1,
+  CURRENT_TRACK.phases,
+)}`;

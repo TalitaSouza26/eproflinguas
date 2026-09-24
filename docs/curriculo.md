@@ -17,14 +17,14 @@ Isso realiza as diretrizes por faixa que já estavam definidas: vocabulário sim
 
 ## Quantidade
 
-- **1º–2º: 5 questões por fase.** A sessão tem história antes do quiz, e atenção sustentada aos 6 anos é de cinco a sete minutos — dez perguntas depois de uma história terminariam com a criança cansada.
+- **1º–2º: 3 a 5 questões por fase.** A sessão tem história antes do quiz, e atenção sustentada aos 6 anos é de cinco a sete minutos. Nas trilhas com história por fase são 3, uma por expressão ensinada.
 - **Das demais faixas em diante: 10 questões por fase.**
 - Cada fase trabalha **8 itens do léxico**, sendo **2 questões de revisão** de fases anteriores da mesma trilha. No 1º–2º são 4 itens e 1 de revisão.
 - Número de fases por trilha, por faixa:
 
 | Faixa | Fases | Questões por fase | Questões por trilha |
 | --- | --- | --- | --- |
-| 1º–2º | 4 | 5 | 20 |
+| 1º–2º | 4 | 3 a 5 | 12 a 20 |
 | 3º–5º | 6 | 10 | 60 |
 | 6º–7º | 8 | 10 | 80 |
 | 8º–9º | 10 | 10 | 100 |
@@ -65,16 +65,18 @@ Sem `meaning_word` e sem `sentence_gap`: nesta faixa o aluno ainda não produz e
 
 #### Exceção: "Primeiras palavras"
 
-Cumprimento não é substantivo desenhável — um sol na tela poderia ser *sun*, *day* ou *morning*, e a questão teria mais de uma resposta defensável. Esta trilha roda em `situation_reply`, e a escada mede outra coisa: reconhecer a fala, escolher a fala certa para a situação, responder alguém.
+Cumprimento não é substantivo desenhável — um sol na tela poderia ser *sun*, *day* ou *morning*, e a questão teria mais de uma resposta defensável. Esta trilha ensina por **história narrada**, e a escada é outra.
 
-| Fase | Foco | Formato | Itens |
+**Cada fase é uma história e três perguntas.** A história apresenta três expressões, com uma pausa em cada uma para a criança repetir em voz alta; o quiz logo depois cobra exatamente essas três. Em blocos maiores a criança ouvia seis palavras de uma vez e ia responder sobre a primeira quatro cenas depois — distância demais nessa idade.
+
+| Fase | História | Ensina | Questões |
 | --- | --- | --- | --- |
-| 1 | Cumprimentar | `situation_reply` | bloco A (6) |
-| 2 | Ser educado | `situation_reply` | bloco B (6) |
-| 3 | Entender o que ouviu | `word_meaning` | A + B (+2 revisão) |
-| 4 | Responder alguém | `situation_reply` com `speakerLine` | A + B sorteados |
+| 1 | Um novo amigo | Hello, My name is, Good morning | 3 |
+| 2 | Até amanhã! | Thank you, You're welcome, Goodbye | 3 |
+| 3 | — | a definir | 3 |
+| 4 | — | a definir | 3 |
 
-Os blocos têm 6 itens, não 8: não existem 16 expressões sem colisão nesse nível. As 10 questões por fase continuam de pé porque **a mesma fala volta em situações diferentes** — responder "Good morning" ao chegar na escola e ao acordar em casa não é a mesma questão duas vezes. É assim que cumprimento se aprende.
+O formato das questões é `meaning_word` com duas alternativas: significado em português, palavra em inglês. Duas é o que uma criança de 6 anos compara de uma vez; o risco de chute existe, e o que o compensa é a fase ser curta e a história vir antes.
 
 ### 3º–5º ano — 6 fases
 

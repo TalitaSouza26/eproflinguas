@@ -21,6 +21,11 @@ export const ONBOARDING_COOKIE = "linguas_comecou";
  */
 export const FIRST_QUIZ_PATH = "/quizzes/primeiras-palavras/historia?fase=1";
 
+/** Caminho da fase atual, para quem já começou. */
+export function phasePath(slug: string, phase: number) {
+  return `/quizzes/${slug}/historia?fase=${phase}`;
+}
+
 export async function hasStarted(): Promise<boolean> {
   const store = await cookies();
   return store.has(ONBOARDING_COOKIE);

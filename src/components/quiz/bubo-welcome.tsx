@@ -4,7 +4,7 @@ import { SpeakButton } from "@/components/quiz/speak-button";
 import { HeartIcon, PlayIcon } from "@/components/ui/icons";
 import { quizForTrack } from "@/lib/quiz/catalog";
 import { storyForTrack } from "@/lib/quiz/stories";
-import { CURRENT_TRACK } from "@/lib/tracks";
+import { CURRENT_PHASE, CURRENT_TRACK } from "@/lib/tracks";
 
 export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender juntos?";
 
@@ -21,8 +21,8 @@ export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender juntos?";
  * botão de ouvir e o botão grande.
  */
 export function BuboWelcome() {
-  const questions = quizForTrack(CURRENT_TRACK.slug).questions.length;
-  const hasStory = Boolean(storyForTrack(CURRENT_TRACK.slug));
+  const questions = quizForTrack(CURRENT_TRACK.slug, CURRENT_PHASE).questions.length;
+  const hasStory = Boolean(storyForTrack(CURRENT_TRACK.slug, CURRENT_PHASE));
 
   return (
     <div className="relative z-10 w-full max-w-5xl">

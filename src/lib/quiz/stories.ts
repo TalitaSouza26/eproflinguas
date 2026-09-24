@@ -1,19 +1,20 @@
 /**
- * Histórias de abertura de trilha.
+ * Histórias de abertura de fase.
  *
- * Uma por trilha, não por fase: história combina com tema, e uma por fase
- * multiplicaria por quatro o custo de arte e de locução sem multiplicar o
- * aprendizado. O aluno vê quando a trilha abre.
+ * Uma por fase, não uma por trilha: a história apresenta três expressões e o
+ * quiz da mesma fase cobra essas três. Em um bloco só, a criança ouvia seis
+ * palavras de uma vez e ia responder sobre a primeira quatro cenas depois —
+ * distância demais para quem tem 6 anos.
  *
  * A história tem dois tipos de momento. O narrado leva a cena adiante; o de
  * ensino para tudo, mostra a palavra e pede que a criança repita em voz alta —
  * é o único lugar do produto onde ela **fala**, e nessa faixa produção oral
  * vem antes da leitura.
  *
- * Nem toda trilha tem história. Sem ela, a trilha abre direto na questão 1.
+ * Nem toda fase tem história. Sem ela, a fase abre direto na questão 1.
  *
- * TODO: as cenas ainda não têm ilustração. Cada `image` vira uma arte quando
- * o acervo existir, e a locução vira voz gravada.
+ * TODO: só a primeira cena tem ilustração. Cada `image` vira uma arte quando o
+ * acervo existir, e a locução vira voz gravada.
  */
 
 export type StoryBeat =
@@ -34,6 +35,8 @@ export type StoryBeat =
 
 export type Story = {
   slug: string;
+  /** Fase da trilha a que esta história pertence. */
+  phase: number;
   /** Posição da história na trilha, mostrada na capa. */
   number: number;
   title: string;
@@ -45,22 +48,20 @@ export type Story = {
 };
 
 /**
- * Trilha "Primeiras palavras".
+ * Trilha "Primeiras palavras", fase 1.
  *
  * A premissa faz o trabalho pesado: Ethan não fala português. O inglês não
  * aparece porque o app mandou, aparece porque é o único jeito de duas crianças
  * se entenderem — e isso uma criança de 6 anos entende de imediato.
  *
- * Abre com o encontro, e não com a Sofia chegando à escola: assim a primeira
- * palavra em inglês chega na primeira tela, em vez de depois de duas telas de
- * texto puro. Criança de 6 anos não espera duas telas.
+ * Abre no encontro, e não na Sofia chegando à escola: assim a primeira palavra
+ * em inglês chega na primeira tela, em vez de depois de duas telas de texto.
  *
- * Ensina Hello, My name is, Good morning, Thank you, You're welcome e Goodbye.
- * "Good afternoon" e "Good night" ficam de fora de propósito: a cena é uma
- * manhã na escola, e enfiar as duas ali seria forçar. Elas aparecem nas fases.
+ * Ensina Hello, My name is e Good morning.
  */
 const NOVO_AMIGO: Story = {
   slug: "primeiras-palavras",
+  phase: 1,
   number: 1,
   title: "Um novo amigo",
   subtitle: "Sofia vai aprender as primeiras frases em inglês junto com você.",
@@ -90,9 +91,26 @@ const NOVO_AMIGO: Story = {
       kind: "narration",
       text: "— Ah! Você quer dizer bom dia! — respondeu Sofia. E Ethan repetiu, contente: — *Good morning*, Sofia!",
     },
+  ],
+};
+
+/**
+ * Trilha "Primeiras palavras", fase 2.
+ *
+ * Continua o mesmo dia: o recreio e a despedida. Ensina Thank you,
+ * You're welcome e Goodbye.
+ */
+const ATE_AMANHA: Story = {
+  slug: "primeiras-palavras",
+  phase: 2,
+  number: 2,
+  title: "Até amanhã!",
+  subtitle: "No recreio, Sofia e Ethan viram amigos de verdade.",
+  cover: "/stories/novo-amigo-capa.webp",
+  beats: [
     {
       kind: "narration",
-      text: "Os dois conversaram até o sinal tocar. Ethan perguntou se podiam brincar juntos no recreio, e Sofia disse que sim. Ele ficou muito feliz: — *Thank you*, Sofia!",
+      text: "Na hora do recreio, Ethan dividiu o lanche dele com a Sofia e perguntou se podiam brincar juntos. Ela disse que sim, e ele ficou muito feliz: — *Thank you*, Sofia!",
     },
     { kind: "lesson", word: "Thank you", meaning: "Obrigado, obrigada" },
     {
@@ -108,14 +126,14 @@ const NOVO_AMIGO: Story = {
     {
       kind: "narration",
       text: "Sofia acenou de volta: — *Goodbye*, Ethan! E assim, com um pouquinho de português e um pouquinho de inglês, Sofia fez um novo amigo.",
-    }
+    },
   ],
 };
 
-const BY_TRACK: Record<string, Story> = { [NOVO_AMIGO.slug]: NOVO_AMIGO };
+const STORIES: Story[] = [NOVO_AMIGO, ATE_AMANHA];
 
-export function storyForTrack(slug: string): Story | undefined {
-  return BY_TRACK[slug];
+export function storyForTrack(slug: string, phase = 1): Story | undefined {
+  return STORIES.find((s) => s.slug === slug && s.phase === phase);
 }
 
 /** Quantas expressões a história ensina — os momentos de "repita comigo". */
