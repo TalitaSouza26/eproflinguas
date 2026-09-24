@@ -1,3 +1,4 @@
+import { hasStarted } from "@/lib/onboarding";
 import { phasesByTrack } from "@/lib/progress";
 import { storyForTrack } from "@/lib/quiz/stories";
 import { TRACKS, type Track } from "@/lib/tracks";
@@ -39,6 +40,19 @@ export async function studentProgress(): Promise<StudentProgress> {
     phase: Math.min(current.completedPhases + 1, current.phases),
     isNew: tracks.every((t) => t.completedPhases === 0),
   };
+}
+
+/**
+ * Se o aluno ainda precisa conhecer o Bubo.
+ *
+ * Só quem nunca foi apresentado **e** nunca concluiu uma fase. Antes bastava
+ * faltar a marca da apresentação, e aí quem chegasse ao quiz por link direto
+ * era mandado para a tela de boas-vindas toda vez que abrisse a Home — mesmo
+ * tendo terminado quizzes.
+ */
+export async function needsIntro(): Promise<boolean> {
+  const [introduced, { isNew }] = await Promise.all([hasStarted(), studentProgress()]);
+  return !introduced && isNew;
 }
 
 /**
