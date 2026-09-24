@@ -4,9 +4,15 @@ import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
 import { BadgeAward } from "@/components/quiz/badge-award";
 import { PatenteAward } from "@/components/quiz/patente-award";
-import { AWARDED_INSIGNIA, AWARDED_PATENTE, AWARDED_WORDS } from "@/lib/quiz/rewards";
+import {
+  AWARDED_INSIGNIA,
+  AWARDED_PATENTE,
+  AWARDED_WORDS,
+  TRACK_PHASES_DONE,
+  TRACK_PHASES_LEFT,
+} from "@/lib/quiz/rewards";
 import { SEED_QUIZ } from "@/lib/quiz/seed";
-import { CURRENT_TRACK } from "@/lib/tracks";
+import { CURRENT_TRACK, nextTrackOf } from "@/lib/tracks";
 
 export const metadata: Metadata = { title: "Resultado — eProf Línguas" };
 
@@ -48,6 +54,14 @@ export default async function ResultadoPage({
   const badge = AWARDED_INSIGNIA;
   const patente = AWARDED_PATENTE;
 
+  const nextTrack = nextTrackOf(CURRENT_TRACK.slug);
+  const trackLine =
+    TRACK_PHASES_LEFT === 0
+      ? nextTrack
+        ? `Trilha concluída! A trilha ${nextTrack.title} está aberta.`
+        : "Trilha concluída!"
+      : `${TRACK_PHASES_LEFT === 1 ? "Falta 1 fase" : `Faltam ${TRACK_PHASES_LEFT} fases`} para terminar esta trilha.`;
+
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-10">
       <section className="rounded-3xl bg-white px-5 py-8 sm:px-8 sm:py-10 text-center shadow-[0_18px_50px_-30px_rgba(15,34,71,0.4)]">
@@ -80,6 +94,33 @@ export default async function ResultadoPage({
           {correct} de {total}
         </p>
         <p className="mt-2 text-sm font-medium text-ink-500">respostas corretas</p>
+
+        {/* Onde essa fase deixou o aluno na trilha. O placar fala da fase; esta
+            barra fala do caminho, que é o que decide se ele volta amanhã. */}
+        <div className="mt-8 rounded-2xl bg-blue-50 px-5 py-4 text-left">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <p className="text-sm font-bold text-deep-900">{CURRENT_TRACK.title}</p>
+            <p className="text-[13px] font-semibold text-deep-700">
+              {TRACK_PHASES_DONE} de {CURRENT_TRACK.phases} fases
+            </p>
+          </div>
+
+          <div
+            role="progressbar"
+            aria-label={`Progresso na trilha ${CURRENT_TRACK.title}`}
+            aria-valuenow={TRACK_PHASES_DONE}
+            aria-valuemin={0}
+            aria-valuemax={CURRENT_TRACK.phases}
+            className="mt-3 h-2.5 overflow-hidden rounded-full bg-white"
+          >
+            <div
+              className="h-full rounded-full bg-accent-500"
+              style={{ width: `${(TRACK_PHASES_DONE / CURRENT_TRACK.phases) * 100}%` }}
+            />
+          </div>
+
+          <p className="mt-2.5 text-[13px] text-ink-700">{trackLine}</p>
+        </div>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
           {patente ? (
