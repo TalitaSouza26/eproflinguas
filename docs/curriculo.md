@@ -30,17 +30,20 @@ Isso realiza as diretrizes por faixa que já estavam definidas: vocabulário sim
 
 ## Trilhas disponíveis por faixa
 
-As duas últimas trilhas são estruturais e pressupõem leitura. **Não valem para o 1º–2º**, que fica com cinco trilhas:
+"Falando com pessoas" abre a jornada em todas as faixas: é o único inglês que o aluno usa no mesmo dia, e serve de tutorial — como o quiz responde no toque, ele descobre isso onde errar não custa nada.
+
+As duas últimas trilhas são estruturais e pressupõem leitura. **Não valem para o 1º–2º**, que fica com seis trilhas:
 
 | Trilha | 1º–2º | 3º–5º | 6º–7º | 8º–9º |
 | --- | :---: | :---: | :---: | :---: |
-| 1. Casa e família | ✓ | ✓ | ✓ | ✓ |
-| 2. Escola | ✓ | ✓ | ✓ | ✓ |
-| 3. Animais | ✓ | ✓ | ✓ | ✓ |
-| 4. Cores e números | ✓ | ✓ | ✓ | ✓ |
-| 5. Comida | ✓ | ✓ | ✓ | ✓ |
-| 6. Verbos do dia a dia | — | ✓ | ✓ | ✓ |
-| 7. Frases simples | — | ✓ | ✓ | ✓ |
+| 1. Falando com pessoas | ✓ | ✓ | ✓ | ✓ |
+| 2. Casa e família | ✓ | ✓ | ✓ | ✓ |
+| 3. Escola | ✓ | ✓ | ✓ | ✓ |
+| 4. Animais | ✓ | ✓ | ✓ | ✓ |
+| 5. Cores e números | ✓ | ✓ | ✓ | ✓ |
+| 6. Comida | ✓ | ✓ | ✓ | ✓ |
+| 7. Verbos do dia a dia | — | ✓ | ✓ | ✓ |
+| 8. Frases simples | — | ✓ | ✓ | ✓ |
 
 ---
 
@@ -58,6 +61,19 @@ A escada é a mesma em todas as trilhas; muda o léxico.
 | 4 | Compreender o bloco B | `word_meaning` | as mesmas 8 da fase 2 (+1 revisão) |
 
 Sem `meaning_word` e sem `sentence_gap`: nesta faixa o aluno ainda não produz escrita em inglês.
+
+#### Exceção: "Falando com pessoas"
+
+Cumprimento não é substantivo desenhável — um sol na tela poderia ser *sun*, *day* ou *morning*, e a questão teria mais de uma resposta defensável. Esta trilha roda em `situation_reply`, e a escada mede outra coisa: reconhecer a fala, escolher a fala certa para a situação, responder alguém.
+
+| Fase | Foco | Formato | Itens |
+| --- | --- | --- | --- |
+| 1 | Cumprimentar | `situation_reply` | bloco A (6) |
+| 2 | Ser educado | `situation_reply` | bloco B (6) |
+| 3 | Entender o que ouviu | `word_meaning` | A + B (+2 revisão) |
+| 4 | Responder alguém | `situation_reply` com `speakerLine` | A + B sorteados |
+
+Os blocos têm 6 itens, não 8: não existem 16 expressões sem colisão nesse nível. As 10 questões por fase continuam de pé porque **a mesma fala volta em situações diferentes** — responder "Good morning" ao chegar na escola e ao acordar em casa não é a mesma questão duas vezes. É assim que cumprimento se aprende.
 
 ### 3º–5º ano — 6 fases
 
@@ -108,43 +124,58 @@ A partir do 8º–9º, `sentence_gap` responde por 6 das 10 fases — é o "mais
 
 Nenhuma palavra se repete entre trilhas, e nenhuma trilha tem duas palavras com a mesma tradução — senão a questão teria duas alternativas corretas. Por isso ficaram de fora `home` (colide com `house`), `class` (com `classroom`) e `room` (com `bedroom`); e `fish`, `chicken` e `orange` aparecem em uma trilha só.
 
-### 1. Casa e família
+### 1. Falando com pessoas
+
+Trilha de expressões, não de palavras soltas: o item é a fala inteira.
+
+- **Núcleo (12):** Hello, Good morning, Good afternoon, Good night, Goodbye, Please, Thank you, Sorry, Yes, No, You're welcome, My name is…
+  - Bloco A (fase 1): Hello, Good morning, Good afternoon, Good night, Goodbye, My name is…
+  - Bloco B (fase 2): Please, Thank you, You're welcome, Sorry, Yes, No
+- **Ampliação (12):** Hi, Bye, See you, Excuse me, How are you?, I'm fine, Nice to meet you, What's your name?, Good evening, Welcome, Have a nice day, Good luck
+- **Avançado (12):** How do you do?, Pleased to meet you, How's it going?, Take care, See you later, See you tomorrow, I beg your pardon, Congratulations, Happy birthday, Of course, No problem, My pleasure
+
+Duas regras só desta trilha:
+
+1. **Sinônimo nunca disputa com sinônimo.** *Hello* e *Hi* traduzem o mesmo "oi", por isso *Hi* só entra na ampliação — e lá a questão pergunta o registro ("com um amigo, na rua"), nunca o genérico. O mesmo vale para *Goodbye*/*Bye* e *Sorry*/*Excuse me*.
+2. **`Good evening` sempre contrasta com `Good night`.** As duas viram "boa noite" em português; a questão precisa deixar claro se é chegando (evening) ou se despedindo (night).
+
+### 2. Casa e família
 
 - **Núcleo (16):** mother, father, sister, brother, baby, family, house, garden, door, window, bed, table, chair, kitchen, bedroom, sofa
 - **Ampliação (14):** grandmother, grandfather, aunt, uncle, cousin, son, daughter, bathroom, living room, lamp, floor, roof, wall, key
 - **Avançado (12):** parents, relatives, neighbour, housework, upstairs, downstairs, to live, to share, to clean, to tidy, next to, between
 
-### 2. Escola
+### 3. Escola
 
 - **Núcleo (16):** school, classroom, teacher, student, friend, desk, board, bag, book, notebook, pen, pencil, eraser, ruler, paper, scissors
 - **Ampliação (14):** library, playground, homework, lesson, test, subject, English, maths, science, art, break, principal, schedule, uniform
 - **Avançado (12):** to study, to learn, to read, to write, to answer, to ask, group work, on time, late, absent, present, together
 
-### 3. Animais
+### 4. Animais
 
 - **Núcleo (16):** dog, cat, bird, fish, cow, horse, pig, duck, rabbit, mouse, sheep, frog, bee, ant, butterfly, turtle
 - **Ampliação (14):** lion, tiger, elephant, monkey, snake, goat, bear, wolf, fox, whale, dolphin, shark, spider, owl
 - **Avançado (12):** pet, farm animal, wild animal, tail, wings, fur, feathers, paws, to fly, to swim, to jump, to hunt
 
-### 4. Cores e números
+### 5. Cores e números
 
 - **Núcleo (18):** red, blue, green, yellow, black, white, orange, pink, one, two, three, four, five, six, seven, eight, nine, ten
 - **Ampliação (14):** purple, brown, grey, eleven, twelve, thirteen, fifteen, twenty, thirty, fifty, one hundred, first, second, third
 - **Avançado (12):** light, dark, bright, colourful, how many, how much, half, double, pair, dozen, thousand, million
 
-### 5. Comida
+### 6. Comida
 
 - **Núcleo (16):** bread, rice, egg, meat, chicken, cheese, soup, cake, milk, water, juice, apple, banana, butter, sugar, salt
 - **Ampliação (14):** breakfast, lunch, dinner, fruit, vegetable, potato, tomato, carrot, chocolate, coffee, tea, sandwich, pizza, pasta
 - **Avançado (12):** to eat, to drink, to cook, hungry, thirsty, delicious, healthy, meal, plate, fork, knife, spoon
 
-### 6. Verbos do dia a dia — a partir do 3º–5º
+### 7. Verbos do dia a dia — a partir do 3º–5º
 
 - **Núcleo (16):** to eat, to drink, to sleep, to play, to run, to walk, to read, to write, to sing, to dance, to go, to see, to open, to close, to sit, to stand
 - **Ampliação (14):** to wake up, to get up, to brush, to wash, to study, to help, to listen, to speak, to watch, to buy, to take, to give, to make, to bring
 - **Avançado (12):** to need, to want, to like, to have, to be, in the morning, in the afternoon, at night, every day, after school, before bed, on weekends
 
-### 7. Frases simples — a partir do 3º–5º
+### 8. Frases simples — a partir do 3º–5º
 
 Trilha estrutural: o léxico são **padrões de frase**, não palavras soltas. As questões usam vocabulário já visto nas trilhas anteriores.
 
@@ -163,7 +194,8 @@ Valem junto com as regras já definidas em [spec-quiz.md](spec-quiz.md):
 3. As **2 questões de revisão** usam itens de fases anteriores **da mesma trilha**, nunca de trilhas bloqueadas.
 4. Em `sentence_gap`, a frase usa apenas vocabulário já visto pelo aluno, e o comprimento acompanha a faixa: até 6 palavras no 6º–7º, até 12 no 8º–9º.
 5. Toda questão carrega o `topic` igual ao nome da trilha. Serve para relatório interno; o aluno não vê.
-6. `image_word` só para itens concretos e ilustráveis — substantivos do núcleo. Verbos, números e padrões de frase nunca usam imagem.
+6. `image_word` só para itens concretos e ilustráveis — substantivos do núcleo. Verbos, números, cumprimentos e padrões de frase nunca usam imagem.
+7. Em `situation_reply`, a situação é uma cena que a criança reconhece (chegar na escola, esbarrar em alguém, hora de dormir) e só admite uma fala. Situação vaga — "você encontra uma pessoa" — aceitaria metade das alternativas.
 
 ## Pendências
 

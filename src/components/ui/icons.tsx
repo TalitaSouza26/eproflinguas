@@ -315,6 +315,27 @@ export function AppleIcon({ className }: IconProps) {
   );
 }
 
+/** Duas falas: a trilha de conversa. */
+export function TalkIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
+      <path
+        d="M14.5 4h3A2.5 2.5 0 0 1 20 6.5v5a2.5 2.5 0 0 1-2.5 2.5H17v3l-3.2-3H12"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M11.5 3h-5A2.5 2.5 0 0 0 4 5.5v5A2.5 2.5 0 0 0 6.5 13H7v3.5L10.8 13h.7a2.5 2.5 0 0 0 2.5-2.5v-5A2.5 2.5 0 0 0 11.5 3Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function MenuIcon({ className }: IconProps) {
   return (
     <svg {...strokeProps} strokeWidth={2} aria-hidden className={className}>

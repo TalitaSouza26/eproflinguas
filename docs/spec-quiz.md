@@ -75,13 +75,15 @@ A interface é construída sobre um union de formatos para aceitar novos sem ree
 - `meaning_word` — significado → palavra.
 - `sentence_gap` — completar frase (peso maior nas faixas maiores).
 - `image_word` — imagem → palavra (previsto no modelo, fora do fluxo atual).
+- `situation_reply` — situação em português → o que se diz em inglês. Aceita
+  `speakerLine`, a fala que o aluno está respondendo.
 
 Áudio de pronúncia é um slot opcional por questão (`audioText`).
 
 ## Resultado
 
 - Tela própria ao fim das 10 questões. Nunca devolver o aluno direto à Home.
-- Prioriza aprendizagem, não competição: "8 de 10 respostas corretas" + os tópicos que precisam de mais prática.
+- Prioriza aprendizagem, não competição: "8 de 10 respostas corretas", sem lista de pontos fracos.
 - Próximo passo explícito: voltar ao início, refazer o quiz ou continuar a trilha.
 - A trilha avança independentemente da nota. Não há nota mínima nem reprovação.
 

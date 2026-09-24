@@ -5,6 +5,7 @@ import {
   PaletteIcon,
   PawIcon,
   SchoolIcon,
+  TalkIcon,
 } from "@/components/ui/icons";
 
 /**
@@ -13,7 +14,7 @@ import {
  * Home, insígnias e quiz leem daqui. Antes cada tela tinha a própria lista e
  * os percentuais da Home eram digitados à mão.
  *
- * Protótipo com as 5 trilhas do 1º–2º ano, na ordem obrigatória do currículo
+ * Protótipo com as 6 trilhas do 1º–2º ano, na ordem obrigatória do currículo
  * (ver docs/curriculo.md). As trilhas "Verbos do dia a dia" e "Frases simples"
  * entram a partir do 3º–5º.
  *
@@ -33,6 +34,14 @@ export type Track = {
 const PHASES_PER_TRACK = 4;
 
 const RAW: Omit<Track, "phases">[] = [
+  // A primeira trilha é a porta de entrada: ensina a falar com alguém e, de
+  // quebra, ensina o próprio quiz — errar ali não custa nada.
+  {
+    slug: "falando-com-pessoas",
+    title: "Falando com pessoas",
+    icon: TalkIcon,
+    completedPhases: 4,
+  },
   { slug: "casa-familia", title: "Casa e família", icon: FamilyIcon, completedPhases: 4 },
   { slug: "escola", title: "Escola", icon: SchoolIcon, completedPhases: 3 },
   { slug: "animais", title: "Animais", icon: PawIcon, completedPhases: 0 },

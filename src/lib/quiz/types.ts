@@ -9,6 +9,7 @@ export const QUESTION_FORMATS = [
   "meaning_word", // significado em português -> palavra em inglês
   "sentence_gap", // completar a lacuna na frase
   "image_word", // imagem -> palavra
+  "situation_reply", // situação em português -> o que se diz em inglês
 ] as const;
 
 export type QuestionFormat = (typeof QUESTION_FORMATS)[number];
@@ -62,6 +63,21 @@ export const questionSchema = z
       prompt: z.string().min(1).max(60),
       imageUrl: imagePath,
     }),
+    /**
+     * Situação → o que se diz.
+     *
+     * Existe porque cumprimento não é substantivo desenhável: um sol na tela
+     * poderia ser "sun", "day" ou "morning", e a questão teria mais de uma
+     * resposta defensável. Aqui o enunciado é a situação, em português, e a
+     * resposta é a fala em inglês.
+     */
+    baseQuestion.extend({
+      format: z.literal("situation_reply"),
+      /** A situação, em português. */
+      prompt: z.string().min(1).max(160),
+      /** O que a outra pessoa disse, quando a situação é uma conversa. */
+      speakerLine: z.string().min(1).max(80).optional(),
+    }),
   ])
   .refine((q) => q.choices.some((c) => c.id === q.correctChoiceId), {
     message: "correctChoiceId precisa apontar para uma alternativa existente",
@@ -79,4 +95,5 @@ export const FORMAT_INSTRUCTION: Record<QuestionFormat, string> = {
   meaning_word: "Qual é a palavra em inglês?",
   sentence_gap: "Complete a frase.",
   image_word: "Qual palavra representa a imagem?",
+  situation_reply: "O que você diz?",
 };

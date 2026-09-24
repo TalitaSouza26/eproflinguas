@@ -32,7 +32,7 @@ export function TrackProgress() {
               </span>
 
               <span
-                className={`w-32 shrink-0 truncate text-[13px] font-medium ${
+                className={`w-40 shrink-0 truncate text-[13px] font-medium ${
                   unlocked ? "text-ink-700" : "text-ink-500"
                 }`}
               >

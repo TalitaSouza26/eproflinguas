@@ -58,6 +58,7 @@ export function QuizPlayer({
   const total = questions.length;
   const isLast = index === total - 1;
   const isCorrect = confirmed && selected === question.correctChoiceId;
+  const isSituation = question.format === "situation_reply";
   const correctCount = answers.filter((a) => a.correct).length;
 
   /**
@@ -155,9 +156,16 @@ export function QuizPlayer({
           {FORMAT_INSTRUCTION[question.format]}
         </p>
 
-        <h3 className="mt-2 flex items-center justify-center gap-3 text-center text-[26px] font-extrabold text-deep-900">
+        {/* Em situation_reply o enunciado é a situação, em português. Não pode
+            entrar no corpo de uma palavra em inglês: o que o aluno tem de ler
+            com atenção ali é a cena, e o que ele decora está nas alternativas. */}
+        <h3
+          className={`mt-2 flex items-center justify-center gap-3 text-center font-extrabold text-deep-900 ${
+            isSituation ? "text-lg leading-snug sm:text-xl" : "text-[26px]"
+          }`}
+        >
           {question.prompt}
-          {question.audioText && (
+          {question.audioText && !isSituation && (
             <button
               type="button"
               aria-label={`Ouvir a pronúncia de ${question.audioText}`}
@@ -171,6 +179,34 @@ export function QuizPlayer({
 
         {question.promptTranslation && (
           <p className="mt-1 text-center text-base text-ink-500">{question.promptTranslation}</p>
+        )}
+
+        {/* A fala da outra pessoa vem numa bolha: é ela que o aluno responde,
+            e ver quem falou é metade do enunciado. */}
+        {isSituation && question.speakerLine && (
+          <div className="mx-auto mt-5 flex max-w-md items-center gap-3 rounded-2xl bg-blue-50 px-4 py-3">
+            <Image
+              src="/bubo/bubo-aceno.webp"
+              alt="Bubo"
+              width={512}
+              height={512}
+              unoptimized
+              className="size-14 shrink-0 object-contain"
+            />
+            <p className="flex items-center gap-2 text-xl font-extrabold text-deep-900">
+              “{question.speakerLine}”
+              {question.audioText && (
+                <button
+                  type="button"
+                  aria-label={`Ouvir a pronúncia de ${question.audioText}`}
+                  className="shrink-0 rounded-full p-1.5 text-blue-600 transition hover:bg-white
+                             focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                >
+                  <SpeakerIcon className="size-5" />
+                </button>
+              )}
+            </p>
+          </div>
         )}
 
         {question.format === "image_word" && (
