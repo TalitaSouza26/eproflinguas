@@ -13,7 +13,7 @@ import Image from "next/image";
 export function WelcomeBackdrop() {
   return (
     <Image
-      src="/brand/fundo-boas-vindas.webp"
+      src="/brand/fundo-estudo.webp"
       alt=""
       fill
       priority
