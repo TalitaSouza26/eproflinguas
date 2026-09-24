@@ -186,12 +186,12 @@ export function QuizPlayer({
         {isSituation && question.speakerLine && (
           <div className="mx-auto mt-5 flex max-w-md items-center gap-3 rounded-2xl bg-blue-50 px-4 py-3">
             <Image
-              src="/bubo/bubo-aceno.webp"
+              src="/bubo/bubo-falando.webp"
               alt="Bubo"
-              width={512}
-              height={512}
+              width={1122}
+              height={1402}
               unoptimized
-              className="size-14 shrink-0 object-contain"
+              className="h-20 w-auto shrink-0 object-contain"
             />
             <p className="flex items-center gap-2 text-xl font-extrabold text-deep-900">
               “{question.speakerLine}”
