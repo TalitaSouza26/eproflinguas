@@ -36,14 +36,12 @@ export function RecentBadges() {
               className="w-11 shrink-0"
             />
 
+            {/* Sem a data: na Home o que importa é qual insígnia o aluno tem,
+                não em que dia ela caiu. O histórico fica em Conquistas. */}
             <div className="min-w-0 flex-1">
               <p className="truncate text-[13px] font-bold text-deep-900">{insignia.name}</p>
               <p className="truncate text-[11px] text-ink-500">{insignia.condition}</p>
             </div>
-
-            <span className="shrink-0 text-[11px] font-semibold text-ink-500">
-              {insignia.earnedAt}
-            </span>
           </li>
         ))}
       </ul>

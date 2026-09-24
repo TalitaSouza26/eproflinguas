@@ -82,6 +82,12 @@ export const CURRENT_TRACK: Track =
 /** Número da próxima fase a jogar na trilha atual. */
 export const CURRENT_PHASE = Math.min(CURRENT_TRACK.completedPhases + 1, CURRENT_TRACK.phases);
 
+/** Fases concluídas em todas as trilhas somadas. */
+export const TOTAL_COMPLETED_PHASES = TRACKS.reduce((n, t) => n + t.completedPhases, 0);
+
+/** O aluno nunca terminou uma fase: as telas falam com ele pela primeira vez. */
+export const IS_NEW_STUDENT = TOTAL_COMPLETED_PHASES === 0;
+
 export function trackBySlug(slug: string): Track | undefined {
   return TRACKS.find((t) => t.slug === slug);
 }
