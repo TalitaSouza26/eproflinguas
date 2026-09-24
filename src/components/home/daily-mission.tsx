@@ -2,11 +2,12 @@ import Link from "next/link";
 import { ArrowRightIcon, CheckIcon, FlameIcon, TargetIcon } from "@/components/ui/icons";
 import { DAILY_MISSION, missionProgress } from "@/lib/daily-mission";
 import { quizzesToday } from "@/lib/progress";
-import { CURRENT_PHASE, CURRENT_TRACK } from "@/lib/tracks";
+import { phaseHref, studentProgress } from "@/lib/student";
 
 export async function DailyMission() {
   // A contagem é real: cada quiz terminado hoje entra aqui.
   const mission = { ...DAILY_MISSION, done: await quizzesToday() };
+  const { current, phase } = await studentProgress();
   const { done, complete, percent } = missionProgress(mission);
 
   return (
@@ -59,7 +60,7 @@ export async function DailyMission() {
 
         {!complete && (
           <Link
-            href={`/quizzes/${CURRENT_TRACK.slug}/historia?fase=${CURRENT_PHASE}`}
+            href={phaseHref(current.slug, phase)}
             className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-blue-600
                        transition hover:text-blue-700 focus-visible:outline-2
                        focus-visible:outline-offset-2 focus-visible:outline-blue-500"

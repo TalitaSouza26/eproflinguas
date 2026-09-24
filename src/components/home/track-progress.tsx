@@ -1,7 +1,11 @@
 import { BookIcon, LockIcon } from "@/components/ui/icons";
-import { TRACKS, isUnlocked, progressOf } from "@/lib/tracks";
+import { progressOf } from "@/lib/tracks";
+import { studentProgress } from "@/lib/student";
 
-export function TrackProgress() {
+export async function TrackProgress() {
+  const { tracks } = await studentProgress();
+  const complete = (i: number) => tracks[i].completedPhases >= tracks[i].phases;
+
   return (
     <section className="rounded-2xl border border-ink-100 bg-white px-6 py-6">
       <div className="flex items-start gap-3.5">
@@ -17,8 +21,8 @@ export function TrackProgress() {
       </div>
 
       <ul className="mt-5 space-y-3.5">
-        {TRACKS.map((track, index) => {
-          const unlocked = isUnlocked(index);
+        {tracks.map((track, index) => {
+          const unlocked = tracks.slice(0, index).every((_, i) => complete(i));
           const progress = progressOf(track);
 
           return (

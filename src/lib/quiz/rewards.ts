@@ -1,6 +1,6 @@
 import { INSIGNIAS, LATEST_INSIGNIA, type Insignia } from "@/lib/insignias";
 import { CURRENT_PATENTE, PATENTES, WORDS_LEARNED, type Patente } from "@/lib/patente";
-import { CURRENT_TRACK } from "@/lib/tracks";
+
 
 /**
  * O que a fase recém-concluída rendeu.
@@ -28,22 +28,4 @@ export const AWARDED_PATENTE: Patente | undefined =
 /** Palavras aprendidas contando esta fase, para a frase da entrega. */
 export const AWARDED_WORDS = Math.max(WORDS_LEARNED, AWARDED_PATENTE?.words ?? 0);
 
-/**
- * Fases concluídas na trilha, contando a que o aluno acabou de terminar.
- *
- * Mesma simulação das outras recompensas: a tentativa ainda não é gravada em
- * lugar nenhum, então o resultado soma um à contagem do mock para o aluno ver
- * a barra andar por causa do que ele fez agora.
- */
-export const TRACK_PHASES_DONE = Math.min(
-  CURRENT_TRACK.completedPhases + 1,
-  CURRENT_TRACK.phases,
-);
 
-export const TRACK_PHASES_LEFT = CURRENT_TRACK.phases - TRACK_PHASES_DONE;
-
-/** Para onde "Continuar trilha" leva: a história da fase seguinte. */
-export const NEXT_PHASE_PATH = `/quizzes/${CURRENT_TRACK.slug}/historia?fase=${Math.min(
-  TRACK_PHASES_DONE + 1,
-  CURRENT_TRACK.phases,
-)}`;

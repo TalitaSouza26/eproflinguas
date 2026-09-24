@@ -34,12 +34,14 @@ function stateFor(
 const ADVANCE_DELAY = { correct: 800, wrong: 2600 };
 
 export function QuizPlayer({
+  trackSlug,
   trackTitle,
   phase,
   phases,
   context,
   questions,
 }: {
+  trackSlug: string;
   trackTitle: string;
   /** Fase atual e total de fases da trilha. */
   phase: number;
@@ -65,7 +67,7 @@ export function QuizPlayer({
   const isCorrect = confirmed && selected === question.correctChoiceId;
   const isSituation = question.format === "situation_reply";
   const correctCount = answers.filter((a) => a.correct).length;
-  const resultHref = `/quizzes/resultado?acertos=${correctCount}&total=${total}`;
+  const resultHref = `/quizzes/resultado?acertos=${correctCount}&total=${total}&trilha=${trackSlug}&fase=${phase}`;
 
   /**
     * Tocar na alternativa já responde.
@@ -117,12 +119,12 @@ export function QuizPlayer({
       // Conta para a missão do dia. Se falhar, o aluno segue para o resultado
       // do mesmo jeito — perder a contagem é menos grave que prender a criança
       // na última questão.
-      void recordQuizDone().catch(() => {});
+      void recordQuizDone(trackSlug, phase).catch(() => {});
       router.push(resultHref);
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [confirmed, isCorrect, isLast, advance, router, resultHref]);
+  }, [confirmed, isCorrect, isLast, advance, router, resultHref, trackSlug, phase]);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-8">

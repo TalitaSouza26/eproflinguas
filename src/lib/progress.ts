@@ -40,3 +40,48 @@ export async function addQuizToday(): Promise<number> {
 
   return total;
 }
+
+/**
+ * Fases concluídas por trilha.
+ *
+ * Guardado como "trilha:n,trilha:n". Enquanto isto não existia, o progresso
+ * era um número fixo em `tracks.ts` e o aluno voltava para a fase 2 depois de
+ * toda conclusão — nunca chegava à revisão nem fechava a trilha.
+ *
+ * TODO: com banco, isto é uma contagem em `quiz_attempts` por trilha.
+ */
+export const PHASES_COOKIE = "linguas_fases";
+
+export function parsePhases(raw: string | undefined): Record<string, number> {
+  const mapa: Record<string, number> = {};
+
+  for (const par of (raw ?? "").split(",")) {
+    const [slug, n] = par.split(":");
+    if (slug && Number(n) > 0) mapa[slug] = Number(n);
+  }
+
+  return mapa;
+}
+
+export async function phasesByTrack(): Promise<Record<string, number>> {
+  const store = await cookies();
+  return parsePhases(store.get(PHASES_COOKIE)?.value);
+}
+
+/** Marca a fase como concluída. Refazer uma fase antiga não faz o aluno voltar. */
+export async function recordPhase(slug: string, phase: number): Promise<void> {
+  const store = await cookies();
+  const mapa = parsePhases(store.get(PHASES_COOKIE)?.value);
+  mapa[slug] = Math.max(mapa[slug] ?? 0, phase);
+
+  const valor = Object.entries(mapa)
+    .map(([s, n]) => `${s}:${n}`)
+    .join(",");
+
+  store.set(PHASES_COOKIE, valor, {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+  });
+}

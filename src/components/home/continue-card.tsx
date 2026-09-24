@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
-import { CURRENT_PHASE, CURRENT_TRACK, IS_NEW_STUDENT } from "@/lib/tracks";
+import { phaseHref, studentProgress } from "@/lib/student";
 
 /**
  * O card que abre a Home.
@@ -12,23 +12,25 @@ import { CURRENT_PHASE, CURRENT_TRACK, IS_NEW_STUDENT } from "@/lib/tracks";
  * muito bem antes da primeira questão é elogio vazio. Para o recém-chegado o
  * card dá boas-vindas e diz o nome da trilha que vai começar.
  */
-const COPY = IS_NEW_STUDENT
-  ? {
-      eyebrow: "Bem-vindo ao eProf Línguas",
-      title: "Vamos começar!",
-      lead: "O Bubo vai te ensinar inglês.",
-      body: `Sua primeira trilha é ${CURRENT_TRACK.title.toLowerCase()}. São ${CURRENT_TRACK.phases} fases, uma de cada vez.`,
-      cta: "Começar agora",
-    }
-  : {
-      eyebrow: "Continue sua jornada",
-      title: "Continue sua trilha",
-      lead: "Você está indo muito bem!",
-      body: "Retome de onde parou e siga conquistando novos conhecimentos.",
-      cta: "Continuar estudando",
-    };
+export async function ContinueCard() {
+  const { current, phase, isNew } = await studentProgress();
 
-export function ContinueCard() {
+  const COPY = isNew
+    ? {
+        eyebrow: "Bem-vindo ao eProf Línguas",
+        title: "Vamos começar!",
+        lead: "O Bubo vai te ensinar inglês.",
+        body: `Sua primeira trilha é ${current.title.toLowerCase()}. São ${current.phases} fases, uma de cada vez.`,
+        cta: "Começar agora",
+      }
+    : {
+        eyebrow: "Continue sua jornada",
+        title: "Continue sua trilha",
+        lead: "Você está indo muito bem!",
+        body: `Você está na fase ${phase} de ${current.phases} da trilha ${current.title.toLowerCase()}.`,
+        cta: "Continuar estudando",
+      };
+
   return (
     <section className={`${BLUE_CARD} px-8 py-8`}>
       <CardBackdrop />
@@ -45,7 +47,7 @@ export function ContinueCard() {
         {/* O recém-chegado passa pelo Bubo antes da primeira pergunta; quem
             já estudou volta direto para onde parou. */}
         <Link
-          href={IS_NEW_STUDENT ? "/quizzes" : `/quizzes/${CURRENT_TRACK.slug}?fase=${CURRENT_PHASE}`}
+          href={isNew ? "/quizzes" : phaseHref(current.slug, phase)}
           className="mt-6 inline-flex items-center gap-2.5 rounded-full bg-accent-500 px-6 py-3 text-sm font-bold
                      text-white shadow-lg shadow-black/20 transition hover:bg-accent-600
                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"

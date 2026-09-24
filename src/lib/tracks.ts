@@ -18,7 +18,9 @@ import {
  * (ver docs/curriculo.md). As trilhas "Verbos do dia a dia" e "Frases simples"
  * entram a partir do 3º–5º.
  *
- * TODO: `completedPhases` vem de `quiz_attempts` quando houver banco.
+ * Aqui fica só a descrição das trilhas. Quanto o aluno já fez vive em
+ * lib/student.ts, que lê o progresso real — trocar isso por números fixos foi
+ * o que prendia o aluno na fase 2.
  */
 
 export type Track = {
@@ -27,66 +29,26 @@ export type Track = {
   icon: ComponentType<{ className?: string }>;
   /** Fases da trilha nesta faixa escolar. */
   phases: number;
-  /** Quantas o aluno já concluiu. */
-  completedPhases: number;
 };
 
 const PHASES_PER_TRACK = 4;
 
-/**
- * O aluno do protótipo está no começo de tudo: primeira trilha, primeira fase.
- *
- * Antes ele aparecia adiantado, com duas trilhas fechadas — e aí a tela de
- * boas-vindas levava um recém-chegado para a fase 4 de uma trilha marcada como
- * concluída. Como as trilhas seguintes só abrem quando a anterior fecha, todas
- * ficam zeradas e bloqueadas.
- */
 const RAW: Omit<Track, "phases">[] = [
   // A primeira trilha é a porta de entrada: ensina a falar com alguém e, de
   // quebra, ensina o próprio quiz — errar ali não custa nada.
-  {
-    slug: "primeiras-palavras",
-    title: "Primeiras palavras",
-    icon: TalkIcon,
-    completedPhases: 0,
-  },
-  { slug: "casa-familia", title: "Casa e família", icon: FamilyIcon, completedPhases: 0 },
-  { slug: "escola", title: "Escola", icon: SchoolIcon, completedPhases: 0 },
-  { slug: "animais", title: "Animais", icon: PawIcon, completedPhases: 0 },
-  { slug: "cores-numeros", title: "Cores e números", icon: PaletteIcon, completedPhases: 0 },
-  { slug: "comida", title: "Comida", icon: AppleIcon, completedPhases: 0 },
+  { slug: "primeiras-palavras", title: "Primeiras palavras", icon: TalkIcon },
+  { slug: "casa-familia", title: "Casa e família", icon: FamilyIcon },
+  { slug: "escola", title: "Escola", icon: SchoolIcon },
+  { slug: "animais", title: "Animais", icon: PawIcon },
+  { slug: "cores-numeros", title: "Cores e números", icon: PaletteIcon },
+  { slug: "comida", title: "Comida", icon: AppleIcon },
 ];
 
 export const TRACKS: Track[] = RAW.map((t) => ({ ...t, phases: PHASES_PER_TRACK }));
 
-export function progressOf(track: Track): number {
+export function progressOf(track: { phases: number; completedPhases: number }): number {
   return Math.round((track.completedPhases / track.phases) * 100);
 }
-
-export function isComplete(track: Track): boolean {
-  return track.completedPhases >= track.phases;
-}
-
-/**
- * A trilha só abre quando todas as anteriores estão completas. A primeira
- * está sempre aberta.
- */
-export function isUnlocked(index: number): boolean {
-  return TRACKS.slice(0, index).every(isComplete);
-}
-
-/** Trilha em que o aluno está: a primeira aberta que ainda não fechou. */
-export const CURRENT_TRACK: Track =
-  TRACKS.find((t, i) => isUnlocked(i) && !isComplete(t)) ?? TRACKS[0];
-
-/** Número da próxima fase a jogar na trilha atual. */
-export const CURRENT_PHASE = Math.min(CURRENT_TRACK.completedPhases + 1, CURRENT_TRACK.phases);
-
-/** Fases concluídas em todas as trilhas somadas. */
-export const TOTAL_COMPLETED_PHASES = TRACKS.reduce((n, t) => n + t.completedPhases, 0);
-
-/** O aluno nunca terminou uma fase: as telas falam com ele pela primeira vez. */
-export const IS_NEW_STUDENT = TOTAL_COMPLETED_PHASES === 0;
 
 export function trackBySlug(slug: string): Track | undefined {
   return TRACKS.find((t) => t.slug === slug);
@@ -98,17 +60,14 @@ export function nextTrackOf(slug: string): Track | undefined {
   return index < 0 ? undefined : TRACKS[index + 1];
 }
 
-/** Quantas fases faltam para fechar a trilha (e abrir a seguinte). */
-export function remainingPhases(track: Track): number {
-  return Math.max(0, track.phases - track.completedPhases);
-}
-
 /**
- * Frase de contexto mostrada no quiz: onde o aluno está e o que falta para
- * destravar a próxima trilha.
+ * Frase de contexto mostrada no quiz: onde o aluno está na trilha.
+ *
+ * Recebe as fases concluídas de fora porque quem sabe disso é o progresso do
+ * aluno, não a descrição da trilha.
  */
-export function trackContextLine(track: Track, phase?: number): string {
-  const remaining = remainingPhases(track);
+export function trackContextLine(track: Track, phase: number, completedPhases: number): string {
+  const remaining = Math.max(0, track.phases - completedPhases);
   const next = nextTrackOf(track.slug);
 
   // Na primeira fase da primeira trilha o aluno é novo: nada de cobrar o que

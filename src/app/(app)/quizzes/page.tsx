@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { BuboWelcome } from "@/components/quiz/bubo-welcome";
 import { WelcomeBackdrop } from "@/components/quiz/welcome-backdrop";
-import { CURRENT_TRACK, IS_NEW_STUDENT } from "@/lib/tracks";
+import { phaseHref, studentProgress } from "@/lib/student";
 
 /**
  * Entrada de estudo pelo menu.
@@ -12,8 +12,10 @@ import { CURRENT_TRACK, IS_NEW_STUDENT } from "@/lib/tracks";
  *
  * TODO: quando houver escolha de trilha, esta rota vira a listagem.
  */
-export default function QuizzesPage() {
-  if (!IS_NEW_STUDENT) redirect(`/quizzes/${CURRENT_TRACK.slug}`);
+export default async function QuizzesPage() {
+  const { current, phase, isNew } = await studentProgress();
+
+  if (!isNew) redirect(phaseHref(current.slug, phase));
 
   return (
     <div className="relative isolate flex min-h-[calc(100vh-5rem)] justify-center px-5 pb-10 pt-6 sm:pt-8">

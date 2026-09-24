@@ -4,7 +4,7 @@ import { SpeakButton } from "@/components/quiz/speak-button";
 import { HeartIcon, PlayIcon } from "@/components/ui/icons";
 import { quizForTrack } from "@/lib/quiz/catalog";
 import { storyForTrack } from "@/lib/quiz/stories";
-import { CURRENT_PHASE, CURRENT_TRACK } from "@/lib/tracks";
+import { studentProgress } from "@/lib/student";
 
 export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender juntos?";
 
@@ -20,18 +20,19 @@ export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender juntos?";
  * lado, que precisa saber em quanto tempo isso acaba. Para ela vale o Bubo, o
  * botão de ouvir e o botão grande.
  */
-export function BuboWelcome() {
-  const questions = quizForTrack(CURRENT_TRACK.slug, CURRENT_PHASE).questions.length;
-  const hasStory = Boolean(storyForTrack(CURRENT_TRACK.slug, CURRENT_PHASE));
+export async function BuboWelcome() {
+  const { current, phase, isNew } = await studentProgress();
+  const questions = quizForTrack(current.slug, phase).questions.length;
+  const hasStory = Boolean(storyForTrack(current.slug, phase));
 
   return (
     <div className="relative z-10 w-full max-w-5xl">
       <header className="text-center">
         <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-200 sm:text-sm">
-          Minha primeira trilha
+          {isNew ? "Minha primeira trilha" : `Fase ${phase} de ${current.phases}`}
         </p>
         <h1 className="mt-2 text-4xl font-extrabold leading-tight text-white drop-shadow sm:text-5xl">
-          {CURRENT_TRACK.title}
+          {current.title}
         </h1>
       </header>
 
