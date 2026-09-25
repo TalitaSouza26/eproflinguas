@@ -20,14 +20,26 @@ import { PHASES_COOKIE, QUIZZES_COOKIE } from "@/lib/progress";
  * para a Home sem apagar nada: aí o progresso é de verdade.
  */
 export function GET(request: NextRequest) {
-  const destino = new URL("/inicio", request.url);
+  // Vai direto para a apresentação, e não para a Home: se a Home vier de
+  // cache, o aluno veria o progresso antigo e pensaria que nada foi apagado.
+  const destino = new URL(DEV_AUTH_ENABLED ? "/bem-vindo" : "/inicio", request.url);
   const response = NextResponse.redirect(destino);
 
   if (DEV_AUTH_ENABLED) {
     for (const cookie of [ONBOARDING_COOKIE, PHASES_COOKIE, QUIZZES_COOKIE]) {
-      response.cookies.delete(cookie);
+      // Caminho e validade explícitos: um apagamento sem `path` pode virar um
+      // segundo cookie no caminho da rota, deixando o original de pé.
+      response.cookies.set(cookie, "", {
+        path: "/",
+        maxAge: 0,
+        expires: new Date(0),
+      });
     }
   }
+
+  // Sem isto, um proxy ou o próprio navegador pode servir a resposta anterior
+  // e o apagamento nunca chega.
+  response.headers.set("Cache-Control", "no-store, max-age=0");
 
   return response;
 }
