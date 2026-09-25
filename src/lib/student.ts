@@ -1,7 +1,7 @@
 import { hasStarted } from "@/lib/onboarding";
 import { phasesByTrack } from "@/lib/progress";
 import { quizForTrack } from "@/lib/quiz/catalog";
-import { phrasesInStory, storyForTrack } from "@/lib/quiz/stories";
+import { hasIntro, phrasesInStory, storyForTrack } from "@/lib/quiz/stories";
 import { TRACKS, type Track } from "@/lib/tracks";
 
 /**
@@ -91,7 +91,7 @@ export async function needsIntro(): Promise<boolean> {
  * direto a primeira questão.
  */
 export function phaseHref(slug: string, phase: number): string {
-  return storyForTrack(slug, phase)
+  return hasIntro(slug, phase)
     ? `/quizzes/${slug}/historia?fase=${phase}`
     : `/quizzes/${slug}?fase=${phase}`;
 }

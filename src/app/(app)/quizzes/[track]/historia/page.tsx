@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { ReviewIntro } from "@/components/quiz/review-intro";
 import { StoryPlayer } from "@/components/quiz/story-player";
 import { WelcomeBackdrop } from "@/components/quiz/welcome-backdrop";
-import { storyForTrack } from "@/lib/quiz/stories";
+import { quizForTrack } from "@/lib/quiz/catalog";
+import { isReviewPhase, storyForTrack } from "@/lib/quiz/stories";
 import { trackBySlug } from "@/lib/tracks";
 
 export const metadata: Metadata = { title: "História — eProf Línguas" };
@@ -29,13 +31,22 @@ export default async function HistoriaPage({
   const phase = Number(fase) >= 1 ? Number(fase) : 1;
   const quizHref = `/quizzes/${slug}?fase=${phase}`;
   const story = storyForTrack(slug, phase);
+  const revisao = isReviewPhase(slug, phase);
 
-  if (!story) redirect(quizHref);
+  if (!story && !revisao) redirect(quizHref);
 
   return (
-    <div className="relative isolate flex min-h-[calc(100vh-5rem)] items-center justify-center px-5 py-10">
+    <div className="relative isolate flex min-h-[calc(100vh-5rem)] justify-center px-5 pb-10 pt-6 sm:pt-8">
       <WelcomeBackdrop />
-      <StoryPlayer story={story} quizHref={quizHref} />
+
+      {story ? (
+        <StoryPlayer story={story} quizHref={quizHref} />
+      ) : (
+        <ReviewIntro
+          questions={quizForTrack(slug, phase).questions.length}
+          quizHref={quizHref}
+        />
+      )}
     </div>
   );
 }

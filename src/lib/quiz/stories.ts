@@ -180,6 +180,22 @@ export function storyForTrack(slug: string, phase = 1): Story | undefined {
   return STORIES.find((s) => s.slug === slug && s.phase === phase);
 }
 
+/**
+ * A fase é a revisão que fecha uma trilha contada por histórias.
+ *
+ * Não tem história própria — ela repassa o que as outras ensinaram —, mas
+ * também não pode começar fria: é a única em que a criança cairia direto numa
+ * pergunta, e ainda por cima numa fase três vezes mais longa.
+ */
+export function isReviewPhase(slug: string, phase: number): boolean {
+  return !storyForTrack(slug, phase) && Boolean(storyForTrack(slug, 1));
+}
+
+/** A fase abre com uma tela do Bubo antes do quiz. */
+export function hasIntro(slug: string, phase: number): boolean {
+  return Boolean(storyForTrack(slug, phase)) || isReviewPhase(slug, phase);
+}
+
 /** Quantas expressões a história ensina — os momentos de "repita comigo". */
 export function phrasesInStory(story: Story): number {
   return story.beats.filter((b) => b.kind === "lesson").length;
