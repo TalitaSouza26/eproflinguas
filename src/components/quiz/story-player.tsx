@@ -307,8 +307,8 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
           <Image
             src="/bubo/bubo-sua-vez.webp"
             alt=""
-            width={795}
-            height={1205}
+            width={890}
+            height={1206}
             unoptimized
             className="animate-rise-in h-72 w-auto drop-shadow-2xl sm:h-[26rem]"
           />
