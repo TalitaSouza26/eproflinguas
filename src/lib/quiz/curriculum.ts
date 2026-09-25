@@ -169,7 +169,7 @@ export const CURRICULUM: CurriculumTrack[] = [
   },
 ];
 
-/** Nome da insígnia e formato de cada uma das 4 fases. */
+/** Nome da conquista e formato de cada uma das 4 fases. */
 export const PHASE_PLAN = [
   { number: 1, block: 0, format: "image_word", title: "Reconhecer — parte 1" },
   { number: 2, block: 1, format: "image_word", title: "Reconhecer — parte 2" },

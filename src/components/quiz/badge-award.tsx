@@ -1,17 +1,17 @@
 import Image from "next/image";
-import type { Insignia } from "@/lib/insignias";
+import type { Conquista } from "@/lib/conquistas";
 
-/** Raios que saem de trás da insígnia. Decorativos e de vida curta. */
+/** Raios que saem de trás da conquista. Decorativos e de vida curta. */
 const RAYS = [0, 45, 90, 135, 180, 225, 270, 315];
 
 /**
- * Entrega da insígnia na tela de resultado.
+ * Entrega da conquista na tela de resultado.
  *
  * A animação roda uma vez, dura menos de dois segundos e não se repete — a
  * especificação pede microinteração curta, não celebração longa. Quem tem
  * `prefers-reduced-motion` ligado vê direto o estado final.
  */
-export function BadgeAward({ insignia }: { insignia: Insignia }) {
+export function BadgeAward({ conquista }: { conquista: Conquista }) {
   return (
     <div className="flex flex-col items-center">
       {/* O rótulo anuncia antes do emblema chegar, como uma chamada. */}
@@ -19,7 +19,7 @@ export function BadgeAward({ insignia }: { insignia: Insignia }) {
         className="animate-rise-in mb-3 text-xs font-bold uppercase tracking-wide text-accent-600"
         style={{ animationDelay: "120ms" }}
       >
-        Nova insígnia
+        Nova conquista
       </p>
 
       <div className="relative flex items-center justify-center">
@@ -46,7 +46,7 @@ export function BadgeAward({ insignia }: { insignia: Insignia }) {
         ))}
 
         <Image
-          src={insignia.image}
+          src={conquista.image}
           unoptimized
           alt=""
           width={512}
@@ -60,13 +60,13 @@ export function BadgeAward({ insignia }: { insignia: Insignia }) {
         className="animate-rise-in mt-3 text-xl font-extrabold text-deep-900"
         style={{ animationDelay: "820ms" }}
       >
-        {insignia.name}
+        {conquista.name}
       </p>
       <p
         className="animate-rise-in mt-1 text-[13px] text-ink-700"
         style={{ animationDelay: "1020ms" }}
       >
-        {insignia.condition}
+        {conquista.condition}
       </p>
     </div>
   );

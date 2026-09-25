@@ -1,5 +1,5 @@
-import { INSIGNIAS, type Insignia } from "@/lib/insignias";
-import { patenteFor, type Patente } from "@/lib/patente";
+import { CONQUISTAS, type Conquista } from "@/lib/conquistas";
+import { divisaoFor, type Divisao } from "@/lib/divisao";
 import type { StudentProgress } from "@/lib/student";
 
 /**
@@ -7,22 +7,22 @@ import type { StudentProgress } from "@/lib/student";
  *
  * As duas recompensas têm condição, e não aparecem em toda conclusão:
  *
- * - **Insígnia "Primeiro passo"**: só no primeiro quiz da vida do aluno.
- * - **Patente Bronze I**: só ao fechar a trilha "Primeiras palavras", que é
+ * - **Conquista "Primeiro passo"**: só no primeiro quiz da vida do aluno.
+ * - **Divisão Bronze I**: só ao fechar a trilha "Primeiras palavras", que é
  *   justamente onde a contagem de palavras cruza o primeiro degrau.
  *
  * Antes as duas eram entregues sempre, e a comemoração perdia o sentido: um
  * prêmio que cai toda vez não é prêmio.
  *
- * TODO: as outras sete insígnias precisam das condições delas (sequência de
+ * TODO: as outras sete conquistas precisam das condições delas (sequência de
  * dias, fase sem erro, trilha completa). Cada uma vira uma checagem aqui.
  */
 
-export const FIRST_INSIGNIA_ID = "primeiro-passo";
+export const FIRST_CONQUISTA_ID = "primeiro-passo";
 
 export type PhaseRewards = {
-  insignia?: Insignia;
-  patente?: Patente;
+  conquista?: Conquista;
+  divisao?: Divisao;
   /** Palavras aprendidas até aqui, para a frase da entrega. */
   words: number;
 };
@@ -38,11 +38,11 @@ export function rewardsFor(
   const trackJustDone =
     playedPhase === playedTrack.phases && playedTrack.completedPhases >= playedTrack.phases;
 
-  const { current } = patenteFor(progress.words);
+  const { current } = divisaoFor(progress.words);
 
   return {
-    insignia: firstEver ? INSIGNIAS.find((i) => i.id === FIRST_INSIGNIA_ID) : undefined,
-    patente: trackJustDone && current ? current : undefined,
+    conquista: firstEver ? CONQUISTAS.find((i) => i.id === FIRST_CONQUISTA_ID) : undefined,
+    divisao: trackJustDone && current ? current : undefined,
     words: progress.words,
   };
 }

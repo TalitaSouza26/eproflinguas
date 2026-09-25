@@ -119,6 +119,67 @@ O mock enviado divergia da especificação em quatro pontos; o que vale é:
 
 Layout: quiz centralizado, com "Voltar", título, barra de progresso laranja e o card branco. A dica do Bubo aparece como botão dentro do card (não em rail lateral), preservando a centralização pedida.
 
+## Como uma fase começa
+
+Nenhuma fase joga a criança direto numa pergunta. O que abre a fase depende do
+que ela ensina, e são três aberturas:
+
+| Abertura | Quando | Trilha |
+| --- | --- | --- |
+| **História narrada** | o que se ensina é fala, não coisa | Primeiras palavras |
+| **Galeria "Olha e escuta"** | o que se ensina é substantivo concreto | Casa e família (e as próximas visuais) |
+| **Tela do Bubo** | fase de revisão, que não apresenta nada novo | Primeiras palavras, fase 4 |
+
+A decisão é do conteúdo, não de variedade. Cumprimento não se desenha — "olá"
+não tem figura —, então essa trilha precisa de narrativa para dar a situação em
+que a expressão é dita. Já mãe, porta e cama são coisas do mundo: a figura é a
+definição, e uma história no meio só atrasaria a criança até a palavra.
+
+Quem chama nunca sabe qual das três é: Home, menu lateral e "continuar" pedem o
+destino a `phaseHref` e seguem o link.
+
+### A galeria "Olha e escuta"
+
+Um cartão por palavra nova: figura grande, a palavra em inglês, o que ela quer
+dizer, e o áudio. A criança anda no próprio ritmo, pode voltar, e no último
+cartão o botão vira "Agora é a sua vez!".
+
+A palavra é falada sozinha ao abrir cada cartão — a única exceção à regra de
+não tocar áudio sem o aluno pedir. Vale aqui porque ela já apertou "Começar"
+sabendo que vem som, e porque numa galeria de vocabulário ouvir a palavra **é**
+o conteúdo.
+
+### Trilha "Casa e família" — a trilha visual
+
+As 16 palavras do núcleo em quatro blocos de quatro, um por fase. Quatro é o
+que cabe numa sessão dessa idade, e cada bloco fecha um assunto inteiro em vez
+de cortar um ao meio:
+
+| Fase | Bloco | Palavras |
+| --- | --- | --- |
+| 1 | A família | mother, father, sister, brother |
+| 2 | A casa | house, family, garden, baby |
+| 3 | Os cômodos | kitchen, bedroom, door, window |
+| 4 | Os móveis | bed, table, chair, sofa |
+
+Cada fase: galeria com as 4 palavras, depois 5 questões — as 4 novas e uma
+retomando a fase anterior, para nenhuma fase virar uma ilha. Na fase 1, que não
+tem anterior, a quinta repete a primeira palavra com o outro distrator.
+
+Todas as questões são `image_word` com duas alternativas. O distrator sai
+sempre do mesmo bloco: o aluno escolhe entre duas coisas da casa, nunca entre
+uma cadeira e um cachorro, o que resolveria a questão por eliminação. A resposta
+certa alterna de posição — fixa, a criança decora a posição em vez da palavra.
+
+**Questão de imagem não tem `audioText`.** O botão de ouvir do enunciado
+pronunciaria a própria resposta. A pronúncia dessa palavra é trabalho da
+galeria, antes da pergunta.
+
+**Imagens:** 16, uma por palavra, em `public/quiz/casa-familia/<palavra>.webp`.
+Só `house` já existe. Enquanto faltarem, a figura vira uma moldura tracejada
+dizendo qual desenho falta — sem isso, arquivo ausente vira ícone quebrado e a
+fase fica impossível sem ninguém entender por quê.
+
 ## Trilhas, fases e progressão
 
 ### Estrutura
@@ -173,15 +234,15 @@ As questões **vivem no banco**. A geração por IA em tempo de execução, cogi
 
 O conteúdo é gerado a partir de `src/lib/quiz/curriculum.ts` pelo script `npm run seed:generate`, que escreve `supabase/seed.sql`. Para mudar conteúdo, edita-se o currículo e roda-se o script — nunca o SQL à mão.
 
-## Patente e insígnias
+## Divisão e conquistas
 
 São dois conceitos independentes. O modelo anterior — cinco categorias, cada uma subindo por cinco tiers — foi descartado por misturar os dois.
 
-### Patente
+### Divisão
 
 O nível do aluno. **Um trilho só, medido em palavras aprendidas.** Conta como aprendida a palavra acertada ao menos uma vez numa fase concluída.
 
-| Patente | Palavras |
+| Divisão | Palavras |
 | --- | --- |
 | Bronze I | 20 |
 | Bronze II | 50 |
@@ -189,15 +250,15 @@ O nível do aluno. **Um trilho só, medido em palavras aprendidas.** Conta como 
 | Ouro | 200 |
 | Diamante | 400 |
 
-A escada é uma lista ordenada em `src/lib/patente.ts`: novos níveis entram acrescentando itens ao fim, sem tocar em tela nenhuma.
+A escada é uma lista ordenada em `src/lib/divisão.ts`: novos níveis entram acrescentando itens ao fim, sem tocar em tela nenhuma.
 
-### Insígnias
+### Conquistas
 
-Conquistas avulsas espalhadas pelo percurso, cada uma com sua condição. **Ganha-se uma vez e pronto — não têm níveis.** Quem sobe é a patente.
+Conquistas avulsas espalhadas pelo percurso, cada uma com sua condição. **Ganha-se uma vez e pronto — não têm níveis.** Quem sobe é a divisão.
 
 As não conquistadas ficam **visíveis, em cinza e com a condição à mostra**: o aluno precisa saber o que dá para perseguir.
 
-| Insígnia | Condição |
+| Conquista | Condição |
 | --- | --- |
 | Primeiro passo | Concluir o primeiro quiz |
 | Maratonista | Aprender 30 palavras em um dia |

@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
 import { CheckIcon, FlameIcon, LockIcon, MedalIcon, TrophyIcon } from "@/components/ui/icons";
-import { PatenteFlame } from "@/components/ui/patente-flame";
-import { insigniasFor } from "@/lib/insignias";
-import { patenteFor, PATENTES } from "@/lib/patente";
+import { DivisaoFlame } from "@/components/ui/divisao-flame";
+import { conquistasFor } from "@/lib/conquistas";
+import { divisaoFor, DIVISOES } from "@/lib/divisao";
 import { studentProgress } from "@/lib/student";
 
 export const metadata: Metadata = { title: "Conquistas — eProf Línguas" };
 
-/** A escada da patente: um trilho só, medido em palavras aprendidas. */
-async function PatenteLadder() {
+/** A escada da divisao: um trilho só, medido em palavras aprendidas. */
+async function DivisaoLadder() {
   const { words: WORDS_LEARNED } = await studentProgress();
-  const { index: CURRENT_INDEX, next: NEXT_PATENTE, toNext: WORDS_TO_NEXT, percent: PATENTE_PERCENT } =
-    patenteFor(WORDS_LEARNED);
+  const { index: CURRENT_INDEX, next: NEXT_DIVISAO, toNext: WORDS_TO_NEXT, percent: DIVISAO_PERCENT } =
+    divisaoFor(WORDS_LEARNED);
 
   return (
     <section className={`${BLUE_CARD} px-6 py-6`}>
@@ -25,7 +25,7 @@ async function PatenteLadder() {
             <TrophyIcon className="size-5" />
           </span>
           <div>
-            <h2 className="text-lg font-extrabold">Sua patente</h2>
+            <h2 className="text-lg font-extrabold">Sua divisão</h2>
             <p className="text-[13px] text-blue-100">Sobe conforme você aprende palavras novas.</p>
           </div>
         </div>
@@ -33,37 +33,37 @@ async function PatenteLadder() {
         <p className="text-sm font-bold">{WORDS_LEARNED} palavras aprendidas</p>
       </div>
 
-      {NEXT_PATENTE && (
+      {NEXT_DIVISAO && (
         <>
           <div
             role="progressbar"
-            aria-label={`Progresso para ${NEXT_PATENTE.name}`}
-            aria-valuenow={PATENTE_PERCENT}
+            aria-label={`Progresso para ${NEXT_DIVISAO.name}`}
+            aria-valuenow={DIVISAO_PERCENT}
             aria-valuemin={0}
             aria-valuemax={100}
             className="relative mt-5 h-2.5 overflow-hidden rounded-full bg-white/20"
           >
             <div
               className="h-full rounded-full bg-accent-500"
-              style={{ width: `${PATENTE_PERCENT}%` }}
+              style={{ width: `${DIVISAO_PERCENT}%` }}
             />
           </div>
           <p className="relative mt-2 text-[13px] text-blue-100">
             Faltam <span className="font-bold text-white">{WORDS_TO_NEXT}</span> palavras para{" "}
-            {NEXT_PATENTE.name}.
+            {NEXT_DIVISAO.name}.
           </p>
         </>
       )}
 
       <ul className="relative mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
-        {PATENTES.map((patente, i) => {
+        {DIVISOES.map((divisao, i) => {
           const reached = i <= CURRENT_INDEX;
           const current = i === CURRENT_INDEX;
-          const { from, to, soft, ink } = patente.tint;
+          const { from, to, soft, ink } = divisao.tint;
 
-          // Cada card veste o metal da sua patente. O halo, o fio e a etiqueta
+          // Cada card veste o metal da sua divisão. O halo, o fio e a etiqueta
           // saem das mesmas quatro cores, então acrescentar um nível na escada
-          // é só descrever as cores dele em patente.ts.
+          // é só descrever as cores dele em divisao.ts.
           const style = {
             "--tint-from": from,
             "--tint-to": to,
@@ -73,7 +73,7 @@ async function PatenteLadder() {
 
           return (
             <li
-              key={patente.id}
+              key={divisao.id}
               style={style}
               className={`relative flex flex-col items-center overflow-hidden rounded-2xl border
                           px-3 pb-4 pt-5 text-center ${
@@ -106,9 +106,9 @@ async function PatenteLadder() {
               </span>
 
               <div className="relative flex w-full items-center justify-center">
-                {current && <PatenteFlame glowClass="size-20 sm:size-24" />}
+                {current && <DivisaoFlame glowClass="size-20 sm:size-24" />}
                 <Image
-                  src={patente.image}
+                  src={divisao.image}
                   unoptimized
                   alt=""
                   width={512}
@@ -134,10 +134,10 @@ async function PatenteLadder() {
                 className="relative mt-2 text-[13px] font-extrabold"
                 style={{ color: reached ? ink : "#ffffff" }}
               >
-                {patente.name}
+                {divisao.name}
               </p>
               <p className={`relative text-[11px] ${reached ? "text-ink-500" : "text-blue-100"}`}>
-                {patente.words} palavras
+                {divisao.words} palavras
               </p>
 
               {/* O estado é dito por palavra e por ícone, nunca só pela cor. */}
@@ -167,11 +167,11 @@ async function PatenteLadder() {
   );
 }
 
-/** Coleção de insígnias: ganhas uma vez, sem níveis. */
-async function InsigniaGrid() {
+/** Coleção de conquistas: ganhas uma vez, sem níveis. */
+async function ConquistaGrid() {
   const { totalPhases } = await studentProgress();
-  const insignias = insigniasFor(totalPhases);
-  const earned = insignias.filter((i) => i.earned);
+  const conquistas = conquistasFor(totalPhases);
+  const earned = conquistas.filter((i) => i.earned);
 
   return (
     <section className="mt-5 rounded-2xl border border-ink-100 bg-white px-6 py-6">
@@ -181,7 +181,7 @@ async function InsigniaGrid() {
             <MedalIcon className="size-5" />
           </span>
           <div>
-            <h2 className="text-lg font-extrabold text-deep-900">Suas insígnias</h2>
+            <h2 className="text-lg font-extrabold text-deep-900">Suas conquistas</h2>
             <p className="text-[13px] text-ink-500">
               Conquistas do percurso. Cada uma é ganha uma vez.
             </p>
@@ -189,42 +189,42 @@ async function InsigniaGrid() {
         </div>
 
         <p className="text-sm font-bold text-deep-900">
-          {earned.length} de {insignias.length}
+          {earned.length} de {conquistas.length}
         </p>
       </div>
 
       <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {insignias.map((insignia) => (
+        {conquistas.map((conquista) => (
           <li
-            key={insignia.id}
+            key={conquista.id}
             className={`flex flex-col items-center rounded-2xl border px-4 py-5 text-center ${
-              insignia.earned
+              conquista.earned
                 ? "border-ink-100 bg-white"
                 : "border-dashed border-ink-300 bg-ink-50"
             }`}
           >
             <Image
-              src={insignia.image}
+              src={conquista.image}
               unoptimized
               alt=""
               width={512}
               height={512}
-              className={`w-20 ${insignia.earned ? "" : "opacity-40 grayscale"}`}
+              className={`w-20 ${conquista.earned ? "" : "opacity-40 grayscale"}`}
             />
 
             <p
               className={`mt-3 text-[14px] font-bold ${
-                insignia.earned ? "text-deep-900" : "text-ink-500"
+                conquista.earned ? "text-deep-900" : "text-ink-500"
               }`}
             >
-              {insignia.name}
+              {conquista.name}
             </p>
-            <p className="mt-1 text-[11px] leading-relaxed text-ink-500">{insignia.condition}</p>
+            <p className="mt-1 text-[11px] leading-relaxed text-ink-500">{conquista.condition}</p>
 
-            {insignia.earned ? (
+            {conquista.earned ? (
               <p className="mt-3 flex items-center gap-1.5 rounded-full bg-correct-50 px-3 py-1 text-[11px] font-semibold text-correct-700">
                 <CheckIcon className="size-3.5" />
-                Conquistada em {insignia.earnedAt}
+                Conquistada em {conquista.earnedAt}
               </p>
             ) : (
               <p className="mt-3 flex items-center gap-1.5 rounded-full bg-ink-100 px-3 py-1 text-[11px] font-semibold text-ink-500">
@@ -242,8 +242,8 @@ async function InsigniaGrid() {
 export default function ConquistasPage() {
   return (
     <div className="px-4 pb-10 pt-4 sm:px-8">
-      <PatenteLadder />
-      <InsigniaGrid />
+      <DivisaoLadder />
+      <ConquistaGrid />
     </div>
   );
 }

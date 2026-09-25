@@ -1,6 +1,7 @@
 import { hasStarted } from "@/lib/onboarding";
 import { phasesByTrack } from "@/lib/progress";
 import { quizForTrack } from "@/lib/quiz/catalog";
+import { galleryFor } from "@/lib/quiz/galeria";
 import { hasIntro, phrasesInStory, storyForTrack } from "@/lib/quiz/stories";
 import { TRACKS, type Track } from "@/lib/tracks";
 
@@ -20,7 +21,7 @@ export type StudentProgress = {
   tracks: TrackProgress[];
   /** Fases concluídas somando todas as trilhas. */
   totalPhases: number;
-  /** Expressões aprendidas: é isso que move a patente. */
+  /** Expressões aprendidas: é isso que move a divisao. */
   words: number;
   /** Trilha em que o aluno está: a primeira aberta que ainda não fechou. */
   current: TrackProgress;
@@ -52,9 +53,16 @@ export async function studentProgress(): Promise<StudentProgress> {
 /**
  * Quantas expressões o aluno aprendeu.
  *
- * Numa fase com história, são as que ela ensina — a fase de revisão repassa as
- * mesmas e não soma nada. Nas trilhas que ainda não têm história, cada questão
- * da fase vale uma palavra.
+ * Quem sabe disso é a abertura da fase, não o quiz: é ela que apresenta as
+ * palavras novas. A história diz quantas ensinou, a galeria tem um cartão por
+ * palavra, e a fase de revisão não apresenta nada — repassa o que as outras já
+ * ensinaram.
+ *
+ * Contar as questões seria mais simples e estaria errado: uma fase de "Casa e
+ * família" tem cinco questões para quatro palavras novas, porque a quinta
+ * retoma a fase anterior. O aluno ganharia uma palavra que não existe.
+ *
+ * Só as trilhas que ainda não têm abertura caem no contador por questão.
  */
 function wordsLearned(tracks: TrackProgress[]): number {
   let total = 0;
@@ -62,11 +70,12 @@ function wordsLearned(tracks: TrackProgress[]): number {
   for (const track of tracks) {
     for (let phase = 1; phase <= track.completedPhases; phase++) {
       const story = storyForTrack(track.slug, phase);
-      total += story
-        ? phrasesInStory(story)
-        : storyForTrack(track.slug, 1)
-          ? 0 // fase de revisão de uma trilha com história: nada de novo
-          : quizForTrack(track.slug, phase).questions.length;
+      const gallery = galleryFor(track.slug, phase);
+
+      if (story) total += phrasesInStory(story);
+      else if (gallery) total += gallery.words.length;
+      else if (storyForTrack(track.slug, 1) || galleryFor(track.slug, 1)) total += 0;
+      else total += quizForTrack(track.slug, phase).questions.length;
     }
   }
 
@@ -87,11 +96,15 @@ export async function needsIntro(): Promise<boolean> {
 }
 
 /**
- * Para onde mandar o aluno estudar: a história da fase, quando ela tem uma, ou
- * direto a primeira questão.
+ * Para onde mandar o aluno estudar.
+ *
+ * Uma fase pode abrir de três jeitos: com a história da trilha narrada, com a
+ * galeria "Olha e escuta" das trilhas visuais, ou direto na primeira questão.
+ * Quem chama nunca precisa saber qual — Home, menu e "continuar" perguntam
+ * aqui e seguem o link.
  */
 export function phaseHref(slug: string, phase: number): string {
-  return hasIntro(slug, phase)
-    ? `/quizzes/${slug}/historia?fase=${phase}`
-    : `/quizzes/${slug}?fase=${phase}`;
+  if (hasIntro(slug, phase)) return `/quizzes/${slug}/historia?fase=${phase}`;
+  if (galleryFor(slug, phase)) return `/quizzes/${slug}/galeria?fase=${phase}`;
+  return `/quizzes/${slug}?fase=${phase}`;
 }

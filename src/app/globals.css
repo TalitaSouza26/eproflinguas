@@ -40,17 +40,17 @@
   --color-ink-100: #e9eef5;
   --color-ink-50: #f6f8fb;
 
-  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
 
   --radius-card: 0.875rem;
 }
 
 body {
-  background: var(--color-ink-50);
+  background: var(--shell-bg);
   color: var(--color-ink-900);
 }
 
-/* Conquista de insígnia.
+/* Entrega de uma conquista.
    Microinteração curta, sem repetição: o selo entra com um pulo e um brilho
    que se dissipa. Nada que atrase o aluno ou vire celebração longa. */
 
@@ -192,45 +192,21 @@ body {
   }
 }
 
-/* Temas da aplicação.
-   `original` é o claro; `azul` pinta a casca e o fundo de azul e mantém os
-   cards brancos. Os cards não mudam: só o que fica atrás deles. */
+/* Cores da casca.
+   A aplicação é azul: menu, header e fundo do conteúdo. Os cards continuam
+   brancos — é o contraste deles com o azul que faz a leitura.
+
+   Houve um segundo tema, claro, com um seletor no header. Saiu: o azul é a
+   identidade do produto, e manter os dois significava desenhar duas vezes
+   cada tela nova e testar as duas. */
 
 :root {
-  /* O menu é azul nos dois temas; o header acompanha o tema.
-     No tema claro ele usa o mesmo gradiente dos cards de destaque. */
-  --sidebar-bg: #143a9e;
-  --sidebar-image: linear-gradient(to bottom right, #1c49cc, #143a9e, #0e2a72);
+  /* O menu é mais escuro que o conteúdo, que já é azul: é assim que ele
+     continua se separando do resto sem precisar de borda. */
+  --sidebar-bg: #0c2464;
   --sidebar-item: #d8e4fb;
   --sidebar-muted: #a9c2f2;
   --sidebar-hover: rgb(255 255 255 / 0.1);
-
-  --shell-bg: var(--color-ink-50);
-  --shell-border: var(--color-ink-100);
-  --shell-title: var(--color-deep-900);
-  --shell-muted: var(--color-ink-500);
-  --shell-item: var(--color-ink-700);
-  --shell-hover: rgb(255 255 255 / 0.7);
-
-  --content-from: #eaf2fd;
-  --content-to: #f8fbff;
-
-  --on-bg-strong: var(--color-deep-900);
-  --on-bg-muted: var(--color-ink-500);
-  --on-bg-item: var(--color-ink-700);
-  --on-bg-accent: var(--color-blue-600);
-
-  /* Item selecionado do menu: card branco, porque o menu é escuro. */
-  --nav-active-bg: #ffffff;
-  --nav-active-fg: var(--color-blue-600);
-  --nav-active-icon: var(--color-accent-500);
-  --nav-active-shadow: 0 4px 14px -6px rgb(0 0 0 / 0.4);
-}
-
-:root[data-theme="azul"] {
-  /* Aqui o conteúdo já é azul: o menu escurece para continuar se separando. */
-  --sidebar-bg: #0c2464;
-  --sidebar-image: none;
 
   --shell-bg: #0c2464;
   --shell-border: rgb(255 255 255 / 0.12);
@@ -247,14 +223,19 @@ body {
   --on-bg-item: #d8e4fb;
   --on-bg-accent: #9dbcff;
 
+  /* Item selecionado do menu: card branco, porque o menu é escuro. */
+  --nav-active-bg: #ffffff;
+  --nav-active-fg: var(--color-blue-600);
+  --nav-active-icon: var(--color-accent-500);
+  --nav-active-shadow: 0 4px 14px -6px rgb(0 0 0 / 0.4);
 }
 
-/* Destaque da patente na Home.
+/* Destaque da divisão na Home.
    Um brilho quente que respira atrás do emblema, com brasas subindo. É lento
    e de baixa opacidade de propósito: precisa chamar atenção sem virar
    distração permanente na tela inicial. */
 
-@keyframes patente-glow {
+@keyframes divisao-glow {
   0%,
   100% {
     opacity: 0.4;
@@ -280,8 +261,8 @@ body {
   }
 }
 
-.animate-patente-glow {
-  animation: patente-glow 2800ms ease-in-out infinite;
+.animate-divisao-glow {
+  animation: divisao-glow 2800ms ease-in-out infinite;
 }
 
 .animate-ember {
@@ -289,7 +270,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-patente-glow {
+  .animate-divisao-glow {
     animation: none;
     opacity: 0.5;
   }
@@ -322,10 +303,10 @@ body {
   }
 }
 
-/* Entrega da patente.
+/* Entrega da divisão.
    O emblema vem do fundo da tela: começa pequeno e desfocado, como se
    estivesse longe, e chega ao tamanho final à frente do aluno. É a única
-   animação longa do produto, e acontece uma vez por patente. */
+   animação longa do produto, e acontece uma vez por divisão. */
 @keyframes award-emerge {
   0% {
     opacity: 0;

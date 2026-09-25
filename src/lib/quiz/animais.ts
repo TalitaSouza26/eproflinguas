@@ -9,6 +9,9 @@ import { questionSchema, type Question } from "@/lib/quiz/types";
  * A fase deveria ser `image_word` inteira, mas só existem duas imagens no
  * acervo. As outras oito rodam em `word_meaning` até as figuras chegarem.
  *
+ * As duas de imagem não têm `audioText`: ali o botão de ouvir do enunciado
+ * pronunciaria a própria resposta.
+ *
  * TODO: sai daqui quando o banco entrar.
  */
 const RAW: unknown[] = [
@@ -19,7 +22,6 @@ const RAW: unknown[] = [
     prompt: "What animal is this?",
     promptTranslation: "Qual animal é este?",
     imageUrl: "/quiz/dog.webp",
-    audioText: "dog",
     choices: [
       { id: "a", label: "Cat" },
       { id: "b", label: "Dog" },
@@ -37,7 +39,6 @@ const RAW: unknown[] = [
     prompt: "What animal is this?",
     promptTranslation: "Qual animal é este?",
     imageUrl: "/quiz/cat.webp",
-    audioText: "cat",
     choices: [
       { id: "a", label: "Dog" },
       { id: "b", label: "Horse" },

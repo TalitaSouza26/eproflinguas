@@ -38,7 +38,7 @@ export default async function HistoriaPage({
   // Centralizado na vertical: o cartão é o único elemento da tela, e encostado
   // no topo ele deixava metade dela vazia.
   return (
-    <div className="relative isolate flex min-h-[calc(100vh-5rem)] items-center justify-center px-5 py-10">
+    <div className="relative isolate flex flex-1 items-center justify-center px-5 py-10">
       <WelcomeBackdrop />
 
       {story ? (

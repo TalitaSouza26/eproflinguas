@@ -1,5 +1,5 @@
 /**
- * Patente do aluno.
+ * Divisão do aluno.
  *
  * Um trilho só, medido em palavras aprendidas. Conta como aprendida a
  * expressão ensinada numa fase concluída.
@@ -8,20 +8,20 @@
  * incluir itens no fim, sem tocar em nenhuma tela.
  *
  * ATENÇÃO: a Bronze I está em 9 palavras porque é o que a trilha "Primeiras
- * palavras" inteira ensina — a primeira patente cai exatamente ao fechar a
+ * palavras" inteira ensina — a primeira divisão cai exatamente ao fechar a
  * primeira trilha. Os degraus seguintes (50, 100, 200, 400) foram pensados
  * quando uma trilha tinha 16 palavras de núcleo; com o conteúdo atual do
  * 1º–2º eles ficaram longe demais e precisam ser recalibrados.
  */
 
-export type Patente = {
+export type Divisao = {
   id: string;
   name: string;
   /** Palavras aprendidas necessárias para alcançar. */
   words: number;
   image: string;
   /**
-   * Cores do metal da patente, tiradas do próprio emblema.
+   * Cores do metal da divisão, tiradas do próprio emblema.
    *
    * A escada é uma fileira de cinco cards, e sem isso todos ficam iguais —
    * o aluno precisa distinguir onde está de relance, não lendo o nome.
@@ -38,7 +38,7 @@ export type Patente = {
   };
 };
 
-export const PATENTES: Patente[] = [
+export const DIVISOES: Divisao[] = [
   {
     id: "bronze-1",
     name: "Bronze I",
@@ -76,22 +76,22 @@ export const PATENTES: Patente[] = [
   },
 ];
 
-export type PatenteStanding = {
-  /** Índice da patente atual, ou -1 se ainda não alcançou a primeira. */
+export type DivisaoStanding = {
+  /** Índice da divisão atual, ou -1 se ainda não alcançou a primeira. */
   index: number;
-  current: Patente | null;
-  next: Patente | null;
+  current: Divisao | null;
+  next: Divisao | null;
   /** Palavras que faltam para a próxima. */
   toNext: number;
-  /** Avanço dentro da patente atual, de 0 a 100. */
+  /** Avanço dentro da divisão atual, de 0 a 100. */
   percent: number;
 };
 
 /** Onde o aluno está na escada, dado quanto ele já aprendeu. */
-export function patenteFor(words: number): PatenteStanding {
-  const index = PATENTES.reduce((found, p, i) => (words >= p.words ? i : found), -1);
-  const current = index >= 0 ? PATENTES[index] : null;
-  const next = PATENTES[index + 1] ?? null;
+export function divisaoFor(words: number): DivisaoStanding {
+  const index = DIVISOES.reduce((found, p, i) => (words >= p.words ? i : found), -1);
+  const current = index >= 0 ? DIVISOES[index] : null;
+  const next = DIVISOES[index + 1] ?? null;
 
   if (!next) return { index, current, next, toNext: 0, percent: 100 };
 

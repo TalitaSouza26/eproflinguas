@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { ContinueCard } from "@/components/home/continue-card";
 import { CurrentBadge } from "@/components/home/current-badge";
 import { DailyMission } from "@/components/home/daily-mission";
-import { PatenteInline } from "@/components/home/patente-inline";
+import { DivisaoInline } from "@/components/home/divisao-inline";
 import { RecentBadges } from "@/components/home/recent-badges";
 import { TrackProgress } from "@/components/home/track-progress";
 import { CURRENT_STUDENT } from "@/lib/home-data";
@@ -15,9 +15,9 @@ export const metadata: Metadata = { title: "Início — eProf Línguas" };
  * Os blocos são filhos diretos da grade e só recebem posição explícita a
  * partir de `xl`, onde a coluna da direita aparece.
  *
- * Abaixo disso essa coluna some inteira — patente e insígnias — porque
+ * Abaixo disso essa coluna some inteira — divisão e conquistas — porque
  * empilhada ela jogava as trilhas para o fim de uma rolagem longa. No lugar
- * dela fica a patente compacta na linha da saudação, e as insígnias seguem em
+ * dela fica a divisão compacta na linha da saudação, e as conquistas seguem em
  * Conquistas.
  */
 export default async function InicioPage() {
@@ -36,7 +36,7 @@ export default async function InicioPage() {
           <p className="mt-0.5 text-[15px] text-[var(--on-bg-accent)]">Pronto para aprender hoje?</p>
         </div>
 
-        <PatenteInline />
+        <DivisaoInline />
       </div>
 
       <div className="min-w-0 xl:col-start-1 xl:row-start-2">

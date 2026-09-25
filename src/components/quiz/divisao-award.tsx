@@ -4,29 +4,29 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRightIcon } from "@/components/ui/icons";
-import { PatenteFlame } from "@/components/ui/patente-flame";
-import type { Patente } from "@/lib/patente";
+import { DivisaoFlame } from "@/components/ui/divisao-flame";
+import type { Divisao } from "@/lib/divisao";
 
 /**
- * Entrega da patente ao fim do quiz.
+ * Entrega da divisão ao fim do quiz.
  *
  * O aluno clica em continuar e, antes de seguir, o emblema surge do fundo da
  * tela pegando fogo. A conquista interrompe o fluxo de propósito: subir de
- * patente é raro — algumas dezenas de palavras entre uma e outra — e passaria
+ * divisão é raro — algumas dezenas de palavras entre uma e outra — e passaria
  * batido se fosse só uma linha na tela de resultado.
  *
  * O botão de continuar dentro do modal é quem leva à trilha, então nada se
  * perde se o aluno fechar: ele volta ao resultado com os mesmos caminhos.
  */
-export function PatenteAward({
-  patente,
+export function DivisaoAward({
+  divisao,
   words,
   href,
   className,
   children,
 }: {
-  patente: Patente;
-  /** Palavras aprendidas até aqui, o que rendeu a patente. */
+  divisao: Divisao;
+  /** Palavras aprendidas até aqui, o que rendeu a divisao. */
   words: number;
   /** Para onde seguir depois da comemoração. */
   href: string;
@@ -65,7 +65,7 @@ export function PatenteAward({
         <div
           role="dialog"
           aria-modal="true"
-          aria-labelledby="patente-award-title"
+          aria-labelledby="divisao-award-title"
           className="animate-award-backdrop fixed inset-0 z-50 flex items-center justify-center overflow-y-auto
                      bg-deep-900/90 px-4 py-10 backdrop-blur-sm"
         >
@@ -74,13 +74,13 @@ export function PatenteAward({
               className="animate-rise-in text-xs font-bold uppercase tracking-[0.2em] text-[#ffb057]"
               style={{ animationDelay: "900ms" }}
             >
-              Nova patente
+              Nova divisão
             </p>
 
             <div className="animate-award-emerge relative mt-5 flex items-center justify-center">
-              <PatenteFlame glowClass="size-56" />
+              <DivisaoFlame glowClass="size-56" />
               <Image
-                src={patente.image}
+                src={divisao.image}
                 alt=""
                 width={512}
                 height={512}
@@ -91,7 +91,7 @@ export function PatenteAward({
             </div>
 
             <h2
-              id="patente-award-title"
+              id="divisao-award-title"
               className="animate-rise-in mt-6 text-3xl font-extrabold text-white"
               style={{ animationDelay: "1150ms" }}
             >
@@ -101,7 +101,7 @@ export function PatenteAward({
               className="animate-rise-in mt-2 text-lg font-bold text-[#ffd8a8]"
               style={{ animationDelay: "1280ms" }}
             >
-              Agora você é patente {patente.name}
+              Agora você é divisão {divisao.name}
             </p>
             <p
               className="animate-rise-in mt-1.5 text-sm text-blue-100"

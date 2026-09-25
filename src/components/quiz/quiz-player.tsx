@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { recordQuizDone } from "@/app/(app)/quizzes/actions";
 import { ChoiceCard, type ChoiceState } from "@/components/quiz/choice-card";
+import { QuizImage } from "@/components/quiz/quiz-image";
 import { SpeakButton } from "@/components/quiz/speak-button";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
 import { ArrowLeftIcon, BulbIcon, SpeakerIcon } from "@/components/ui/icons";
@@ -15,7 +16,11 @@ type Answer = { questionId: string; topic: string; correct: boolean };
 
 function stateFor(
   choiceId: string,
-  { confirmed, selected, correctId }: { confirmed: boolean; selected: string | null; correctId: string },
+  {
+    confirmed,
+    selected,
+    correctId,
+  }: { confirmed: boolean; selected: string | null; correctId: string },
 ): ChoiceState {
   if (!confirmed) return selected === choiceId ? "selected" : "default";
   if (choiceId === correctId) return "correct";
@@ -70,13 +75,13 @@ export function QuizPlayer({
   const resultHref = `/quizzes/resultado?acertos=${correctCount}&total=${total}&trilha=${trackSlug}&fase=${phase}`;
 
   /**
-    * Tocar na alternativa já responde.
-    *
-    * Não há passo de confirmar: para a criança que sabe a palavra, o botão era
-    * só um clique a mais entre ela e a resposta. Em troca, a escolha é
-    * definitiva no toque — por isso o card da alternativa é grande e bem
-    * separado dos vizinhos.
-    */
+   * Tocar na alternativa já responde.
+   *
+   * Não há passo de confirmar: para a criança que sabe a palavra, o botão era
+   * só um clique a mais entre ela e a resposta. Em troca, a escolha é
+   * definitiva no toque — por isso o card da alternativa é grande e bem
+   * separado dos vizinhos.
+   */
   function answer(choiceId: string) {
     if (confirmed) return;
 
@@ -124,10 +129,19 @@ export function QuizPlayer({
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [confirmed, isCorrect, isLast, advance, router, resultHref, trackSlug, phase]);
+  }, [
+    confirmed,
+    isCorrect,
+    isLast,
+    advance,
+    router,
+    resultHref,
+    trackSlug,
+    phase,
+  ]);
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-8 xl:max-w-[56rem]">
       {/* Faixa da fase: onde o aluno está, com a saída sempre à vista. */}
       <header className={`${BLUE_CARD} px-6 py-5`}>
         <CardBackdrop />
@@ -144,7 +158,9 @@ export function QuizPlayer({
               Fase {phase} de {phases}
             </Link>
 
-            <h2 className="mt-1 truncate text-2xl font-extrabold">{trackTitle}</h2>
+            <h2 className="mt-1 truncate text-2xl font-extrabold">
+              {trackTitle}
+            </h2>
           </div>
 
           <span className="shrink-0 rounded-full border border-white/25 px-4 py-2 text-xs font-bold">
@@ -153,7 +169,9 @@ export function QuizPlayer({
         </div>
       </header>
 
-      <p className="mt-3 text-center text-sm text-[var(--on-bg-muted)]">{context}</p>
+      <p className="mt-3 text-center text-sm text-[var(--on-bg-muted)]">
+        {context}
+      </p>
 
       {/* A barra mede posição no quiz, não desempenho: avança por questão concluída. */}
       <div className="mt-3 flex items-center gap-4">
@@ -175,163 +193,204 @@ export function QuizPlayer({
         </span>
       </div>
 
-      <section className="mt-5 rounded-3xl bg-white p-5 sm:p-8 shadow-[0_18px_50px_-30px_rgba(15,34,71,0.4)]">
-        <p className="text-center text-xs font-semibold uppercase tracking-wide text-ink-500">
-          {FORMAT_INSTRUCTION[question.format]}
-        </p>
+      <section
+        className="mt-5 flex gap-6 rounded-3xl bg-white p-5 shadow-[0_18px_50px_-30px_rgba(15,34,71,0.4)]
+                   sm:p-8"
+      >
+        {/* O Bubo mora dentro do card, ao lado da pergunta, numa pose só.
+            Trocar de arte a cada resposta puxava o olho para o canto bem na
+            hora em que a explicação aparecia — que é o que a criança precisa
+            ler. Ele fica parado, de companhia.
 
-        {/* Em situation_reply o enunciado é a situação, em português. Não pode
+            Some abaixo de xl: ali a largura toda é das alternativas. */}
+        {/* A coluna não tem altura própria: ela acompanha a altura da
+            pergunta, e o Bubo se ajusta dentro dela. Com altura fixa era ele
+            quem mandava no card e sobrava um vazio acima do enunciado.
+
+            `inset-0` o mantém dentro do padding do card — nada de cabeça ou
+            pé encostando na borda. O piso de altura dá a ele um tamanho
+            decente mesmo na pergunta mais curta, sem abrir buraco visível.
+
+            A arte é a versão recortada: no original o Bubo ocupa 662 de 1254px
+            de largura, e a moldura transparente encolhia o desenho à metade. */}
+        <aside
+          aria-hidden
+          className="relative hidden min-h-[17rem] w-44 shrink-0 xl:block"
+        >
+          <Image
+            src="/bubo/bubo-pensando-recorte.webp"
+            alt=""
+            width={662}
+            height={1225}
+            unoptimized
+            className="absolute inset-0 size-full object-contain object-bottom"
+          />
+        </aside>
+
+        <div className="min-w-0 flex-1">
+          <p className="text-center text-xs font-semibold uppercase tracking-wide text-ink-500">
+            {FORMAT_INSTRUCTION[question.format]}
+          </p>
+
+          {/* Em situation_reply o enunciado é a situação, em português. Não pode
             entrar no corpo de uma palavra em inglês: o que o aluno tem de ler
             com atenção ali é a cena, e o que ele decora está nas alternativas. */}
-        <h3
-          className={`mt-2 flex items-center justify-center gap-3 text-center font-extrabold text-deep-900 ${
-            isSituation ? "text-lg leading-snug sm:text-xl" : "text-[26px]"
-          }`}
-        >
-          {question.prompt}
-          {question.audioText && !isSituation && (
-            <button
-              type="button"
-              aria-label={`Ouvir a pronúncia de ${question.audioText}`}
-              className="shrink-0 rounded-full p-1.5 text-blue-600 transition hover:bg-blue-50
-                         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-            >
-              <SpeakerIcon className="size-5" />
-            </button>
-          )}
-        </h3>
-
-        {question.promptTranslation && (
-          <p className="mt-1 text-center text-base text-ink-500">{question.promptTranslation}</p>
-        )}
-
-        {/* A fala da outra pessoa vem numa bolha: é ela que o aluno responde,
-            e ver quem falou é metade do enunciado. */}
-        {isSituation && question.speakerLine && (
-          <div className="mx-auto mt-5 flex max-w-md items-center gap-3 rounded-2xl bg-blue-50 px-4 py-3 text-left">
-            {question.speaker ? (
-              // Personagem da história: círculo com a inicial até existir arte
-              // da Sofia e do Ethan.
-              <span
-                aria-hidden
-                className="flex size-14 shrink-0 items-center justify-center rounded-full bg-blue-600
-                           text-xl font-extrabold text-white"
-              >
-                {question.speaker.charAt(0)}
-              </span>
-            ) : (
-              <Image
-                src="/bubo/bubo-falando.webp"
-                alt="Bubo"
-                width={1122}
-                height={1402}
-                unoptimized
-                className="h-20 w-auto shrink-0 object-contain"
-              />
-            )}
-
-            <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
-                {question.speaker ?? "Bubo"}
-              </p>
-              <p className="flex items-center gap-2 text-xl font-extrabold text-deep-900">
-                “{question.speakerLine}”
-                <SpeakButton
-                  text={question.speakerLine}
-                  lang="en-US"
-                  label={`Ouvir ${question.speakerLine}`}
-                  className="shrink-0 p-1 text-blue-600 hover:bg-white focus-visible:outline-blue-500"
-                />
-              </p>
-            </div>
-          </div>
-        )}
-
-        {question.format === "image_word" && (
-          <Image
-            src={question.imageUrl}
-            alt=""
-            width={512}
-            height={512}
-            priority
-            className="mx-auto mt-4 h-48 w-auto object-contain"
-          />
-        )}
-
-        {/* A grade acompanha a quantidade: duas ou quatro em pares, três lado
-            a lado. Sobrar meia coluna faria a última alternativa parecer
-            diferente das outras. */}
-        <div
-          className={`mt-6 grid gap-3 ${
-            question.choices.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"
-          }`}
-        >
-          {question.choices.map((choice) => (
-            <ChoiceCard
-              key={choice.id}
-              label={choice.label}
-              state={stateFor(choice.id, { confirmed, selected, correctId: question.correctChoiceId })}
-              disabled={confirmed}
-              onSelect={() => answer(choice.id)}
-            />
-          ))}
-        </div>
-
-        {/* Dica: opcional, acionada pelo aluno, e sai de cena depois de confirmar. */}
-        {!confirmed && question.hint && (
-          <div className="mt-4">
-            {hintOpen ? (
-              <p className="flex items-start gap-3 rounded-2xl bg-blue-50 px-4 py-3 text-sm text-deep-700">
-                <BulbIcon className="mt-0.5 size-5 shrink-0 text-accent-500" />
-                <span>
-                  <span className="font-bold text-deep-900">Dica do Bubo: </span>
-                  {question.hint}
-                </span>
-              </p>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setHintOpen(true)}
-                className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-blue-600
-                           transition hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2
-                           focus-visible:outline-blue-500"
-              >
-                <BulbIcon className="size-5 text-accent-500" />
-                Pedir uma dica ao Bubo
-              </button>
-            )}
-          </div>
-        )}
-
-        {confirmed && (
-          <p
-            role="status"
-            className={`mt-4 rounded-2xl px-4 py-3.5 text-sm font-semibold ${
-              isCorrect ? "bg-correct-50 text-correct-700" : "bg-wrong-50 text-wrong-700"
+          <h3
+            className={`mt-2 flex items-center justify-center gap-3 text-center font-extrabold text-deep-900 ${
+              isSituation ? "text-lg leading-snug sm:text-xl" : "text-[26px]"
             }`}
           >
-            {isCorrect ? "Muito bem! " : "Quase! "}
-            <span className="font-medium">{question.explanation}</span>
-          </p>
-        )}
+            {question.prompt}
+            {question.audioText && !isSituation && (
+              <button
+                type="button"
+                aria-label={`Ouvir a pronúncia de ${question.audioText}`}
+                className="shrink-0 rounded-full p-1.5 text-blue-600 transition hover:bg-blue-50
+                         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+              >
+                <SpeakerIcon className="size-5" />
+              </button>
+            )}
+          </h3>
 
-        {/* O rodapé só existe para mostrar a espera do erro. No acerto ele fica
-            de fora, senão sobraria uma faixa vazia com linha e tudo por 800ms. */}
-        {confirmed && !isCorrect && (
-          <div className="mt-6 flex justify-end border-t border-ink-100 pt-6">
-            <div className="flex w-full flex-col items-end gap-2">
-              <p className="text-[13px] font-semibold text-ink-500">
-                {isLast ? "Ver resultado…" : "Próxima pergunta…"}
-              </p>
-              <div className="h-1.5 w-40 overflow-hidden rounded-full bg-ink-100">
-                <div
-                  className="animate-advance h-full rounded-full bg-accent-500"
-                  style={{ animationDuration: `${ADVANCE_DELAY.wrong}ms` }}
+          {question.promptTranslation && (
+            <p className="mt-1 text-center text-base text-ink-500">
+              {question.promptTranslation}
+            </p>
+          )}
+
+          {/* A fala da outra pessoa vem numa bolha: é ela que o aluno responde,
+            e ver quem falou é metade do enunciado. */}
+          {isSituation && question.speakerLine && (
+            <div className="mx-auto mt-5 flex max-w-md items-center gap-3 rounded-2xl bg-blue-50 px-4 py-3 text-left">
+              {question.speaker ? (
+                // Personagem da história: círculo com a inicial até existir arte
+                // da Sofia e do Ethan.
+                <span
+                  aria-hidden
+                  className="flex size-14 shrink-0 items-center justify-center rounded-full bg-blue-600
+                           text-xl font-extrabold text-white"
+                >
+                  {question.speaker.charAt(0)}
+                </span>
+              ) : (
+                <Image
+                  src="/bubo/bubo-falando.webp"
+                  alt="Bubo"
+                  width={1122}
+                  height={1402}
+                  unoptimized
+                  className="h-20 w-auto shrink-0 object-contain"
                 />
+              )}
+
+              <div className="min-w-0">
+                <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
+                  {question.speaker ?? "Bubo"}
+                </p>
+                <p className="flex items-center gap-2 text-xl font-extrabold text-deep-900">
+                  “{question.speakerLine}”
+                  <SpeakButton
+                    text={question.speakerLine}
+                    lang="en-US"
+                    label={`Ouvir ${question.speakerLine}`}
+                    className="shrink-0 p-1 text-blue-600 hover:bg-white focus-visible:outline-blue-500"
+                  />
+                </p>
               </div>
             </div>
+          )}
+
+          {question.format === "image_word" && (
+            <QuizImage
+              src={question.imageUrl}
+              alt=""
+              word={question.explanation.split(" significa ")[1]?.replace(".", "") ?? "?"}
+              priority
+              className="mx-auto mt-4 h-48 w-auto object-contain"
+            />
+          )}
+
+          {/* Uma alternativa por linha, sempre. Lado a lado a criança compara
+            as duas de relance; empilhadas ela lê uma, depois a outra — que é
+            o que a gente quer de quem ainda está aprendendo a ler. E o card
+            fica alto o bastante para o Bubo ter companhia do lado. */}
+          <div className="mt-6 grid gap-3">
+            {question.choices.map((choice) => (
+              <ChoiceCard
+                key={choice.id}
+                label={choice.label}
+                state={stateFor(choice.id, {
+                  confirmed,
+                  selected,
+                  correctId: question.correctChoiceId,
+                })}
+                disabled={confirmed}
+                onSelect={() => answer(choice.id)}
+              />
+            ))}
           </div>
-        )}
+
+          {/* Dica: opcional, acionada pelo aluno, e sai de cena depois de confirmar. */}
+          {!confirmed && question.hint && (
+            <div className="mt-4">
+              {hintOpen ? (
+                <p className="flex items-start gap-3 rounded-2xl bg-blue-50 px-4 py-3 text-sm text-deep-700">
+                  <BulbIcon className="mt-0.5 size-5 shrink-0 text-accent-500" />
+                  <span>
+                    <span className="font-bold text-deep-900">
+                      Dica do Bubo:{" "}
+                    </span>
+                    {question.hint}
+                  </span>
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setHintOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-blue-600
+                           transition hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2
+                           focus-visible:outline-blue-500"
+                >
+                  <BulbIcon className="size-5 text-accent-500" />
+                  Pedir uma dica ao Bubo
+                </button>
+              )}
+            </div>
+          )}
+
+          {confirmed && (
+            <p
+              role="status"
+              className={`mt-4 rounded-2xl px-4 py-3.5 text-sm font-semibold ${
+                isCorrect
+                  ? "bg-correct-50 text-correct-700"
+                  : "bg-wrong-50 text-wrong-700"
+              }`}
+            >
+              {isCorrect ? "Muito bem! " : "Quase! "}
+              <span className="font-medium">{question.explanation}</span>
+            </p>
+          )}
+
+          {/* O rodapé só existe para mostrar a espera do erro. No acerto ele fica
+            de fora, senão sobraria uma faixa vazia com linha e tudo por 800ms. */}
+          {confirmed && !isCorrect && (
+            <div className="mt-6 flex justify-end border-t border-ink-100 pt-6">
+              <div className="flex w-full flex-col items-end gap-2">
+                <p className="text-[13px] font-semibold text-ink-500">
+                  {isLast ? "Ver resultado…" : "Próxima pergunta…"}
+                </p>
+                <div className="h-1.5 w-40 overflow-hidden rounded-full bg-ink-100">
+                  <div
+                    className="animate-advance h-full rounded-full bg-accent-500"
+                    style={{ animationDuration: `${ADVANCE_DELAY.wrong}ms` }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </section>
     </div>
   );

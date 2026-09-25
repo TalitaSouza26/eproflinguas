@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
 import { BadgeAward } from "@/components/quiz/badge-award";
 import { CelebrationBurst } from "@/components/quiz/celebration-burst";
-import { PatenteAward } from "@/components/quiz/patente-award";
+import { DivisaoAward } from "@/components/quiz/divisao-award";
 import { rewardsFor } from "@/lib/quiz/rewards";
 import { phaseHref, studentProgress } from "@/lib/student";
 import { SEED_QUIZ } from "@/lib/quiz/seed";
@@ -53,10 +53,10 @@ export default async function ResultadoPage({
   const track = tracks.find((t) => t.slug === sp.trilha) ?? currentTrack;
   const playedPhase = toInt(sp.fase, 1);
 
-  // A insígnia conquistada assume o lugar do Bubo: o prêmio é o que o aluno
+  // A conquista conquistada assume o lugar do Bubo: o prêmio é o que o aluno
   // deve ver primeiro. As duas recompensas têm condição — ver lib/quiz/rewards.
   const progress = await studentProgress();
-  const { insignia: badge, patente, words } = rewardsFor(progress, track, playedPhase);
+  const { conquista: badge, divisao, words } = rewardsFor(progress, track, playedPhase);
 
   const done = track.completedPhases;
   const left = track.phases - done;
@@ -79,7 +79,7 @@ export default async function ResultadoPage({
     <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-10">
       <section className="rounded-3xl bg-white px-5 py-8 sm:px-8 sm:py-10 text-center shadow-[0_18px_50px_-30px_rgba(15,34,71,0.4)]">
         {/* Fechar a trilha é o maior acontecimento da tela, e ganha o Bubo
-            comemorando. Depois vem a insígnia, quando a fase rendeu uma. */}
+            comemorando. Depois vem a conquista, quando a fase rendeu uma. */}
         {trackDone ? (
           <div className="relative mx-auto flex w-40 items-center justify-center">
             <CelebrationBurst />
@@ -94,7 +94,7 @@ export default async function ResultadoPage({
             />
           </div>
         ) : badge ? (
-          <BadgeAward insignia={badge} />
+          <BadgeAward conquista={badge} />
         ) : (
           <Image
             src="/bubo/bubo-quiz-feito.webp"
@@ -157,16 +157,16 @@ export default async function ResultadoPage({
         </div>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          {patente ? (
-            <PatenteAward
-              patente={patente}
+          {divisao ? (
+            <DivisaoAward
+              divisao={divisao}
               words={words}
               href={continueHref}
               className={CTA_PRIMARY}
             >
               Continuar trilha
               <ArrowRightIcon className="size-4" />
-            </PatenteAward>
+            </DivisaoAward>
           ) : (
             <Link href={continueHref} className={CTA_PRIMARY}>
               Continuar trilha

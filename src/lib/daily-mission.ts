@@ -3,7 +3,7 @@
  *
  * Uma meta pequena, alcançável numa sessão, que se renova todo dia. Serve
  * para dar ao aluno um motivo concreto para abrir o app hoje — diferente das
- * insígnias, que medem acúmulo ao longo de semanas.
+ * conquistas, que medem acúmulo ao longo de semanas.
  *
  * A meta é deliberadamente baixa: uma missão que não se cumpre vira lembrete
  * de fracasso, e é o oposto do que ela existe para fazer.

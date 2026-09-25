@@ -18,7 +18,7 @@ export default async function QuizzesPage() {
   if (!isNew) redirect(phaseHref(current.slug, phase));
 
   return (
-    <div className="relative isolate flex min-h-[calc(100vh-5rem)] justify-center px-5 pb-10 pt-6 sm:pt-8">
+    <div className="relative isolate flex flex-1 items-center justify-center px-5 py-10">
       <WelcomeBackdrop />
       <BuboWelcome />
     </div>

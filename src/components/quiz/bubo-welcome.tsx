@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { startJourney } from "@/app/bem-vindo/actions";
 import { SpeakButton } from "@/components/quiz/speak-button";
-import { HeartIcon, PlayIcon } from "@/components/ui/icons";
+import { PlayIcon } from "@/components/ui/icons";
 import { quizForTrack } from "@/lib/quiz/catalog";
 import { storyForTrack } from "@/lib/quiz/stories";
 import { studentProgress } from "@/lib/student";
@@ -29,14 +29,19 @@ export async function BuboWelcome() {
     <div className="relative z-10 w-full max-w-5xl">
       <header className="text-center">
         <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-200 sm:text-sm">
-          {isNew ? "Minha primeira trilha" : `Fase ${phase} de ${current.phases}`}
+          {isNew
+            ? "Minha primeira trilha"
+            : `Fase ${phase} de ${current.phases}`}
         </p>
         <h1 className="mt-2 text-4xl font-extrabold leading-tight text-white drop-shadow sm:text-5xl">
           {current.title}
         </h1>
       </header>
 
-      <div className="mt-2 grid items-center gap-2 sm:mt-4 sm:grid-cols-[1.15fr_1fr] sm:gap-0">
+      {/* Uma dupla centrada, não duas colunas. Em grade o Bubo ficava
+          centrado dentro da coluna dele e o balão encostava na borda oposta:
+          sobrava folga só de um lado, e o conjunto puxava para a direita. */}
+      <div className="mt-2 flex flex-col items-center gap-2 sm:mt-4 sm:flex-row sm:justify-center sm:gap-0">
         <Image
           src="/bubo/bubo-boas-vindas.webp"
           alt=""
@@ -44,12 +49,17 @@ export async function BuboWelcome() {
           height={1205}
           unoptimized
           priority
-          className="animate-rise-in mx-auto h-72 w-auto drop-shadow-2xl sm:h-[30rem] lg:h-[34rem]"
+          className="animate-rise-in h-72 w-auto shrink-0 drop-shadow-2xl sm:h-[30rem] lg:h-[34rem]"
         />
 
-        {/* A fala encosta no Bubo: o recorte tem ar sobrando dos dois lados,
-            então sem a margem negativa o rabicho ficaria apontando para o vazio. */}
-        <div className="animate-rise-in sm:-ml-10 lg:-ml-14" style={{ animationDelay: "120ms" }}>
+        {/* A fala fica ao lado do Bubo, sem montar em cima dele: a margem
+            negativa que havia aqui cobria a mão levantada inteira — justamente
+            o aceno que a tela está mostrando. O recorte é justo, então o
+            rabicho já aponta para ele sem precisar invadir. */}
+        <div
+          className="animate-rise-in w-full sm:ml-3 sm:w-[28rem] lg:ml-4 lg:w-[32rem]"
+          style={{ animationDelay: "120ms" }}
+        >
           {/* A fala sai na direção do Bubo: no empilhado o rabicho aponta para
               cima, e a partir de sm ele vira para a esquerda. */}
           <div className="relative rounded-3xl bg-white px-6 py-6 text-center shadow-2xl">
@@ -94,18 +104,12 @@ export async function BuboWelcome() {
                   História <span className="px-1 text-blue-300">+</span>
                 </>
               )}
-              {questions} perguntas <span className="px-1 text-blue-300">•</span> No seu ritmo
+              {questions} perguntas{" "}
+              <span className="px-1 text-blue-300">•</span> No seu ritmo
             </p>
           </form>
         </div>
       </div>
-
-      {/* A promessa que tira o medo de errar, e que o quiz cumpre: nenhuma
-          questão pune, e dá para refazer a fase quantas vezes quiser. */}
-      <p className="mt-6 flex flex-col items-center gap-1.5 text-center text-sm italic text-blue-100">
-        <HeartIcon className="size-6 not-italic" />
-        Pode tentar de novo. Eu te ajudo!
-      </p>
     </div>
   );
 }

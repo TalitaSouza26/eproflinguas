@@ -14,6 +14,7 @@ import { phaseHref, studentProgress } from "@/lib/student";
  */
 export async function ContinueCard() {
   const { current, phase, isNew } = await studentProgress();
+  const done = current.completedPhases;
 
   const COPY = isNew
     ? {
@@ -44,6 +45,30 @@ export async function ContinueCard() {
         <p className="mt-1.5 font-bold text-white">{COPY.lead}</p>
         <p className="mt-1.5 text-sm leading-relaxed text-blue-100">{COPY.body}</p>
 
+        {/* O avanço na trilha, para quem sai no meio e volta depois: a frase
+            diz onde ele está, a barra mostra o quanto já andou. Não aparece
+            para o recém-chegado, que não tem nada a mostrar ainda. */}
+        {!isNew && (
+          <div className="mt-4 flex items-center gap-3">
+            <div
+              role="progressbar"
+              aria-label={`Progresso na trilha ${current.title}`}
+              aria-valuenow={done}
+              aria-valuemin={0}
+              aria-valuemax={current.phases}
+              className="h-2.5 flex-1 overflow-hidden rounded-full bg-white/20"
+            >
+              <div
+                className="h-full rounded-full bg-accent-500 transition-[width] duration-500"
+                style={{ width: `${(done / current.phases) * 100}%` }}
+              />
+            </div>
+            <span className="shrink-0 text-xs font-bold text-blue-100">
+              {done} de {current.phases} fases
+            </span>
+          </div>
+        )}
+
         {/* O recém-chegado passa pelo Bubo antes da primeira pergunta; quem
             já estudou volta direto para onde parou. */}
         <Link
@@ -57,14 +82,23 @@ export async function ContinueCard() {
         </Link>
       </div>
 
+      {/* O Bubo encosta no canto e sai pela base do card, que corta o que
+          passa. É busto, não corpo inteiro: numa faixa larga e baixa como
+          esta, o rosto aparece grande — no corpo inteiro ele caberia na
+          altura e o rosto ficaria do tamanho de um polegar.
+
+          A altura é percentual e o pé passa da base de propósito: o card muda
+          de altura entre o aluno novo e o que já tem barra de progresso, e o
+          que sobra tem de sair por baixo — cortar o capelo em cima ficava
+          claramente errado. */}
       <Image
-        src="/bubo/bubo-aceno.webp"
+        src="/bubo/bubo-bust-aceno.webp"
         unoptimized
         alt=""
-        width={1122}
-        height={1402}
+        width={1013}
+        height={1257}
         priority
-        className="pointer-events-none absolute -bottom-2 right-8 hidden w-56 lg:block"
+        className="pointer-events-none absolute -bottom-6 right-4 hidden h-[108%] w-auto lg:block xl:right-10"
       />
     </section>
   );

@@ -7,13 +7,13 @@ const EMBERS = [
 ];
 
 /**
- * Fogo atrás da patente conquistada.
+ * Fogo atrás da divisão conquistada.
  *
  * Fica num componente só porque aparece em dois lugares — Home e Conquistas —
  * e o ritmo precisa ser o mesmo nos dois. Some para quem pede menos
  * movimento: é animação em laço, a que mais incomoda.
  */
-export function PatenteFlame({
+export function DivisaoFlame({
   glowClass = "size-28",
   embers = true,
 }: {
@@ -25,7 +25,7 @@ export function PatenteFlame({
     <>
       <span
         aria-hidden
-        className={`animate-patente-glow absolute rounded-full bg-accent-500 blur-2xl ${glowClass}`}
+        className={`animate-divisao-glow absolute rounded-full bg-accent-500 blur-2xl ${glowClass}`}
       />
       {embers &&
         EMBERS.map(({ left, delay, size }) => (

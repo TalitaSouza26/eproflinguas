@@ -11,7 +11,7 @@ import {
 /**
  * Fonte única das trilhas.
  *
- * Home, insígnias e quiz leem daqui. Antes cada tela tinha a própria lista e
+ * Home, conquistas e quiz leem daqui. Antes cada tela tinha a própria lista e
  * os percentuais da Home eram digitados à mão.
  *
  * Protótipo com as 6 trilhas do 1º–2º ano, na ordem obrigatória do currículo

@@ -1,16 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { insigniasFor } from "@/lib/insignias";
+import { conquistasFor } from "@/lib/conquistas";
 import { studentProgress } from "@/lib/student";
 
 /**
- * Insígnias conquistadas, na coluna lateral da Home.
+ * Conquistas conquistadas, na coluna lateral da Home.
  *
  * Empilhadas, uma por linha: a lista é curta e o nome não cabe legível em
  * miniatura lado a lado.
  */
 /**
- * Insígnias conquistadas, na coluna lateral da Home.
+ * Conquistas conquistadas, na coluna lateral da Home.
  *
  * Empilhadas, uma por linha: a lista é curta e o nome não cabe legível em
  * miniatura lado a lado.
@@ -21,13 +21,13 @@ import { studentProgress } from "@/lib/student";
  */
 export async function RecentBadges() {
   const { totalPhases } = await studentProgress();
-  const insignias = insigniasFor(totalPhases);
-  const earned = insignias.filter((i) => i.earned);
+  const conquistas = conquistasFor(totalPhases);
+  const earned = conquistas.filter((i) => i.earned);
 
   return (
     <section className="self-start rounded-2xl border border-ink-100 bg-white px-5 py-5">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-[15px] font-extrabold text-deep-900">Suas insígnias</h2>
+        <h2 className="text-[15px] font-extrabold text-deep-900">Suas conquistas</h2>
         <Link
           href="/conquistas"
           className="text-[13px] font-semibold text-blue-600 transition hover:text-blue-700
@@ -38,35 +38,35 @@ export async function RecentBadges() {
       </div>
 
       <ul className="space-y-3">
-        {insignias.map((insignia) => (
-          <li key={insignia.id} className="flex items-center gap-3">
+        {conquistas.map((conquista) => (
+          <li key={conquista.id} className="flex items-center gap-3">
             <Image
-              src={insignia.image}
+              src={conquista.image}
               unoptimized
               alt=""
               width={512}
               height={512}
-              className={`w-11 shrink-0 ${insignia.earned ? "" : "opacity-40 grayscale"}`}
+              className={`w-11 shrink-0 ${conquista.earned ? "" : "opacity-40 grayscale"}`}
             />
 
-            {/* Sem a data: na Home o que importa é qual insígnia o aluno tem,
+            {/* Sem a data: na Home o que importa é qual conquista o aluno tem,
                 não em que dia ela caiu. O histórico fica em Conquistas. */}
             <div className="min-w-0 flex-1">
               <p
                 className={`truncate text-[13px] font-bold ${
-                  insignia.earned ? "text-deep-900" : "text-ink-500"
+                  conquista.earned ? "text-deep-900" : "text-ink-500"
                 }`}
               >
-                {insignia.name}
+                {conquista.name}
               </p>
-              <p className="truncate text-[11px] text-ink-500">{insignia.condition}</p>
+              <p className="truncate text-[11px] text-ink-500">{conquista.condition}</p>
             </div>
           </li>
         ))}
       </ul>
 
       <p className="mt-4 text-center text-[11px] text-ink-500">
-        {earned.length} de {insignias.length} conquistadas
+        {earned.length} de {conquistas.length} conquistadas
       </p>
     </section>
   );
