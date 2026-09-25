@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -16,7 +16,7 @@ import { cancelSpeech, speakParts, splitBilingual, togglePause } from "@/lib/spe
 import { phrasesInStory, type Story } from "@/lib/quiz/stories";
 
 const CTA =
-  "inline-flex items-center justify-center gap-3 rounded-full bg-accent-500 px-10 py-4 text-xl font-extrabold " +
+  "inline-flex items-center justify-center gap-2.5 rounded-full bg-accent-500 px-7 py-4 text-lg font-extrabold " +
   "text-white shadow-2xl shadow-black/30 transition hover:bg-accent-600 focus-visible:outline-4 " +
   "focus-visible:outline-offset-4 focus-visible:outline-white";
 
@@ -55,6 +55,11 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
   const [index, setIndex] = useState(-1);
   const [playing, setPlaying] = useState(false);
   const [paused, setPaused] = useState(false);
+
+  // Cancelar a fala anterior antes de começar outra. Sem isso, o fim da fala
+  // velha chegava depois do início da nova e desligava o estado de tocando —
+  // o botão passava a mentir.
+  const stopSpeech = useRef<() => void>(() => {});
   const total = story.beats.length;
   const phrases = phrasesInStory(story);
   const beat = index >= 0 && index < total ? story.beats[index] : undefined;
@@ -82,18 +87,27 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
   // Cada cena fala ao entrar e depois espera. Avançar é sempre do aluno: um
   // avanço automático tiraria dele o "ouvir de novo", que é o botão que mais
   // importa para quem ainda está pegando o som das palavras.
+  const play = useCallback(
+    (b: NonNullable<typeof beat>) => {
+      stopSpeech.current();
+      setPlaying(true);
+      setPaused(false);
+      stopSpeech.current = speakParts(partsFor(b), () => setPlaying(false));
+    },
+    [partsFor],
+  );
+
   useEffect(() => {
     if (!beat) return;
 
-    setPlaying(true);
-    setPaused(false);
-    const stop = speakParts(partsFor(beat), () => setPlaying(false));
+    play(beat);
 
     return () => {
-      stop();
+      stopSpeech.current();
       setPlaying(false);
+      setPaused(false);
     };
-  }, [beat, partsFor]);
+  }, [beat, play]);
 
   /** Um botão só para as três situações: tocando, pausado e parado. */
   function playPause() {
@@ -104,9 +118,7 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
       return;
     }
 
-    setPlaying(true);
-    setPaused(false);
-    speakParts(partsFor(beat), () => setPlaying(false));
+    play(beat);
   }
 
   useEffect(() => cancelSpeech, []);
@@ -234,17 +246,21 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
             )}
 
             {/* Voltar, ouvir e seguir — nessa ordem, que é a do tempo: a cena
-                que passou, a que está tocando, a próxima. */}
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+                que passou, a que está tocando, a próxima.
+
+                Os três têm largura reservada e não quebram linha: o botão do
+                meio troca de rótulo três vezes, e sem isso o card mudava de
+                altura no meio da cena, parecendo outra tela. */}
+            <div className="mt-7 flex flex-nowrap items-center justify-center gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={back}
                 disabled={index === 0}
                 aria-label="Voltar para a cena anterior"
-                className="inline-flex items-center gap-2 rounded-full bg-ink-50 px-5 py-3.5 text-base
-                           font-bold text-ink-700 transition hover:bg-ink-100 disabled:cursor-not-allowed
-                           disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2
-                           focus-visible:outline-blue-500"
+                className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-ink-50
+                           px-4 py-3.5 text-base font-bold text-ink-700 transition hover:bg-ink-100
+                           disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2
+                           focus-visible:outline-offset-2 focus-visible:outline-blue-500 sm:px-5"
               >
                 <ArrowLeftIcon className="size-5" />
                 Voltar
@@ -253,9 +269,10 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
               <button
                 type="button"
                 onClick={playPause}
-                className="inline-flex items-center gap-2.5 rounded-full bg-blue-50 px-6 py-3.5 text-base
-                           font-bold text-blue-700 transition hover:bg-blue-100 focus-visible:outline-2
-                           focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                className="inline-flex w-[8.5rem] shrink-0 items-center justify-center gap-2 whitespace-nowrap
+                           rounded-full bg-blue-50 py-3.5 text-base font-bold text-blue-700 transition
+                           hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2
+                           focus-visible:outline-blue-500 sm:w-[9.5rem] sm:gap-2.5"
               >
                 {playing && !paused ? (
                   <>
@@ -265,12 +282,12 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
                 ) : (
                   <>
                     <ReplayIcon className="size-5" />
-                    {paused ? "Retomar" : "Ouvir de novo"}
+                    {paused ? "Retomar" : "Ouvir"}
                   </>
                 )}
               </button>
 
-              <button type="button" onClick={next} className={CTA}>
+              <button type="button" onClick={next} className={`${CTA} shrink-0 whitespace-nowrap`}>
                 {beat.kind === "lesson" ? "Eu falei!" : "Continuar"}
                 <ArrowRightIcon className="size-5" />
               </button>
