@@ -27,6 +27,25 @@ export function cancelSpeech() {
 }
 
 /**
+ * Pausa ou retoma a fala em curso.
+ *
+ * Devolve o novo estado: `true` quando ficou pausada. Se não havia nada
+ * falando, não faz nada e devolve `false`.
+ */
+export function togglePause(): boolean {
+  const synth = typeof window === "undefined" ? undefined : window.speechSynthesis;
+  if (!synth || !synth.speaking) return false;
+
+  if (synth.paused) {
+    synth.resume();
+    return false;
+  }
+
+  synth.pause();
+  return true;
+}
+
+/**
  * Fala os pedaços em sequência e avisa no fim.
  *
  * Devolve uma função de cancelamento: sair da cena no meio da fala deixaria

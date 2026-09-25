@@ -3,8 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRightIcon, BookIcon, PlayIcon, ReplayIcon, SpeakerIcon } from "@/components/ui/icons";
-import { cancelSpeech, speakParts, splitBilingual } from "@/lib/speech";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  BookIcon,
+  PauseIcon,
+  PlayIcon,
+  ReplayIcon,
+  SpeakerIcon,
+} from "@/components/ui/icons";
+import { cancelSpeech, speakParts, splitBilingual, togglePause } from "@/lib/speech";
 import { phrasesInStory, type Story } from "@/lib/quiz/stories";
 
 const CTA =
@@ -45,15 +53,29 @@ function Narration({ text }: { text: string }) {
 export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: string }) {
   // -1 é a capa; story.beats.length é o fim.
   const [index, setIndex] = useState(-1);
+  const [playing, setPlaying] = useState(false);
+  const [paused, setPaused] = useState(false);
   const total = story.beats.length;
   const phrases = phrasesInStory(story);
   const beat = index >= 0 && index < total ? story.beats[index] : undefined;
 
   const next = useCallback(() => setIndex((i) => i + 1), []);
+  const back = useCallback(() => setIndex((i) => Math.max(0, i - 1)), []);
+
+  // A palavra sai sem as reticências: o sintetizador lê "My name is…" como
+  // uma frase interrompida.
+  const spoken = (word: string) => word.replace(/…/g, "");
 
   const partsFor = useCallback(
     (b: NonNullable<typeof beat>) =>
-      b.kind === "narration" ? splitBilingual(b.text) : [{ text: b.word, lang: "en-US" as const }],
+      b.kind === "narration"
+        ? splitBilingual(b.text)
+        : // O convite vem falado, e não só escrito na tela: é a criança que
+          // ainda não lê que mais precisa saber que agora é a vez dela.
+          [
+            { text: "Repita comigo:", lang: "pt-BR" as const },
+            { text: spoken(b.word), lang: "en-US" as const },
+          ],
     [],
   );
 
@@ -62,8 +84,30 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
   // importa para quem ainda está pegando o som das palavras.
   useEffect(() => {
     if (!beat) return;
-    return speakParts(partsFor(beat));
+
+    setPlaying(true);
+    setPaused(false);
+    const stop = speakParts(partsFor(beat), () => setPlaying(false));
+
+    return () => {
+      stop();
+      setPlaying(false);
+    };
   }, [beat, partsFor]);
+
+  /** Um botão só para as três situações: tocando, pausado e parado. */
+  function playPause() {
+    if (!beat) return;
+
+    if (playing) {
+      setPaused(togglePause());
+      return;
+    }
+
+    setPlaying(true);
+    setPaused(false);
+    speakParts(partsFor(beat), () => setPlaying(false));
+  }
 
   useEffect(() => cancelSpeech, []);
 
@@ -171,7 +215,7 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
 
                 <button
                   type="button"
-                  onClick={() => speakParts(partsFor(beat))}
+                  onClick={() => speakParts([{ text: spoken(beat.word), lang: "en-US" }])}
                   aria-label={`Ouvir ${beat.word} de novo`}
                   className="flex items-center gap-3 rounded-2xl px-4 py-2 text-4xl font-extrabold
                              text-deep-900 transition hover:bg-blue-50 focus-visible:outline-2
@@ -189,18 +233,41 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
               </div>
             )}
 
-            {/* Ouvir de novo antes de continuar: a ordem na tela é a ordem em
-                que a criança usa. */}
+            {/* Voltar, ouvir e seguir — nessa ordem, que é a do tempo: a cena
+                que passou, a que está tocando, a próxima. */}
             <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
               <button
                 type="button"
-                onClick={() => beat && speakParts(partsFor(beat))}
+                onClick={back}
+                disabled={index === 0}
+                aria-label="Voltar para a cena anterior"
+                className="inline-flex items-center gap-2 rounded-full bg-ink-50 px-5 py-3.5 text-base
+                           font-bold text-ink-700 transition hover:bg-ink-100 disabled:cursor-not-allowed
+                           disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2
+                           focus-visible:outline-blue-500"
+              >
+                <ArrowLeftIcon className="size-5" />
+                Voltar
+              </button>
+
+              <button
+                type="button"
+                onClick={playPause}
                 className="inline-flex items-center gap-2.5 rounded-full bg-blue-50 px-6 py-3.5 text-base
                            font-bold text-blue-700 transition hover:bg-blue-100 focus-visible:outline-2
                            focus-visible:outline-offset-2 focus-visible:outline-blue-500"
               >
-                <ReplayIcon className="size-5" />
-                Ouvir de novo
+                {playing && !paused ? (
+                  <>
+                    <PauseIcon className="size-5" />
+                    Pausar
+                  </>
+                ) : (
+                  <>
+                    <ReplayIcon className="size-5" />
+                    {paused ? "Retomar" : "Ouvir de novo"}
+                  </>
+                )}
               </button>
 
               <button type="button" onClick={next} className={CTA}>
