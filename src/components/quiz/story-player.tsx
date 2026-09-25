@@ -305,14 +305,14 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
       {index >= total && (
         <>
           <Image
-            src="/bubo/bubo-boas-vindas.webp"
+            src="/bubo/bubo-sua-vez.webp"
             alt=""
-            width={346}
-            height={539}
+            width={795}
+            height={1205}
             unoptimized
-            className="animate-rise-in h-56 w-auto drop-shadow-2xl"
+            className="animate-rise-in h-72 w-auto drop-shadow-2xl sm:h-[26rem]"
           />
-          <p className="animate-rise-in text-2xl font-extrabold text-white sm:text-3xl">
+          <p className="animate-rise-in text-3xl font-extrabold text-white sm:text-4xl">
             Agora é a sua vez!
           </p>
           <Link href={quizHref} className={`${CTA} animate-cta-call`}>
