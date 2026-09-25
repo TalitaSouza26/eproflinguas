@@ -67,13 +67,13 @@ Sem `meaning_word` e sem `sentence_gap`: nesta faixa o aluno ainda não produz e
 
 Cumprimento não é substantivo desenhável — um sol na tela poderia ser *sun*, *day* ou *morning*, e a questão teria mais de uma resposta defensável. Esta trilha ensina por **história narrada**, e a escada é outra.
 
-**Cada fase é uma história e três perguntas.** A história apresenta três expressões, com uma pausa em cada uma para a criança repetir em voz alta; o quiz logo depois cobra exatamente essas três. Em blocos maiores a criança ouvia seis palavras de uma vez e ia responder sobre a primeira quatro cenas depois — distância demais nessa idade.
+**A trilha tem uma história só, contada em partes.** "Um novo amigo" é um dia na vida da Sofia, dividido em três: cada fase abre com uma parte, que apresenta três expressões com uma pausa em cada para a criança repetir em voz alta, e o quiz logo depois cobra exatamente essas três. Contada de uma vez, a criança ouviria nove palavras seguidas e responderia sobre a primeira muitas cenas depois.
 
-| Fase | História | Ensina | Questões |
+| Fase | Parte da história | Ensina | Questões |
 | --- | --- | --- | --- |
-| 1 | Um novo amigo | Hello, My name is, Good morning | 3 |
-| 2 | No recreio | Please, Thank you, You're welcome | 3 |
-| 3 | Até amanhã! | Sorry, Goodbye, Good night | 3 |
+| 1 | 1 — a manhã, o encontro | Hello, My name is, Good morning | 3 |
+| 2 | 2 — o recreio | Please, Thank you, You're welcome | 3 |
+| 3 | 3 — o fim do dia | Sorry, Goodbye, Good night | 3 |
 | 4 | — | revisão das nove | 9 |
 
 A fase 4 não tem história: é a revisão que fecha a trilha. Sem narração dividindo o tempo, cabem as nove expressões com uma questão cada — dá o mesmo par de minutos de uma fase com história e três perguntas.

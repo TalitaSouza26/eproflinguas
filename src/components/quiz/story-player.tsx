@@ -13,7 +13,7 @@ import {
   SpeakerIcon,
 } from "@/components/ui/icons";
 import { cancelSpeech, speakParts, splitBilingual, togglePause } from "@/lib/speech";
-import { phrasesInStory, type Story } from "@/lib/quiz/stories";
+import { partsInTrack, phrasesInStory, type Story } from "@/lib/quiz/stories";
 
 /**
  * Moldura das ilustrações.
@@ -75,6 +75,7 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
   const stopSpeech = useRef<() => void>(() => {});
   const total = story.beats.length;
   const phrases = phrasesInStory(story);
+  const parts = partsInTrack(story.slug);
   const beat = index >= 0 && index < total ? story.beats[index] : undefined;
 
   const next = useCallback(() => setIndex((i) => i + 1), []);
@@ -156,8 +157,9 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
             </div>
 
             <div className="px-6 pb-6 pt-2 text-left sm:py-8 sm:pl-4 sm:pr-8">
+              {/* A história é uma só; o que muda é a parte. */}
               <p className="inline-flex rounded-full bg-blue-50 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-700">
-                História {story.number}
+                Parte {story.part} de {parts}
               </p>
 
               <h1 className="mt-4 text-3xl font-extrabold leading-tight text-deep-900 sm:text-4xl">

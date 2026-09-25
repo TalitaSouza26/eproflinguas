@@ -1,10 +1,11 @@
 /**
- * Histórias de abertura de fase.
+ * A história da trilha, contada em partes.
  *
- * Uma por fase, não uma por trilha: a história apresenta três expressões e o
- * quiz da mesma fase cobra essas três. Em um bloco só, a criança ouvia seis
- * palavras de uma vez e ia responder sobre a primeira quatro cenas depois —
- * distância demais para quem tem 6 anos.
+ * É **uma** história — um dia na vida da Sofia —, dividida em partes: cada
+ * fase abre com uma parte e o quiz logo depois cobra as três expressões que
+ * ela ensinou. Contada de uma vez, a criança ouviria nove palavras seguidas e
+ * responderia sobre a primeira muitas cenas depois; em partes, a pergunta vem
+ * enquanto a cena ainda está fresca.
  *
  * A história tem dois tipos de momento. O narrado leva a cena adiante; o de
  * ensino para tudo, mostra a palavra e pede que a criança repita em voz alta —
@@ -35,12 +36,13 @@ export type StoryBeat =
 
 export type Story = {
   slug: string;
-  /** Fase da trilha a que esta história pertence. */
+  /** Fase da trilha a que esta parte pertence. */
   phase: number;
-  /** Posição da história na trilha, mostrada na capa. */
-  number: number;
+  /** Qual parte da história é esta. */
+  part: number;
+  /** Título da história inteira — o mesmo em todas as partes. */
   title: string;
-  /** Uma linha sobre o que vai acontecer, dita na capa. */
+  /** O que acontece nesta parte, dito na capa. */
   subtitle: string;
   /** Ilustração da capa. A cena, não o mascote. */
   cover: string;
@@ -48,7 +50,7 @@ export type Story = {
 };
 
 /**
- * Trilha "Primeiras palavras", fase 1.
+ * Parte 1 — a manhã.
  *
  * A premissa faz o trabalho pesado: Ethan não fala português. O inglês não
  * aparece porque o app mandou, aparece porque é o único jeito de duas crianças
@@ -62,9 +64,9 @@ export type Story = {
 const NOVO_AMIGO: Story = {
   slug: "primeiras-palavras",
   phase: 1,
-  number: 1,
+  part: 1,
   title: "Um novo amigo",
-  subtitle: "Sofia vai aprender as primeiras frases em inglês junto com você.",
+  subtitle: "Sofia conhece um menino que ainda não fala português.",
   cover: "/stories/novo-amigo-capa.webp",
   beats: [
     {
@@ -99,7 +101,7 @@ const NOVO_AMIGO: Story = {
 };
 
 /**
- * Fase 2 — o recreio.
+ * Parte 2 — o recreio.
  *
  * O trio é o da boa educação, e ele se encadeia sozinho: pedir, agradecer,
  * responder ao agradecimento. Ensina Please, Thank you e You're welcome.
@@ -107,9 +109,9 @@ const NOVO_AMIGO: Story = {
 const NO_RECREIO: Story = {
   slug: "primeiras-palavras",
   phase: 2,
-  number: 2,
-  title: "No recreio",
-  subtitle: "Ethan precisa de ajuda e Sofia aprende a ser educada em inglês.",
+  part: 2,
+  title: "Um novo amigo",
+  subtitle: "No recreio, Ethan precisa de ajuda — e Sofia aprende a ser educada em inglês.",
   cover: "/stories/recreio-brincar.webp",
   beats: [
     {
@@ -139,7 +141,7 @@ const NO_RECREIO: Story = {
 };
 
 /**
- * Fase 3 — o fim do dia.
+ * Parte 3 — o fim do dia.
  *
  * Fecha o dia inteiro: o esbarrão, a despedida na porta e a hora de dormir.
  * Ensina Sorry, Goodbye e Good night.
@@ -147,8 +149,8 @@ const NO_RECREIO: Story = {
 const ATE_AMANHA: Story = {
   slug: "primeiras-palavras",
   phase: 3,
-  number: 3,
-  title: "Até amanhã!",
+  part: 3,
+  title: "Um novo amigo",
   subtitle: "O dia acaba, e Sofia se despede do novo amigo.",
   cover: "/stories/ate-amanha-goodbye.webp",
   beats: [
@@ -178,6 +180,11 @@ const ATE_AMANHA: Story = {
 };
 
 const STORIES: Story[] = [NOVO_AMIGO, NO_RECREIO, ATE_AMANHA];
+
+/** Em quantas partes a história da trilha é contada. */
+export function partsInTrack(slug: string): number {
+  return STORIES.filter((s) => s.slug === slug).length;
+}
 
 export function storyForTrack(slug: string, phase = 1): Story | undefined {
   return STORIES.find((s) => s.slug === slug && s.phase === phase);
