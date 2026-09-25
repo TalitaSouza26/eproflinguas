@@ -13,15 +13,16 @@ import { studentProgress } from "@/lib/student";
  * Insígnias conquistadas, na coluna lateral da Home.
  *
  * Empilhadas, uma por linha: a lista é curta e o nome não cabe legível em
- * miniatura lado a lado. Quem ainda não ganhou nenhuma vê as oito apagadas,
- * com a condição à mostra — é o cardápio do que dá para perseguir, e some
- * assim que a primeira cai.
+ * miniatura lado a lado.
+ *
+ * Aparecem sempre as oito, conquistadas ou não. A apagada ao lado da
+ * conquistada é o que mostra à criança o que ainda dá para perseguir — some a
+ * lista e a conquista vira um item solto, sem tamanho.
  */
 export async function RecentBadges() {
   const { totalPhases } = await studentProgress();
   const insignias = insigniasFor(totalPhases);
   const earned = insignias.filter((i) => i.earned);
-  const shown = earned.length > 0 ? earned : insignias;
 
   return (
     <section className="self-start rounded-2xl border border-ink-100 bg-white px-5 py-5">
@@ -37,7 +38,7 @@ export async function RecentBadges() {
       </div>
 
       <ul className="space-y-3">
-        {shown.map((insignia) => (
+        {insignias.map((insignia) => (
           <li key={insignia.id} className="flex items-center gap-3">
             <Image
               src={insignia.image}
