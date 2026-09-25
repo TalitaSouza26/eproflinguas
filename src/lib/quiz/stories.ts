@@ -13,9 +13,8 @@
  *
  * Nem toda fase tem história. Sem ela, a fase abre direto na questão 1.
  *
- * TODO: faltam duas cenas da fase 3 — a noite em casa, com o "Good night", e o
- * fecho. Cada `image` vira uma arte quando ela existir, e a locução vira voz
- * gravada.
+ * TODO: falta a ilustração do fecho da fase 3. Cada `image` vira uma arte
+ * quando ela existir, e a locução vira voz gravada.
  */
 
 export type StoryBeat =
@@ -168,6 +167,7 @@ const ATE_AMANHA: Story = {
     {
       kind: "narration",
       text: "À noite, Sofia contou tudo para a mãe e aprendeu mais uma: em inglês, boa noite é *Good night*.",
+      image: "/stories/ate-amanha-good-night.webp",
     },
     { kind: "lesson", word: "Good night", meaning: "Boa noite" },
     {
