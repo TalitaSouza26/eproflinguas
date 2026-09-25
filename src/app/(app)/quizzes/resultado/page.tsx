@@ -97,13 +97,13 @@ export default async function ResultadoPage({
           <BadgeAward insignia={badge} />
         ) : (
           <Image
-            src="/bubo/bubo-pointing.webp"
+            src="/bubo/bubo-quiz-feito.webp"
             alt="Bubo, o mascote do eProf Línguas"
-            width={1122}
-            height={1402}
+            width={773}
+            height={1184}
             unoptimized
             priority
-            className="mx-auto w-32"
+            className="animate-badge-pop mx-auto w-36"
           />
         )}
 
