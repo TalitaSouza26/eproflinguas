@@ -13,7 +13,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Escola",
     prompt: "Book",
-    audioText: "book",
     choices: [
       { id: "a", label: "Caderno" },
       { id: "b", label: "Livro" },
@@ -29,7 +28,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Escola",
     prompt: "Pencil",
-    audioText: "pencil",
     choices: [
       { id: "a", label: "Borracha" },
       { id: "b", label: "Régua" },
@@ -47,7 +45,6 @@ const RAW: unknown[] = [
     prompt: "What is this?",
     promptTranslation: "O que é isto?",
     imageUrl: "/quiz/house.webp",
-    audioText: "house",
     choices: [
       { id: "a", label: "School" },
       { id: "b", label: "House" },
@@ -65,7 +62,6 @@ const RAW: unknown[] = [
     prompt: "What is this?",
     promptTranslation: "O que é isto?",
     imageUrl: "/quiz/flower.webp",
-    audioText: "flower",
     choices: [
       { id: "a", label: "Tree" },
       { id: "b", label: "Grass" },
@@ -81,7 +77,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Cores",
     prompt: "Blue",
-    audioText: "blue",
     choices: [
       { id: "a", label: "Verde" },
       { id: "b", label: "Azul" },
@@ -97,7 +92,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Escola",
     prompt: "Teacher",
-    audioText: "teacher",
     choices: [
       { id: "a", label: "Aluno" },
       { id: "b", label: "Diretor" },
@@ -143,7 +137,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Rotina",
     prompt: "To sleep",
-    audioText: "to sleep",
     choices: [
       { id: "a", label: "Comer" },
       { id: "b", label: "Correr" },
@@ -159,7 +152,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Números",
     prompt: "Seven",
-    audioText: "seven",
     choices: [
       { id: "a", label: "Cinco" },
       { id: "b", label: "Sete" },

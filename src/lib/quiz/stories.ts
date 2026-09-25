@@ -8,7 +8,7 @@
  * enquanto a cena ainda está fresca.
  *
  * A história tem dois tipos de momento. O narrado leva a cena adiante; o de
- * ensino para tudo, mostra a palavra e pede que a criança repita em voz alta —
+ * ensino para tudo e mostra a palavra com o que ela quer dizer —
  * é o único lugar do produto onde ela **fala**, e nessa faixa produção oral
  * vem antes da leitura.
  *

@@ -1,10 +1,10 @@
 import { CASA_FAMILIA_PHASES, type Word } from "@/lib/quiz/casa-familia";
 
 /**
- * A galeria "Olha e escuta".
+ * A galeria "Olha e aprende".
  *
  * É o que abre uma fase que não tem história: os cartões das palavras novas,
- * uma por vez, figura grande e o áudio. Serve às trilhas de substantivo
+ * uma por vez, com a figura grande. Serve às trilhas de substantivo
  * concreto — casa, escola, animais, comida —, onde a figura já é a definição e
  * uma narrativa só adiaria a palavra.
  *

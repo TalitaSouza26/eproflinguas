@@ -99,7 +99,7 @@ export async function needsIntro(): Promise<boolean> {
  * Para onde mandar o aluno estudar.
  *
  * Uma fase pode abrir de três jeitos: com a história da trilha narrada, com a
- * galeria "Olha e escuta" das trilhas visuais, ou direto na primeira questão.
+ * galeria "Olha e aprende" das trilhas visuais, ou direto na primeira questão.
  * Quem chama nunca precisa saber qual — Home, menu e "continuar" perguntam
  * aqui e seguem o link.
  */

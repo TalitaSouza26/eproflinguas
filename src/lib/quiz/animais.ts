@@ -8,9 +8,7 @@ import { questionSchema, type Question } from "@/lib/quiz/types";
  *
  * A fase deveria ser `image_word` inteira, mas só existem duas imagens no
  * acervo. As outras oito rodam em `word_meaning` até as figuras chegarem.
- *
- * As duas de imagem não têm `audioText`: ali o botão de ouvir do enunciado
- * pronunciaria a própria resposta.
+
  *
  * TODO: sai daqui quando o banco entrar.
  */
@@ -54,7 +52,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Animais",
     prompt: "Bird",
-    audioText: "bird",
     choices: [
       { id: "a", label: "Peixe" },
       { id: "b", label: "Pássaro" },
@@ -70,7 +67,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Animais",
     prompt: "Fish",
-    audioText: "fish",
     choices: [
       { id: "a", label: "Peixe" },
       { id: "b", label: "Pato" },
@@ -86,7 +82,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Animais",
     prompt: "Cow",
-    audioText: "cow",
     choices: [
       { id: "a", label: "Cavalo" },
       { id: "b", label: "Porco" },
@@ -102,7 +97,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Animais",
     prompt: "Horse",
-    audioText: "horse",
     choices: [
       { id: "a", label: "Cachorro" },
       { id: "b", label: "Cavalo" },
@@ -118,7 +112,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Animais",
     prompt: "Pig",
-    audioText: "pig",
     choices: [
       { id: "a", label: "Pato" },
       { id: "b", label: "Rato" },
@@ -134,7 +127,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Animais",
     prompt: "Duck",
-    audioText: "duck",
     choices: [
       { id: "a", label: "Pato" },
       { id: "b", label: "Vaca" },
@@ -150,7 +142,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Animais",
     prompt: "Rabbit",
-    audioText: "rabbit",
     choices: [
       { id: "a", label: "Rato" },
       { id: "b", label: "Porco" },
@@ -166,7 +157,6 @@ const RAW: unknown[] = [
     format: "word_meaning",
     topic: "Animais",
     prompt: "Mouse",
-    audioText: "mouse",
     choices: [
       { id: "a", label: "Cachorro" },
       { id: "b", label: "Rato" },

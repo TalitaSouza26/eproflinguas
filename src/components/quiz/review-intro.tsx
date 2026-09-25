@@ -1,9 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SpeakButton } from "@/components/quiz/speak-button";
 import { ArrowRightIcon, PlayIcon } from "@/components/ui/icons";
-
-export const REVIEW_LINE = "Vamos revisar o que você aprendeu?";
 
 /**
  * Abertura da fase de revisão.
@@ -15,7 +12,13 @@ export const REVIEW_LINE = "Vamos revisar o que você aprendeu?";
  * Aqui o Bubo cumpre o mesmo papel que a história cumpre nas outras fases —
  * dizer o que vem — e a contagem de perguntas prepara para o tamanho.
  */
-export function ReviewIntro({ questions, quizHref }: { questions: number; quizHref: string }) {
+export function ReviewIntro({
+  questions,
+  quizHref,
+}: {
+  questions: number;
+  quizHref: string;
+}) {
   return (
     <div className="relative z-10 w-full max-w-4xl">
       <header className="text-center">
@@ -38,7 +41,10 @@ export function ReviewIntro({ questions, quizHref }: { questions: number; quizHr
           className="animate-rise-in mx-auto h-64 w-auto drop-shadow-2xl sm:h-[26rem]"
         />
 
-        <div className="animate-rise-in sm:-ml-10 lg:-ml-14" style={{ animationDelay: "120ms" }}>
+        <div
+          className="animate-rise-in sm:-ml-10 lg:-ml-14"
+          style={{ animationDelay: "120ms" }}
+        >
           <div className="relative rounded-3xl bg-white px-6 py-6 text-center shadow-2xl">
             <span
               aria-hidden
@@ -49,16 +55,6 @@ export function ReviewIntro({ questions, quizHref }: { questions: number; quizHr
             <p className="text-2xl font-extrabold leading-snug text-deep-900 sm:text-3xl">
               Vamos revisar o que você aprendeu?
             </p>
-
-            <SpeakButton
-              text={REVIEW_LINE}
-              label="Ouvir o Bubo"
-              iconClassName="size-6"
-              className="mt-4 gap-2.5 rounded-full bg-blue-50 px-6 py-3 text-lg font-bold text-blue-700
-                         hover:bg-blue-100 focus-visible:outline-blue-500"
-            >
-              Ouvir
-            </SpeakButton>
           </div>
 
           <div className="mt-6 text-center">
@@ -74,7 +70,9 @@ export function ReviewIntro({ questions, quizHref }: { questions: number; quizHr
             </Link>
 
             <p className="mt-3 text-sm font-semibold text-blue-100">
-              {questions} perguntas <span className="px-1 text-blue-300">•</span> tudo o que você já viu
+              {questions} perguntas{" "}
+              <span className="px-1 text-blue-300">•</span> tudo o que você já
+              viu
             </p>
           </div>
         </div>

@@ -53,8 +53,6 @@ const baseQuestion = z.object({
   explanation: z.string().min(1).max(140),
   /** Apoio opcional do Bubo, disponível antes de confirmar. */
   hint: z.string().max(140).optional(),
-  /** Palavra/frase em inglês que o botão de áudio pronuncia, quando houver. */
-  audioText: z.string().max(140).optional(),
   /** Tradução do enunciado, exibida abaixo dele. */
   promptTranslation: z.string().max(120).optional(),
 });

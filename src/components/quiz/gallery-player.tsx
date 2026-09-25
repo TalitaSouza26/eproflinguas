@@ -2,60 +2,38 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { QuizImage } from "@/components/quiz/quiz-image";
-import { ArrowLeftIcon, ArrowRightIcon, PlayIcon, SpeakerIcon } from "@/components/ui/icons";
+import { ArrowLeftIcon, ArrowRightIcon, PlayIcon } from "@/components/ui/icons";
 import type { Gallery } from "@/lib/quiz/galeria";
 
 /**
- * A galeria "Olha e escuta" — a abertura das fases sem história.
+ * A galeria "Olha e aprende" — a abertura das fases sem história.
  *
- * Um cartão por palavra: a figura grande, a palavra em inglês, o que ela quer
- * dizer e o botão de ouvir. A criança anda no próprio ritmo e pode voltar.
+ * Chamava-se "Olha e escuta" enquanto a palavra era falada ao abrir o cartão.
+ * Sem áudio no produto, o nome mandava a criança fazer algo que a tela não
+ * faz mais.
  *
- * A palavra em inglês é falada sozinha ao abrir cada cartão. É o contrário da
- * regra do resto do app, onde nada toca sem o aluno pedir — aqui vale porque a
- * criança já apertou "Começar" sabendo que vem som, e porque numa galeria de
- * vocabulário ouvir a palavra **é** o conteúdo: deixar isso a cargo de um
- * segundo toque faria metade das crianças passar batido pela pronúncia.
+ * Um cartão por palavra: a figura grande, a palavra em inglês e o que ela quer
+ * dizer. A criança anda no próprio ritmo e pode voltar.
+ *
+ * Sem áudio. O sintetizador do navegador saiu do produto inteiro — erra a
+ * prosódia do inglês infantil e troca de voz a cada aparelho. A pronúncia
+ * volta quando houver voz gravada.
  */
-export function GalleryPlayer({ gallery, quizHref }: { gallery: Gallery; quizHref: string }) {
+export function GalleryPlayer({
+  gallery,
+  quizHref,
+}: {
+  gallery: Gallery;
+  quizHref: string;
+}) {
   const [index, setIndex] = useState(0);
   const [started, setStarted] = useState(false);
 
   const total = gallery.words.length;
   const word = gallery.words[index];
   const isLast = index === total - 1;
-
-  // A fala do cartão anterior precisa parar antes da próxima começar, senão as
-  // duas se sobrepõem em quem avança rápido.
-  const spoken = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!started) return;
-
-    const synth = window.speechSynthesis;
-    if (!synth || spoken.current === word.en) return;
-
-    synth.cancel();
-    const utterance = new SpeechSynthesisUtterance(word.en);
-    utterance.lang = "en-US";
-    utterance.rate = 0.85;
-    synth.speak(utterance);
-    spoken.current = word.en;
-  }, [started, word.en]);
-
-  useEffect(() => () => window.speechSynthesis?.cancel(), []);
-
-  function speak() {
-    const synth = window.speechSynthesis;
-    if (!synth) return;
-    synth.cancel();
-    const utterance = new SpeechSynthesisUtterance(word.en);
-    utterance.lang = "en-US";
-    utterance.rate = 0.85;
-    synth.speak(utterance);
-  }
 
   if (!started) {
     return (
@@ -91,7 +69,7 @@ export function GalleryPlayer({ gallery, quizHref }: { gallery: Gallery; quizHre
                            sm:-left-2 sm:top-[42%] sm:translate-x-0"
               />
               <p className="text-2xl font-extrabold leading-snug text-deep-900 sm:text-3xl">
-                Olha e escuta!
+                Olha e aprende!
               </p>
               <p className="mt-2 text-base text-ink-500">
                 {total} palavras novas. Depois é a sua vez.
@@ -138,7 +116,11 @@ export function GalleryPlayer({ gallery, quizHref }: { gallery: Gallery; quizHre
           <span
             key={w.en}
             className={`h-2.5 rounded-full transition-all ${
-              i === index ? "w-8 bg-accent-500" : i < index ? "w-2.5 bg-white/70" : "w-2.5 bg-white/25"
+              i === index
+                ? "w-8 bg-accent-500"
+                : i < index
+                  ? "w-2.5 bg-white/70"
+                  : "w-2.5 bg-white/25"
             }`}
           />
         ))}
@@ -153,20 +135,10 @@ export function GalleryPlayer({ gallery, quizHref }: { gallery: Gallery; quizHre
           className="mx-auto h-56 w-auto object-contain sm:h-64"
         />
 
-        <p className="mt-5 text-4xl font-extrabold text-deep-900 sm:text-5xl">{word.en}</p>
+        <p className="mt-5 text-4xl font-extrabold text-deep-900 sm:text-5xl">
+          {word.en}
+        </p>
         <p className="mt-1 text-lg text-ink-500">{word.pt}</p>
-
-        <button
-          type="button"
-          onClick={speak}
-          aria-label={`Ouvir ${word.en} de novo`}
-          className="mt-5 inline-flex items-center justify-center gap-2.5 rounded-full bg-blue-50 px-6 py-3
-                     text-lg font-bold text-blue-700 transition hover:bg-blue-100 focus-visible:outline-2
-                     focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-        >
-          <SpeakerIcon className="size-6" />
-          Ouvir de novo
-        </button>
       </div>
 
       {/* Voltar à esquerda, seguir à direita — a mesma mão que a história usa. */}

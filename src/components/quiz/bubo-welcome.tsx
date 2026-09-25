@@ -1,12 +1,9 @@
 import Image from "next/image";
 import { startJourney } from "@/app/bem-vindo/actions";
-import { SpeakButton } from "@/components/quiz/speak-button";
 import { PlayIcon } from "@/components/ui/icons";
 import { quizForTrack } from "@/lib/quiz/catalog";
 import { storyForTrack } from "@/lib/quiz/stories";
 import { studentProgress } from "@/lib/student";
-
-export const WELCOME_LINE = "Oi! Eu sou o Bubo. Vamos aprender juntos?";
 
 /**
  * O Bubo se apresenta.
@@ -74,16 +71,6 @@ export async function BuboWelcome() {
               <br />
               Vamos aprender juntos?
             </p>
-
-            <SpeakButton
-              text={WELCOME_LINE}
-              label="Ouvir o Bubo"
-              iconClassName="size-6"
-              className="mt-4 gap-2.5 rounded-full bg-blue-50 px-6 py-3 text-lg font-bold text-blue-700
-                         hover:bg-blue-100 focus-visible:outline-blue-500"
-            >
-              Ouvir
-            </SpeakButton>
           </div>
 
           <form action={startJourney} className="mt-6 text-center">

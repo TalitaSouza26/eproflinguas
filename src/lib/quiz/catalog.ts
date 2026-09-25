@@ -9,7 +9,7 @@ import { QUESTIONS_PER_QUIZ } from "@/lib/quiz/types";
  *
  * "Primeiras palavras" tem um conjunto por fase, casado com a história da
  * mesma fase. "Casa e família" também tem um por fase, casado com a galeria
- * "Olha e escuta". As outras ainda têm um conjunto só, cortado no tamanho da
+ * "Olha e aprende". As outras ainda têm um conjunto só, cortado no tamanho da
  * faixa — é protótipo. O que não pode é uma trilha servir o conteúdo de outra:
  * Escola perguntando o nome do gato foi o que motivou este mapa.
  *

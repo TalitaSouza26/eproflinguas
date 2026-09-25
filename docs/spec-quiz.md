@@ -78,7 +78,7 @@ A interface é construída sobre um union de formatos para aceitar novos sem ree
 - `situation_reply` — situação em português → o que se diz em inglês. Aceita
   `speakerLine`, a fala que o aluno está respondendo.
 
-Áudio de pronúncia é um slot opcional por questão (`audioText`).
+Sem áudio. O produto inteiro é mudo hoje: o sintetizador do navegador erra a prosódia do inglês infantil e troca de voz a cada aparelho, e isso pesava mais do que ajudava numa criança que está aprendendo a pronúncia. Volta quando houver voz gravada — e aí como arquivo por palavra, não como texto para o navegador ler.
 
 ## Resultado
 
@@ -127,7 +127,7 @@ que ela ensina, e são três aberturas:
 | Abertura | Quando | Trilha |
 | --- | --- | --- |
 | **História narrada** | o que se ensina é fala, não coisa | Primeiras palavras |
-| **Galeria "Olha e escuta"** | o que se ensina é substantivo concreto | Casa e família (e as próximas visuais) |
+| **Galeria "Olha e aprende"** | o que se ensina é substantivo concreto | Casa e família (e as próximas visuais) |
 | **Tela do Bubo** | fase de revisão, que não apresenta nada novo | Primeiras palavras, fase 4 |
 
 A decisão é do conteúdo, não de variedade. Cumprimento não se desenha — "olá"
@@ -138,16 +138,11 @@ definição, e uma história no meio só atrasaria a criança até a palavra.
 Quem chama nunca sabe qual das três é: Home, menu lateral e "continuar" pedem o
 destino a `phaseHref` e seguem o link.
 
-### A galeria "Olha e escuta"
+### A galeria "Olha e aprende"
 
 Um cartão por palavra nova: figura grande, a palavra em inglês, o que ela quer
-dizer, e o áudio. A criança anda no próprio ritmo, pode voltar, e no último
-cartão o botão vira "Agora é a sua vez!".
-
-A palavra é falada sozinha ao abrir cada cartão — a única exceção à regra de
-não tocar áudio sem o aluno pedir. Vale aqui porque ela já apertou "Começar"
-sabendo que vem som, e porque numa galeria de vocabulário ouvir a palavra **é**
-o conteúdo.
+dizer. A criança anda no próprio ritmo, pode voltar, e no último cartão o
+botão vira "Agora é a sua vez!".
 
 ### Trilha "Casa e família" — a trilha visual
 
@@ -170,10 +165,6 @@ Todas as questões são `image_word` com duas alternativas. O distrator sai
 sempre do mesmo bloco: o aluno escolhe entre duas coisas da casa, nunca entre
 uma cadeira e um cachorro, o que resolveria a questão por eliminação. A resposta
 certa alterna de posição — fixa, a criança decora a posição em vez da palavra.
-
-**Questão de imagem não tem `audioText`.** O botão de ouvir do enunciado
-pronunciaria a própria resposta. A pronúncia dessa palavra é trabalho da
-galeria, antes da pergunta.
 
 **Imagens:** 16, uma por palavra, em `public/quiz/casa-familia/<palavra>.webp`.
 Só `house` já existe. Enquanto faltarem, a figura vira uma moldura tracejada

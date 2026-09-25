@@ -2,17 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   BookIcon,
-  PauseIcon,
   PlayIcon,
-  ReplayIcon,
-  SpeakerIcon,
 } from "@/components/ui/icons";
-import { cancelSpeech, speakParts, splitBilingual, togglePause } from "@/lib/speech";
 import { partsInTrack, phrasesInStory, type Story } from "@/lib/quiz/stories";
 
 /**
@@ -54,25 +50,30 @@ function Narration({ text }: { text: string }) {
 }
 
 /**
- * História de abertura da trilha.
+ * História de abertura da trilha, para ler.
  *
- * Começa numa capa com um botão, e não tocando sozinha: o navegador bloqueia
- * áudio antes do primeiro toque, e som que começa sem aviso assusta quem está
- * com o aparelho no colo. Desse toque em diante tudo é automático.
+ * Não tem áudio. A narração era falada pelo sintetizador do navegador, que
+ * erra a prosódia do inglês infantil e muda de voz a cada sistema — para uma
+ * história inteira isso pesa mais do que ajuda. Sai daqui até haver voz
+ * gravada; o que continua falando é a palavra nova, na galeria e no quiz.
  *
- * A cena narrada avança sozinha quando a fala termina. A de ensino não avança:
- * ela espera a criança repetir em voz alta, e só o toque dela segue.
+ * Cada cena espera o toque do aluno. Nada avança sozinho: quem lê devagar
+ * precisa do tempo dele.
+ *
+ * A cena de ensino pedia "repita comigo" e o botão respondia "eu falei". Saiu
+ * junto com o áudio: sem ouvir, a criança de 6 anos não tinha de onde tirar a
+ * pronúncia — o pedido virava uma cobrança sem resposta. Repetir em voz alta
+ * volta quando houver voz gravada.
  */
-export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: string }) {
+export function StoryPlayer({
+  story,
+  quizHref,
+}: {
+  story: Story;
+  quizHref: string;
+}) {
   // -1 é a capa; story.beats.length é o fim.
   const [index, setIndex] = useState(-1);
-  const [playing, setPlaying] = useState(false);
-  const [paused, setPaused] = useState(false);
-
-  // Cancelar a fala anterior antes de começar outra. Sem isso, o fim da fala
-  // velha chegava depois do início da nova e desligava o estado de tocando —
-  // o botão passava a mentir.
-  const stopSpeech = useRef<() => void>(() => {});
   const total = story.beats.length;
   const phrases = phrasesInStory(story);
   const parts = partsInTrack(story.slug);
@@ -80,62 +81,6 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
 
   const next = useCallback(() => setIndex((i) => i + 1), []);
   const back = useCallback(() => setIndex((i) => Math.max(0, i - 1)), []);
-
-  // A palavra sai sem as reticências: o sintetizador lê "My name is…" como
-  // uma frase interrompida.
-  const spoken = (word: string) => word.replace(/…/g, "");
-
-  const partsFor = useCallback(
-    (b: NonNullable<typeof beat>) =>
-      b.kind === "narration"
-        ? splitBilingual(b.text)
-        : // O convite vem falado, e não só escrito na tela: é a criança que
-          // ainda não lê que mais precisa saber que agora é a vez dela.
-          [
-            { text: "Repita comigo:", lang: "pt-BR" as const },
-            { text: spoken(b.word), lang: "en-US" as const },
-          ],
-    [],
-  );
-
-  // Cada cena fala ao entrar e depois espera. Avançar é sempre do aluno: um
-  // avanço automático tiraria dele o "ouvir de novo", que é o botão que mais
-  // importa para quem ainda está pegando o som das palavras.
-  const play = useCallback(
-    (b: NonNullable<typeof beat>) => {
-      stopSpeech.current();
-      setPlaying(true);
-      setPaused(false);
-      stopSpeech.current = speakParts(partsFor(b), () => setPlaying(false));
-    },
-    [partsFor],
-  );
-
-  useEffect(() => {
-    if (!beat) return;
-
-    play(beat);
-
-    return () => {
-      stopSpeech.current();
-      setPlaying(false);
-      setPaused(false);
-    };
-  }, [beat, play]);
-
-  /** Um botão só para as três situações: tocando, pausado e parado. */
-  function playPause() {
-    if (!beat) return;
-
-    if (playing) {
-      setPaused(togglePause());
-      return;
-    }
-
-    play(beat);
-  }
-
-  useEffect(() => cancelSpeech, []);
 
   return (
     <div
@@ -152,7 +97,14 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
                 não encosta na borda nem é cortada pelo canto arredondado. */}
             <div className="p-3 sm:p-4">
               <div className={MOLDURA}>
-                <Image src={story.cover} alt="" fill priority sizes={TAMANHO} className="object-contain" />
+                <Image
+                  src={story.cover}
+                  alt=""
+                  fill
+                  priority
+                  sizes={TAMANHO}
+                  className="object-contain"
+                />
               </div>
             </div>
 
@@ -165,7 +117,9 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
               <h1 className="mt-4 text-3xl font-extrabold leading-tight text-deep-900 sm:text-4xl">
                 {story.title}
               </h1>
-              <p className="mt-3 text-base leading-relaxed text-ink-700">{story.subtitle}</p>
+              <p className="mt-3 text-base leading-relaxed text-ink-700">
+                {story.subtitle}
+              </p>
 
               {/* O que a criança leva daqui, contado pelas próprias cenas de
                   ensino em vez de escrito à mão. */}
@@ -206,7 +160,11 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
               <span
                 key={i}
                 className={`h-1.5 rounded-full transition-all ${
-                  i === index ? "w-6 bg-accent-500" : i < index ? "w-1.5 bg-white/70" : "w-1.5 bg-white/25"
+                  i === index
+                    ? "w-6 bg-accent-500"
+                    : i < index
+                      ? "w-1.5 bg-white/70"
+                      : "w-1.5 bg-white/25"
                 }`}
               />
             ))}
@@ -216,87 +174,66 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
             {beat.kind === "narration" && beat.image && (
               <div className="p-3 pb-0 sm:p-4 sm:pb-0">
                 <div className={MOLDURA}>
-                  <Image src={beat.image} alt="" fill priority sizes={TAMANHO} className="object-contain" />
+                  <Image
+                    src={beat.image}
+                    alt=""
+                    fill
+                    priority
+                    sizes={TAMANHO}
+                    className="object-contain"
+                  />
                 </div>
               </div>
             )}
 
             <div className="px-6 py-7 sm:px-10">
-            {beat.kind === "narration" ? (
-              <Narration text={beat.text} />
-            ) : (
-              <div className="flex flex-col items-center gap-3">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent-600">
-                  Palavra nova
-                </p>
+              {beat.kind === "narration" ? (
+                <Narration text={beat.text} />
+              ) : (
+                <div className="flex flex-col items-center gap-3">
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent-600">
+                    Palavra nova
+                  </p>
 
+                  <p className="px-4 py-2 text-4xl font-extrabold text-deep-900 sm:text-5xl">
+                    {beat.word}
+                  </p>
+
+                  <p className="text-lg text-ink-700">
+                    quer dizer{" "}
+                    <span className="font-bold text-deep-900">
+                      {beat.meaning}
+                    </span>
+                  </p>
+                </div>
+              )}
+
+              {/* Voltar e seguir. Nenhum dos dois troca de rótulo no meio da
+                cena, então o card não muda de altura enquanto se lê. */}
+              <div className="mt-7 flex flex-nowrap items-center justify-center gap-2 sm:gap-3">
                 <button
                   type="button"
-                  onClick={() => speakParts([{ text: spoken(beat.word), lang: "en-US" }])}
-                  aria-label={`Ouvir ${beat.word} de novo`}
-                  className="flex items-center gap-3 rounded-2xl px-4 py-2 text-4xl font-extrabold
-                             text-deep-900 transition hover:bg-blue-50 focus-visible:outline-2
-                             focus-visible:outline-offset-2 focus-visible:outline-blue-500 sm:text-5xl"
-                >
-                  {beat.word}
-                  <SpeakerIcon className="size-8 text-blue-600" />
-                </button>
-
-                <p className="text-lg text-ink-700">
-                  quer dizer <span className="font-bold text-deep-900">{beat.meaning}</span>
-                </p>
-
-                <p className="mt-2 text-base font-bold text-accent-600">Repita comigo!</p>
-              </div>
-            )}
-
-            {/* Voltar, ouvir e seguir — nessa ordem, que é a do tempo: a cena
-                que passou, a que está tocando, a próxima.
-
-                Os três têm largura reservada e não quebram linha: o botão do
-                meio troca de rótulo três vezes, e sem isso o card mudava de
-                altura no meio da cena, parecendo outra tela. */}
-            <div className="mt-7 flex flex-nowrap items-center justify-center gap-2 sm:gap-3">
-              <button
-                type="button"
-                onClick={back}
-                disabled={index === 0}
-                aria-label="Voltar para a cena anterior"
-                className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-ink-50
+                  onClick={back}
+                  disabled={index === 0}
+                  aria-label="Voltar para a cena anterior"
+                  className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-ink-50
                            px-4 py-3.5 text-base font-bold text-ink-700 transition hover:bg-ink-100
                            disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2
                            focus-visible:outline-offset-2 focus-visible:outline-blue-500 sm:px-5"
-              >
-                <ArrowLeftIcon className="size-5" />
-                Voltar
-              </button>
+                >
+                  <ArrowLeftIcon className="size-5" />
+                  Voltar
+                </button>
 
-              <button
-                type="button"
-                onClick={playPause}
-                className="inline-flex w-[8.5rem] shrink-0 items-center justify-center gap-2 whitespace-nowrap
-                           rounded-full bg-blue-50 py-3.5 text-base font-bold text-blue-700 transition
-                           hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2
-                           focus-visible:outline-blue-500 sm:w-[9.5rem] sm:gap-2.5"
-              >
-                {playing && !paused ? (
-                  <>
-                    <PauseIcon className="size-5" />
-                    Pausar
-                  </>
-                ) : (
-                  <>
-                    <ReplayIcon className="size-5" />
-                    {paused ? "Retomar" : "Ouvir"}
-                  </>
-                )}
-              </button>
-
-              <button type="button" onClick={next} className={`${CTA} shrink-0 whitespace-nowrap`}>
-                {beat.kind === "lesson" ? "Eu falei!" : "Continuar"}
-                <ArrowRightIcon className="size-5" />
-              </button>
-            </div>
+                <button
+                  type="button"
+                  onClick={next}
+                  className={`${CTA} shrink-0 whitespace-nowrap`}
+                >
+                  Continuar
+                  <ArrowRightIcon className="size-5" />
+                </button>
+              </div>
             </div>
           </div>
         </>

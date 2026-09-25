@@ -7,9 +7,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { recordQuizDone } from "@/app/(app)/quizzes/actions";
 import { ChoiceCard, type ChoiceState } from "@/components/quiz/choice-card";
 import { QuizImage } from "@/components/quiz/quiz-image";
-import { SpeakButton } from "@/components/quiz/speak-button";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
-import { ArrowLeftIcon, BulbIcon, SpeakerIcon } from "@/components/ui/icons";
+import { ArrowLeftIcon, BulbIcon } from "@/components/ui/icons";
 import { FORMAT_INSTRUCTION, type Question } from "@/lib/quiz/types";
 
 type Answer = { questionId: string; topic: string; correct: boolean };
@@ -236,21 +235,11 @@ export function QuizPlayer({
             entrar no corpo de uma palavra em inglês: o que o aluno tem de ler
             com atenção ali é a cena, e o que ele decora está nas alternativas. */}
           <h3
-            className={`mt-2 flex items-center justify-center gap-3 text-center font-extrabold text-deep-900 ${
+            className={`mt-2 text-center font-extrabold text-deep-900 ${
               isSituation ? "text-lg leading-snug sm:text-xl" : "text-[26px]"
             }`}
           >
             {question.prompt}
-            {question.audioText && !isSituation && (
-              <button
-                type="button"
-                aria-label={`Ouvir a pronúncia de ${question.audioText}`}
-                className="shrink-0 rounded-full p-1.5 text-blue-600 transition hover:bg-blue-50
-                         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-              >
-                <SpeakerIcon className="size-5" />
-              </button>
-            )}
           </h3>
 
           {question.promptTranslation && (
@@ -288,14 +277,8 @@ export function QuizPlayer({
                 <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
                   {question.speaker ?? "Bubo"}
                 </p>
-                <p className="flex items-center gap-2 text-xl font-extrabold text-deep-900">
+                <p className="text-xl font-extrabold text-deep-900">
                   “{question.speakerLine}”
-                  <SpeakButton
-                    text={question.speakerLine}
-                    lang="en-US"
-                    label={`Ouvir ${question.speakerLine}`}
-                    className="shrink-0 p-1 text-blue-600 hover:bg-white focus-visible:outline-blue-500"
-                  />
                 </p>
               </div>
             </div>
@@ -305,7 +288,11 @@ export function QuizPlayer({
             <QuizImage
               src={question.imageUrl}
               alt=""
-              word={question.explanation.split(" significa ")[1]?.replace(".", "") ?? "?"}
+              word={
+                question.explanation
+                  .split(" significa ")[1]
+                  ?.replace(".", "") ?? "?"
+              }
               priority
               className="mx-auto mt-4 h-48 w-auto object-contain"
             />

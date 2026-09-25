@@ -67,7 +67,7 @@ Sem `meaning_word` e sem `sentence_gap`: nesta faixa o aluno ainda não produz e
 
 Cumprimento não é substantivo desenhável — um sol na tela poderia ser *sun*, *day* ou *morning*, e a questão teria mais de uma resposta defensável. Esta trilha ensina por **história narrada**, e a escada é outra.
 
-**A trilha tem uma história só, contada em partes.** "Um novo amigo" é um dia na vida da Sofia, dividido em três: cada fase abre com uma parte, que apresenta três expressões com uma pausa em cada para a criança repetir em voz alta, e o quiz logo depois cobra exatamente essas três. Contada de uma vez, a criança ouviria nove palavras seguidas e responderia sobre a primeira muitas cenas depois.
+**A trilha tem uma história só, contada em partes.** "Um novo amigo" é um dia na vida da Sofia, dividido em três: cada fase abre com uma parte, que apresenta três expressões com uma cena para cada, e o quiz logo depois cobra exatamente essas três. Contada de uma vez, a criança ouviria nove palavras seguidas e responderia sobre a primeira muitas cenas depois.
 
 | Fase | Parte da história | Ensina | Questões |
 | --- | --- | --- | --- |

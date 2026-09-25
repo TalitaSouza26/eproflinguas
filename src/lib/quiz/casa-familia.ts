@@ -14,8 +14,8 @@ import { questionSchema, type Question } from "@/lib/quiz/types";
  *
  * Como funciona a fase:
  *
- * 1. **Galeria "Olha e escuta"** — as 4 palavras novas, uma por cartão, com a
- *    figura grande e o áudio. É o que substitui a história.
+ * 1. **Galeria "Olha e aprende"** — as 4 palavras novas, uma por cartão, com a
+ *    figura grande. É o que substitui a história.
  * 2. **Quiz** — 5 questões, todas `image_word` com duas alternativas: quatro
  *    das palavras novas e uma retomando a fase anterior.
  *
@@ -34,7 +34,7 @@ import { questionSchema, type Question } from "@/lib/quiz/types";
  */
 
 export type Word = {
-  /** A palavra em inglês, como aparece na alternativa e no áudio. */
+  /** A palavra em inglês, como aparece no cartão e na alternativa. */
   en: string;
   pt: string;
   /** Figura da palavra. A mesma serve à galeria e à questão. */
@@ -111,9 +111,6 @@ function question(id: string, word: Word, distractor: Word, correctFirst: boolea
     topic: "Casa e família",
     prompt: "What is this?",
     promptTranslation: "O que é isto?",
-    // Sem `audioText`: numa questão de imagem o botão de ouvir do enunciado
-    // pronunciaria a resposta. A pronúncia dessa palavra é o trabalho da
-    // galeria, antes da pergunta.
     imageUrl: word.image,
     choices: correctFirst ? [correct, wrong] : [wrong, correct],
     correctChoiceId: "a",

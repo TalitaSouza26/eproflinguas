@@ -5,7 +5,7 @@ import { WelcomeBackdrop } from "@/components/quiz/welcome-backdrop";
 import { galleryFor } from "@/lib/quiz/galeria";
 import { trackBySlug } from "@/lib/tracks";
 
-export const metadata: Metadata = { title: "Olha e escuta — eProf Línguas" };
+export const metadata: Metadata = { title: "Olha e aprende — eProf Línguas" };
 
 /**
  * A galeria que abre uma fase sem história.

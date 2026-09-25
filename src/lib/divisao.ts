@@ -21,7 +21,7 @@ export type Divisao = {
   words: number;
   image: string;
   /**
-   * Cores do metal da divisão, tiradas do próprio emblema.
+   * Cores do metal da divisão, amostradas do próprio emblema.
    *
    * A escada é uma fileira de cinco cards, e sem isso todos ficam iguais —
    * o aluno precisa distinguir onde está de relance, não lendo o nome.
@@ -43,36 +43,36 @@ export const DIVISOES: Divisao[] = [
     id: "bronze-1",
     name: "Bronze I",
     words: 9,
-    image: "/badges/bronze-1.webp",
-    tint: { from: "#a85d33", to: "#e8a878", soft: "#fbeee5", ink: "#7a3f1d" },
+    image: "/badges/bronze-1-v2.webp",
+    tint: { from: "#c25a1c", to: "#f0a05c", soft: "#fdefe4", ink: "#8a3c10" },
   },
   {
     id: "bronze-2",
     name: "Bronze II",
     words: 50,
-    image: "/badges/bronze-2.webp",
-    tint: { from: "#8d6a3f", to: "#f0cf9b", soft: "#fbf3e6", ink: "#6b4a22" },
+    image: "/badges/bronze-2-v2.webp",
+    tint: { from: "#a84818", to: "#e08a48", soft: "#fbece1", ink: "#7a3210" },
   },
   {
     id: "prata",
     name: "Prata",
     words: 100,
-    image: "/badges/prata.webp",
-    tint: { from: "#6f7e96", to: "#dbe6f2", soft: "#f1f5fa", ink: "#3e4a5e" },
+    image: "/badges/prata-v2.webp",
+    tint: { from: "#7a8ba8", to: "#dfe6f4", soft: "#f2f5fb", ink: "#44506a" },
   },
   {
     id: "ouro",
     name: "Ouro",
     words: 200,
-    image: "/badges/ouro.webp",
-    tint: { from: "#c08a12", to: "#ffd87c", soft: "#fff6e0", ink: "#7a5406" },
+    image: "/badges/ouro-v2.webp",
+    tint: { from: "#d99a00", to: "#ffd848", soft: "#fff6dc", ink: "#8a6100" },
   },
   {
     id: "diamante",
     name: "Diamante",
     words: 400,
-    image: "/badges/diamante.webp",
-    tint: { from: "#2f74cf", to: "#a6dcff", soft: "#eaf5ff", ink: "#1b3f70" },
+    image: "/badges/diamante-v2.webp",
+    tint: { from: "#0060f0", to: "#bfe9ff", soft: "#e9f6ff", ink: "#12406f" },
   },
 ];
 

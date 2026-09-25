@@ -30,7 +30,6 @@ const FASE_1: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Olá",
-    audioText: "Hello",
     choices: [
       { id: "a", label: "Hello" },
       { id: "b", label: "My name is…" },
@@ -44,7 +43,6 @@ const FASE_1: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Meu nome é…",
-    audioText: "My name is",
     choices: [
       { id: "a", label: "Good morning" },
       { id: "b", label: "My name is…" },
@@ -58,7 +56,6 @@ const FASE_1: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Bom dia",
-    audioText: "Good morning",
     choices: [
       { id: "a", label: "Hello" },
       { id: "b", label: "Good morning" },
@@ -76,7 +73,6 @@ const FASE_2: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Por favor",
-    audioText: "Please",
     choices: [
       { id: "a", label: "Thank you" },
       { id: "b", label: "Please" },
@@ -90,7 +86,6 @@ const FASE_2: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Obrigado",
-    audioText: "Thank you",
     choices: [
       { id: "a", label: "Thank you" },
       { id: "b", label: "You're welcome" },
@@ -104,7 +99,6 @@ const FASE_2: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "De nada",
-    audioText: "You're welcome",
     choices: [
       { id: "a", label: "You're welcome" },
       { id: "b", label: "Please" },
@@ -122,7 +116,6 @@ const FASE_3: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Desculpa",
-    audioText: "Sorry",
     choices: [
       { id: "a", label: "Sorry" },
       { id: "b", label: "Goodbye" },
@@ -136,7 +129,6 @@ const FASE_3: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Tchau",
-    audioText: "Goodbye",
     choices: [
       { id: "a", label: "Good night" },
       { id: "b", label: "Goodbye" },
@@ -150,7 +142,6 @@ const FASE_3: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Boa noite",
-    audioText: "Good night",
     choices: [
       { id: "a", label: "Sorry" },
       { id: "b", label: "Good night" },
@@ -168,7 +159,6 @@ const REVISAO: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Olá",
-    audioText: "Hello",
     choices: [
       { id: "a", label: "Hello" },
       { id: "b", label: "Thank you" },
@@ -182,7 +172,6 @@ const REVISAO: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Meu nome é…",
-    audioText: "My name is",
     choices: [
       { id: "a", label: "Good night" },
       { id: "b", label: "My name is…" },
@@ -196,7 +185,6 @@ const REVISAO: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Bom dia",
-    audioText: "Good morning",
     choices: [
       { id: "a", label: "Good morning" },
       { id: "b", label: "Thank you" },
@@ -210,7 +198,6 @@ const REVISAO: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Por favor",
-    audioText: "Please",
     choices: [
       { id: "a", label: "Good night" },
       { id: "b", label: "Please" },
@@ -224,7 +211,6 @@ const REVISAO: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Obrigado",
-    audioText: "Thank you",
     choices: [
       { id: "a", label: "Please" },
       { id: "b", label: "Thank you" },
@@ -238,7 +224,6 @@ const REVISAO: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "De nada",
-    audioText: "You're welcome",
     choices: [
       { id: "a", label: "You're welcome" },
       { id: "b", label: "Good night" },
@@ -252,7 +237,6 @@ const REVISAO: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Desculpa",
-    audioText: "Sorry",
     choices: [
       { id: "a", label: "Sorry" },
       { id: "b", label: "Please" },
@@ -266,7 +250,6 @@ const REVISAO: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Tchau",
-    audioText: "Goodbye",
     choices: [
       { id: "a", label: "Goodbye" },
       { id: "b", label: "Good night" },
@@ -280,7 +263,6 @@ const REVISAO: unknown[] = [
     format: "meaning_word",
     topic: "Primeiras palavras",
     prompt: "Boa noite",
-    audioText: "Good night",
     choices: [
       { id: "a", label: "Good night" },
       { id: "b", label: "Please" },
