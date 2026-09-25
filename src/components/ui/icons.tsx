@@ -97,11 +97,19 @@ export function HelpIcon({ className }: IconProps) {
   );
 }
 
+/**
+ * Engrenagem de oito dentes, gerada em volta de (12,12): raio 9.9 na ponta do
+ * dente, 7.3 na raiz, dente e vão com larguras parecidas.
+ *
+ * Antes era um círculo com oito riscos saindo dele — que é a mesma construção
+ * de um sol, e era assim que ele era lido no cabeçalho, ao lado de um ícone de
+ * ajuda. Os cantos arredondam sozinhos pelo `strokeLinejoin` compartilhado.
+ */
 export function SettingsIcon({ className }: IconProps) {
   return (
     <svg {...strokeProps} aria-hidden className={className}>
-      <circle cx="12" cy="12" r="2.6" />
-      <path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.4 1.4M16.6 16.6 18 18M18 6l-1.4 1.4M7.4 16.6 6 18" />
+      <path d="M10.61 4.83L10.54 2.21L13.46 2.21L13.39 4.83L16.08 5.95L17.89 4.04L19.96 6.11L18.05 7.92L19.17 10.61L21.79 10.54L21.79 13.46L19.17 13.39L18.05 16.08L19.96 17.89L17.89 19.96L16.08 18.05L13.39 19.17L13.46 21.79L10.54 21.79L10.61 19.17L7.92 18.05L6.11 19.96L4.04 17.89L5.95 16.08L4.83 13.39L2.21 13.46L2.21 10.54L4.83 10.61L5.95 7.92L4.04 6.11L6.11 4.04L7.92 5.95Z" />
+      <circle cx="12" cy="12" r="3.6" />
     </svg>
   );
 }

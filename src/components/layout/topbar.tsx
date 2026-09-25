@@ -125,8 +125,18 @@ export function Topbar({ signOutAction }: { signOutAction: () => Promise<void> }
             <p className="text-[13px] text-[var(--shell-muted)]">Aluno</p>
           </div>
 
-          <span className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-accent-500 text-sm font-bold text-white">
+          {/* As iniciais ficam atrás da foto, não no lugar dela: se a imagem
+              não carregar, o círculo continua identificando o aluno em vez de
+              virar um buraco no cabeçalho. */}
+          <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-blue-600 to-accent-500 text-sm font-bold text-white">
             {CURRENT_STUDENT.initials}
+            <Image
+              src={CURRENT_STUDENT.photo}
+              alt={CURRENT_STUDENT.fullName}
+              width={256}
+              height={256}
+              className="absolute inset-0 size-full object-cover"
+            />
           </span>
 
           {/* Configurações, ajuda e sair moram aqui, em ícone: nenhum é sobre

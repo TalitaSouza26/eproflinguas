@@ -9,7 +9,9 @@
 export const CURRENT_STUDENT = {
   firstName: "João",
   fullName: "João Souza",
+  /** Usadas quando a foto não carrega. */
   initials: "JS",
+  photo: "/alunos/joao.webp",
 };
 
 export type Stat = {
