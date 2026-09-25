@@ -40,8 +40,8 @@ export async function BuboWelcome() {
         <Image
           src="/bubo/bubo-boas-vindas.webp"
           alt=""
-          width={346}
-          height={539}
+          width={795}
+          height={1205}
           unoptimized
           priority
           className="animate-rise-in mx-auto h-72 w-auto drop-shadow-2xl sm:h-[30rem] lg:h-[34rem]"
