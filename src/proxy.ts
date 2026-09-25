@@ -62,5 +62,10 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|brand|bubo|badges|quiz|illustrations|.*\.webp$).*)"],
+  // As exceções são pastas de imagem em public/, e por isso terminam em barra:
+  // sem ela "quiz" também casava com /quizzes/..., e a trilha inteira ficava
+  // fora da proteção de sessão.
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|brand/|bubo/|badges/|quiz/|stories/|illustrations/|.*\.webp$).*)",
+  ],
 };
