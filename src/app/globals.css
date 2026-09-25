@@ -392,3 +392,69 @@ body {
     animation: none;
   }
 }
+
+/* Comemoração de trilha concluída.
+   Um clarão que abre e some, raios curtos e faíscas subindo em volta. Roda
+   uma vez e dura pouco mais de um segundo: é festa, não espera. */
+@keyframes burst-glow {
+  0% {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+  35% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+
+@keyframes burst-ray {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.2);
+  }
+  40% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1.35);
+  }
+}
+
+@keyframes burst-spark {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  30% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-2.5rem) scale(1);
+  }
+}
+
+.animate-burst-glow {
+  animation: burst-glow 1400ms ease-out both;
+}
+
+.animate-burst-ray {
+  animation: burst-ray 900ms ease-out both;
+  transform-origin: bottom center;
+}
+
+.animate-burst-spark {
+  animation: burst-spark 1200ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-burst-glow,
+  .animate-burst-ray,
+  .animate-burst-spark {
+    display: none;
+  }
+}

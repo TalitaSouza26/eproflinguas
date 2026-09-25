@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
 import { BadgeAward } from "@/components/quiz/badge-award";
+import { CelebrationBurst } from "@/components/quiz/celebration-burst";
 import { PatenteAward } from "@/components/quiz/patente-award";
 import { rewardsFor } from "@/lib/quiz/rewards";
 import { phaseHref, studentProgress } from "@/lib/student";
@@ -80,15 +81,18 @@ export default async function ResultadoPage({
         {/* Fechar a trilha é o maior acontecimento da tela, e ganha o Bubo
             comemorando. Depois vem a insígnia, quando a fase rendeu uma. */}
         {trackDone ? (
-          <Image
-            src="/bubo/bubo-comemorando.webp"
-            alt=""
-            width={905}
-            height={1201}
-            unoptimized
-            priority
-            className="animate-badge-pop mx-auto w-40"
-          />
+          <div className="relative mx-auto flex w-40 items-center justify-center">
+            <CelebrationBurst />
+            <Image
+              src="/bubo/bubo-comemorando.webp"
+              alt=""
+              width={905}
+              height={1201}
+              unoptimized
+              priority
+              className="animate-badge-pop relative w-40"
+            />
+          </div>
         ) : badge ? (
           <BadgeAward insignia={badge} />
         ) : (
