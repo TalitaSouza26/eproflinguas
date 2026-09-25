@@ -77,7 +77,19 @@ export default async function ResultadoPage({
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-10">
       <section className="rounded-3xl bg-white px-5 py-8 sm:px-8 sm:py-10 text-center shadow-[0_18px_50px_-30px_rgba(15,34,71,0.4)]">
-        {badge ? (
+        {/* Fechar a trilha é o maior acontecimento da tela, e ganha o Bubo
+            comemorando. Depois vem a insígnia, quando a fase rendeu uma. */}
+        {trackDone ? (
+          <Image
+            src="/bubo/bubo-comemorando.webp"
+            alt=""
+            width={905}
+            height={1201}
+            unoptimized
+            priority
+            className="animate-badge-pop mx-auto w-40"
+          />
+        ) : badge ? (
           <BadgeAward insignia={badge} />
         ) : (
           <Image
@@ -95,8 +107,14 @@ export default async function ResultadoPage({
             linha "Conclua seu primeiro quiz" parecia legenda do título. */}
         <hr className="mt-6 border-t border-ink-100" />
 
-        <h2 className="mt-6 text-2xl font-extrabold text-deep-900">Quiz concluído!</h2>
-        <p className="mt-1.5 text-[15px] text-ink-700">{buboMessage(correct, total)}</p>
+        <h2 className="mt-6 text-2xl font-extrabold text-deep-900">
+          {trackDone ? `Trilha ${track.title} concluída!` : "Quiz concluído!"}
+        </h2>
+        <p className="mt-1.5 text-[15px] text-ink-700">
+          {trackDone
+            ? "Você aprendeu todas as palavras desta trilha. O Bubo está orgulhoso!"
+            : buboMessage(correct, total)}
+        </p>
 
         {/* O destaque é quanto o aluno acertou, não uma nota ou posição. */}
         <p className="mt-7 flex items-center justify-center gap-3 text-[40px] font-extrabold leading-none text-correct-600">
