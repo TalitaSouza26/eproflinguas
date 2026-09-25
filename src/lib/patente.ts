@@ -1,13 +1,17 @@
 /**
  * Patente do aluno.
  *
- * Um trilho só, medido em palavras aprendidas. Conta como aprendida a palavra
- * que o aluno acertou pelo menos uma vez numa fase concluída.
+ * Um trilho só, medido em palavras aprendidas. Conta como aprendida a
+ * expressão ensinada numa fase concluída.
  *
  * A escada é uma lista ordenada de propósito: para acrescentar níveis basta
  * incluir itens no fim, sem tocar em nenhuma tela.
  *
- * TODO: `WORDS_LEARNED` vem de `attempt_answers` quando houver banco.
+ * ATENÇÃO: a Bronze I está em 9 palavras porque é o que a trilha "Primeiras
+ * palavras" inteira ensina — a primeira patente cai exatamente ao fechar a
+ * primeira trilha. Os degraus seguintes (50, 100, 200, 400) foram pensados
+ * quando uma trilha tinha 16 palavras de núcleo; com o conteúdo atual do
+ * 1º–2º eles ficaram longe demais e precisam ser recalibrados.
  */
 
 export type Patente = {
@@ -38,7 +42,7 @@ export const PATENTES: Patente[] = [
   {
     id: "bronze-1",
     name: "Bronze I",
-    words: 20,
+    words: 9,
     image: "/badges/bronze-1.webp",
     tint: { from: "#a85d33", to: "#e8a878", soft: "#fbeee5", ink: "#7a3f1d" },
   },
@@ -72,33 +76,33 @@ export const PATENTES: Patente[] = [
   },
 ];
 
-/**
- * Quantas palavras o aluno já aprendeu.
- *
- * Zero: o aluno do protótipo está chegando agora. Com isso não há patente
- * conquistada, e as telas mostram a Bronze I apagada com o que falta para
- * acendê-la.
- */
-export const WORDS_LEARNED = 0;
+export type PatenteStanding = {
+  /** Índice da patente atual, ou -1 se ainda não alcançou a primeira. */
+  index: number;
+  current: Patente | null;
+  next: Patente | null;
+  /** Palavras que faltam para a próxima. */
+  toNext: number;
+  /** Avanço dentro da patente atual, de 0 a 100. */
+  percent: number;
+};
 
-/** Índice da patente atual, ou -1 se ainda não alcançou a primeira. */
-export const CURRENT_INDEX = PATENTES.reduce(
-  (found, patente, i) => (WORDS_LEARNED >= patente.words ? i : found),
-  -1,
-);
+/** Onde o aluno está na escada, dado quanto ele já aprendeu. */
+export function patenteFor(words: number): PatenteStanding {
+  const index = PATENTES.reduce((found, p, i) => (words >= p.words ? i : found), -1);
+  const current = index >= 0 ? PATENTES[index] : null;
+  const next = PATENTES[index + 1] ?? null;
 
-export const CURRENT_PATENTE: Patente | null =
-  CURRENT_INDEX >= 0 ? PATENTES[CURRENT_INDEX] : null;
+  if (!next) return { index, current, next, toNext: 0, percent: 100 };
 
-export const NEXT_PATENTE: Patente | null = PATENTES[CURRENT_INDEX + 1] ?? null;
+  const floor = current?.words ?? 0;
+  const span = next.words - floor;
 
-/** Palavras que faltam para a próxima patente. */
-export const WORDS_TO_NEXT = NEXT_PATENTE ? Math.max(0, NEXT_PATENTE.words - WORDS_LEARNED) : 0;
-
-/** Avanço dentro da patente atual, de 0 a 100. */
-export const PATENTE_PERCENT = (() => {
-  if (!NEXT_PATENTE) return 100;
-  const floor = CURRENT_PATENTE?.words ?? 0;
-  const span = NEXT_PATENTE.words - floor;
-  return span > 0 ? Math.min(100, Math.round(((WORDS_LEARNED - floor) / span) * 100)) : 0;
-})();
+  return {
+    index,
+    current,
+    next,
+    toNext: Math.max(0, next.words - words),
+    percent: span > 0 ? Math.min(100, Math.round(((words - floor) / span) * 100)) : 0,
+  };
+}

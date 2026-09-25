@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
 import { BadgeAward } from "@/components/quiz/badge-award";
 import { PatenteAward } from "@/components/quiz/patente-award";
-import { AWARDED_INSIGNIA, AWARDED_PATENTE, AWARDED_WORDS } from "@/lib/quiz/rewards";
+import { rewardsFor } from "@/lib/quiz/rewards";
 import { phaseHref, studentProgress } from "@/lib/student";
 import { SEED_QUIZ } from "@/lib/quiz/seed";
 import { nextTrackOf } from "@/lib/tracks";
@@ -44,17 +44,18 @@ export default async function ResultadoPage({
   const total = toInt(sp.total, SEED_QUIZ.questions.length);
   const correct = Math.min(toInt(sp.acertos, 0), total);
 
-  // A insígnia conquistada assume o lugar do Bubo: o prêmio é o que o aluno
-  // deve ver primeiro. O que a fase rendeu vem de lib/quiz/rewards.
-  const badge = AWARDED_INSIGNIA;
-  const patente = AWARDED_PATENTE;
-
   // A tela fala da trilha que o aluno acabou de jogar, e não da atual: ao
   // fechar a última fase, a atual já virou a trilha seguinte. O player manda
   // a origem na URL.
   const { tracks, current: currentTrack } = await studentProgress();
+
   const track = tracks.find((t) => t.slug === sp.trilha) ?? currentTrack;
   const playedPhase = toInt(sp.fase, 1);
+
+  // A insígnia conquistada assume o lugar do Bubo: o prêmio é o que o aluno
+  // deve ver primeiro. As duas recompensas têm condição — ver lib/quiz/rewards.
+  const progress = await studentProgress();
+  const { insignia: badge, patente, words } = rewardsFor(progress, track, playedPhase);
 
   const done = track.completedPhases;
   const left = track.phases - done;
@@ -137,7 +138,7 @@ export default async function ResultadoPage({
           {patente ? (
             <PatenteAward
               patente={patente}
-              words={AWARDED_WORDS}
+              words={words}
               href={continueHref}
               className={CTA_PRIMARY}
             >

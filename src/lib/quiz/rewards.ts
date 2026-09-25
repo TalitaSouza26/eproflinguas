@@ -1,31 +1,48 @@
-import { INSIGNIAS, LATEST_INSIGNIA, type Insignia } from "@/lib/insignias";
-import { CURRENT_PATENTE, PATENTES, WORDS_LEARNED, type Patente } from "@/lib/patente";
-
+import { INSIGNIAS, type Insignia } from "@/lib/insignias";
+import { patenteFor, type Patente } from "@/lib/patente";
+import type { StudentProgress } from "@/lib/student";
 
 /**
  * O que a fase recém-concluída rendeu.
  *
- * Enquanto não há banco, a tela de resultado simula: quem terminou um quiz
- * ganhou a primeira insígnia que ainda faltava e alcançou a primeira patente
- * que ainda não tinha. É o que o protótipo precisa mostrar — a comemoração é
- * metade do produto, e com o aluno zerado não sobraria nada para entregar.
+ * As duas recompensas têm condição, e não aparecem em toda conclusão:
  *
- * TODO: com banco, comparar o estado antes e depois da tentativa. A insígnia
- * só aparece se a condição dela virou verdadeira agora, e a patente só se a
- * contagem de palavras cruzou a faixa nesta fase.
+ * - **Insígnia "Primeiro passo"**: só no primeiro quiz da vida do aluno.
+ * - **Patente Bronze I**: só ao fechar a trilha "Primeiras palavras", que é
+ *   justamente onde a contagem de palavras cruza o primeiro degrau.
+ *
+ * Antes as duas eram entregues sempre, e a comemoração perdia o sentido: um
+ * prêmio que cai toda vez não é prêmio.
+ *
+ * TODO: as outras sete insígnias precisam das condições delas (sequência de
+ * dias, fase sem erro, trilha completa). Cada uma vira uma checagem aqui.
  */
 
-/** A insígnia entregue nesta conclusão. */
-export const AWARDED_INSIGNIA: Insignia | undefined =
-  INSIGNIAS.find((i) => !i.earned) ?? LATEST_INSIGNIA;
+export const FIRST_INSIGNIA_ID = "primeiro-passo";
 
-/** A patente alcançada nesta conclusão. */
-export const AWARDED_PATENTE: Patente | undefined =
-  CURRENT_PATENTE === null
-    ? PATENTES[0]
-    : PATENTES[PATENTES.indexOf(CURRENT_PATENTE) + 1] ?? CURRENT_PATENTE;
+export type PhaseRewards = {
+  insignia?: Insignia;
+  patente?: Patente;
+  /** Palavras aprendidas até aqui, para a frase da entrega. */
+  words: number;
+};
 
-/** Palavras aprendidas contando esta fase, para a frase da entrega. */
-export const AWARDED_WORDS = Math.max(WORDS_LEARNED, AWARDED_PATENTE?.words ?? 0);
+export function rewardsFor(
+  progress: StudentProgress,
+  playedTrack: { slug: string; phases: number; completedPhases: number },
+  playedPhase: number,
+): PhaseRewards {
+  const firstEver = progress.totalPhases === 1;
 
+  // A trilha fechou agora: o aluno estava na última fase dela e ela completou.
+  const trackJustDone =
+    playedPhase === playedTrack.phases && playedTrack.completedPhases >= playedTrack.phases;
 
+  const { current } = patenteFor(progress.words);
+
+  return {
+    insignia: firstEver ? INSIGNIAS.find((i) => i.id === FIRST_INSIGNIA_ID) : undefined,
+    patente: trackJustDone && current ? current : undefined,
+    words: progress.words,
+  };
+}

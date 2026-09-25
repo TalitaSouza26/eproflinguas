@@ -81,8 +81,15 @@ export const INSIGNIAS: Insignia[] = [
   },
 ];
 
-export const EARNED_INSIGNIAS = INSIGNIAS.filter((i) => i.earned);
-export const LOCKED_INSIGNIAS = INSIGNIAS.filter((i) => !i.earned);
-
-/** A mais recente conquistada — é a que a tela de resultado entrega. */
-export const LATEST_INSIGNIA: Insignia | undefined = EARNED_INSIGNIAS.at(-1);
+/**
+ * A coleção do aluno, dado o que ele já fez.
+ *
+ * Hoje só "Primeiro passo" tem condição implementada, e ela é a mais simples:
+ * concluir o primeiro quiz. As outras sete continuam apagadas até as condições
+ * delas existirem — ver o TODO em lib/quiz/rewards.
+ */
+export function insigniasFor(totalPhases: number): Insignia[] {
+  return INSIGNIAS.map((i) =>
+    i.id === "primeiro-passo" ? { ...i, earned: totalPhases >= 1 } : i,
+  );
+}

@@ -3,17 +3,15 @@ import Link from "next/link";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { PatenteFlame } from "@/components/ui/patente-flame";
-import {
-  CURRENT_PATENTE,
-  NEXT_PATENTE,
-  PATENTES,
-  PATENTE_PERCENT,
-  WORDS_LEARNED,
-  WORDS_TO_NEXT,
-} from "@/lib/patente";
+import { patenteFor, PATENTES } from "@/lib/patente";
+import { studentProgress } from "@/lib/student";
 
 /** A patente do aluno e o quanto falta para a próxima, em palavras. */
-export function CurrentBadge() {
+export async function CurrentBadge() {
+  const { words } = await studentProgress();
+  const { current: CURRENT_PATENTE, next: NEXT_PATENTE, toNext: WORDS_TO_NEXT, percent: PATENTE_PERCENT } =
+    patenteFor(words);
+  const WORDS_LEARNED = words;
   const shown = CURRENT_PATENTE ?? PATENTES[0];
 
   return (

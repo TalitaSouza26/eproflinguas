@@ -3,20 +3,18 @@ import Image from "next/image";
 import { BLUE_CARD, CardBackdrop } from "@/components/ui/card-backdrop";
 import { CheckIcon, FlameIcon, LockIcon, MedalIcon, TrophyIcon } from "@/components/ui/icons";
 import { PatenteFlame } from "@/components/ui/patente-flame";
-import { EARNED_INSIGNIAS, INSIGNIAS } from "@/lib/insignias";
-import {
-  CURRENT_INDEX,
-  NEXT_PATENTE,
-  PATENTES,
-  PATENTE_PERCENT,
-  WORDS_LEARNED,
-  WORDS_TO_NEXT,
-} from "@/lib/patente";
+import { insigniasFor } from "@/lib/insignias";
+import { patenteFor, PATENTES } from "@/lib/patente";
+import { studentProgress } from "@/lib/student";
 
 export const metadata: Metadata = { title: "Conquistas — eProf Línguas" };
 
 /** A escada da patente: um trilho só, medido em palavras aprendidas. */
-function PatenteLadder() {
+async function PatenteLadder() {
+  const { words: WORDS_LEARNED } = await studentProgress();
+  const { index: CURRENT_INDEX, next: NEXT_PATENTE, toNext: WORDS_TO_NEXT, percent: PATENTE_PERCENT } =
+    patenteFor(WORDS_LEARNED);
+
   return (
     <section className={`${BLUE_CARD} px-6 py-6`}>
       <CardBackdrop />
@@ -170,7 +168,11 @@ function PatenteLadder() {
 }
 
 /** Coleção de insígnias: ganhas uma vez, sem níveis. */
-function InsigniaGrid() {
+async function InsigniaGrid() {
+  const { totalPhases } = await studentProgress();
+  const insignias = insigniasFor(totalPhases);
+  const earned = insignias.filter((i) => i.earned);
+
   return (
     <section className="mt-5 rounded-2xl border border-ink-100 bg-white px-6 py-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -187,12 +189,12 @@ function InsigniaGrid() {
         </div>
 
         <p className="text-sm font-bold text-deep-900">
-          {EARNED_INSIGNIAS.length} de {INSIGNIAS.length}
+          {earned.length} de {insignias.length}
         </p>
       </div>
 
       <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {INSIGNIAS.map((insignia) => (
+        {insignias.map((insignia) => (
           <li
             key={insignia.id}
             className={`flex flex-col items-center rounded-2xl border px-4 py-5 text-center ${

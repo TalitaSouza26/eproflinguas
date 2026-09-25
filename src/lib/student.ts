@@ -1,6 +1,7 @@
 import { hasStarted } from "@/lib/onboarding";
 import { phasesByTrack } from "@/lib/progress";
-import { storyForTrack } from "@/lib/quiz/stories";
+import { quizForTrack } from "@/lib/quiz/catalog";
+import { phrasesInStory, storyForTrack } from "@/lib/quiz/stories";
 import { TRACKS, type Track } from "@/lib/tracks";
 
 /**
@@ -17,6 +18,10 @@ export type TrackProgress = Track & { completedPhases: number };
 
 export type StudentProgress = {
   tracks: TrackProgress[];
+  /** Fases concluídas somando todas as trilhas. */
+  totalPhases: number;
+  /** Expressões aprendidas: é isso que move a patente. */
+  words: number;
   /** Trilha em que o aluno está: a primeira aberta que ainda não fechou. */
   current: TrackProgress;
   /** Próxima fase a jogar na trilha atual. */
@@ -36,10 +41,36 @@ export async function studentProgress(): Promise<StudentProgress> {
 
   return {
     tracks,
+    totalPhases: tracks.reduce((n, t) => n + t.completedPhases, 0),
+    words: wordsLearned(tracks),
     current,
     phase: Math.min(current.completedPhases + 1, current.phases),
     isNew: tracks.every((t) => t.completedPhases === 0),
   };
+}
+
+/**
+ * Quantas expressões o aluno aprendeu.
+ *
+ * Numa fase com história, são as que ela ensina — a fase de revisão repassa as
+ * mesmas e não soma nada. Nas trilhas que ainda não têm história, cada questão
+ * da fase vale uma palavra.
+ */
+function wordsLearned(tracks: TrackProgress[]): number {
+  let total = 0;
+
+  for (const track of tracks) {
+    for (let phase = 1; phase <= track.completedPhases; phase++) {
+      const story = storyForTrack(track.slug, phase);
+      total += story
+        ? phrasesInStory(story)
+        : storyForTrack(track.slug, 1)
+          ? 0 // fase de revisão de uma trilha com história: nada de novo
+          : quizForTrack(track.slug, phase).questions.length;
+    }
+  }
+
+  return total;
 }
 
 /**

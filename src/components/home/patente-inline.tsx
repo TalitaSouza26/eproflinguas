@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PatenteFlame } from "@/components/ui/patente-flame";
-import { CURRENT_PATENTE, PATENTES } from "@/lib/patente";
+import { patenteFor, PATENTES } from "@/lib/patente";
+import { studentProgress } from "@/lib/student";
 
 /**
  * Patente ao lado do nome, no celular.
@@ -11,7 +12,9 @@ import { CURRENT_PATENTE, PATENTES } from "@/lib/patente";
  * aluno vê em que pé está sem rolar, e o toque leva a Conquistas — que é onde
  * moram os detalhes que o card mostrava.
  */
-export function PatenteInline() {
+export async function PatenteInline() {
+  const { words } = await studentProgress();
+  const { current: CURRENT_PATENTE } = patenteFor(words);
   const shown = CURRENT_PATENTE ?? PATENTES[0];
 
   return (

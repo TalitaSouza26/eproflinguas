@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { EARNED_INSIGNIAS, INSIGNIAS } from "@/lib/insignias";
+import { insigniasFor } from "@/lib/insignias";
+import { studentProgress } from "@/lib/student";
 
 /**
  * Insígnias conquistadas, na coluna lateral da Home.
@@ -16,8 +17,11 @@ import { EARNED_INSIGNIAS, INSIGNIAS } from "@/lib/insignias";
  * com a condição à mostra — é o cardápio do que dá para perseguir, e some
  * assim que a primeira cai.
  */
-export function RecentBadges() {
-  const shown = EARNED_INSIGNIAS.length > 0 ? EARNED_INSIGNIAS : INSIGNIAS;
+export async function RecentBadges() {
+  const { totalPhases } = await studentProgress();
+  const insignias = insigniasFor(totalPhases);
+  const earned = insignias.filter((i) => i.earned);
+  const shown = earned.length > 0 ? earned : insignias;
 
   return (
     <section className="self-start rounded-2xl border border-ink-100 bg-white px-5 py-5">
@@ -61,7 +65,7 @@ export function RecentBadges() {
       </ul>
 
       <p className="mt-4 text-center text-[11px] text-ink-500">
-        {EARNED_INSIGNIAS.length} de {INSIGNIAS.length} conquistadas
+        {earned.length} de {insignias.length} conquistadas
       </p>
     </section>
   );
