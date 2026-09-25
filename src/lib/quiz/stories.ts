@@ -13,8 +13,9 @@
  *
  * Nem toda fase tem história. Sem ela, a fase abre direto na questão 1.
  *
- * TODO: as fases 1 e 2 estão ilustradas; falta a 3. Cada `image` vira uma arte
- * quando ela existir, e a locução vira voz gravada.
+ * TODO: faltam duas cenas da fase 3 — a noite em casa, com o "Good night", e o
+ * fecho. Cada `image` vira uma arte quando ela existir, e a locução vira voz
+ * gravada.
  */
 
 export type StoryBeat =
@@ -150,16 +151,18 @@ const ATE_AMANHA: Story = {
   number: 3,
   title: "Até amanhã!",
   subtitle: "O dia acaba, e Sofia se despede do novo amigo.",
-  cover: "/stories/novo-amigo-capa.webp",
+  cover: "/stories/ate-amanha-goodbye.webp",
   beats: [
     {
       kind: "narration",
       text: "Correndo para a fila, Sofia esbarrou sem querer no Ethan. Ela parou na hora e disse: — *Sorry*!",
+      image: "/stories/ate-amanha-sorry.webp",
     },
     { kind: "lesson", word: "Sorry", meaning: "Desculpa" },
     {
       kind: "narration",
       text: "— Tudo bem! — riu Ethan. O sinal tocou, e na porta da escola ele acenou: — *Goodbye*, Sofia!",
+      image: "/stories/ate-amanha-goodbye.webp",
     },
     { kind: "lesson", word: "Goodbye", meaning: "Tchau" },
     {
