@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "@/components/layout/nav-items";
 import { ThemeSwitch } from "@/components/layout/theme-switch";
-import { CloseIcon, LogoutIcon } from "@/components/ui/icons";
+import { CloseIcon, LogoutIcon, ReplayIcon } from "@/components/ui/icons";
 
 const ITEM_BASE =
   "flex items-center gap-3.5 rounded-xl px-4 py-3 text-[15px] transition " +
@@ -13,10 +13,13 @@ const ITEM_BASE =
 
 export function Sidebar({
   signOutAction,
+  devMode,
   open,
   onNavigate,
 }: {
   signOutAction: () => Promise<void>;
+  /** Modo protótipo: mostra o atalho de recomeçar. */
+  devMode: boolean;
   /** Só vale no mobile: no desktop o menu é sempre visível. */
   open: boolean;
   onNavigate: () => void;
@@ -92,6 +95,22 @@ export function Sidebar({
           </button>
         </form>
       </nav>
+
+      {/* Atalho de demonstração: repetir a primeira sessão é o que mais se
+          faz com o protótipo, e o progresso vive em cookies que o navegador
+          não deixa apagar. Some quando o Supabase entrar. */}
+      {devMode && (
+        <a
+          href="/recomecar"
+          className="mt-6 inline-flex items-center gap-2 self-start rounded-full border border-white/20
+                     px-3.5 py-2 text-xs font-semibold text-[var(--sidebar-item)] transition
+                     hover:bg-[var(--sidebar-hover)] focus-visible:outline-2
+                     focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+          <ReplayIcon className="size-4" />
+          Recomeçar o protótipo
+        </a>
+      )}
 
       {/* No desktop o seletor vive no header; aqui ele acompanha a gaveta. */}
       <div className="mt-8 flex justify-center lg:hidden">

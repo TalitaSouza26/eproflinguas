@@ -13,9 +13,12 @@ import { Topbar } from "@/components/layout/topbar";
  */
 export function AppShell({
   signOutAction,
+  devMode,
   children,
 }: {
   signOutAction: () => Promise<void>;
+  /** Modo protótipo: libera o atalho de recomeçar no menu. */
+  devMode: boolean;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -44,7 +47,12 @@ export function AppShell({
         />
       )}
 
-      <Sidebar signOutAction={signOutAction} open={open} onNavigate={() => setOpen(false)} />
+      <Sidebar
+        signOutAction={signOutAction}
+        devMode={devMode}
+        open={open}
+        onNavigate={() => setOpen(false)}
+      />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onMenuClick={() => setOpen(true)} menuOpen={open} />
