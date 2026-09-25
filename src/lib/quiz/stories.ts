@@ -13,8 +13,8 @@
  *
  * Nem toda fase tem história. Sem ela, a fase abre direto na questão 1.
  *
- * TODO: só a primeira cena tem ilustração. Cada `image` vira uma arte quando o
- * acervo existir, e a locução vira voz gravada.
+ * TODO: as cenas da fase 1 já têm ilustração; as das fases 2 e 3 ainda não.
+ * Cada `image` vira uma arte quando ela existir, e a locução vira voz gravada.
  */
 
 export type StoryBeat =
@@ -76,15 +76,18 @@ const NOVO_AMIGO: Story = {
     {
       kind: "narration",
       text: "A professora contou que ele se chamava Ethan. Ele tinha vindo dos Estados Unidos e ainda estava aprendendo a falar português.",
+      image: "/stories/novo-amigo-professora.webp",
     },
     {
       kind: "narration",
       text: "Sofia se apresentou: — Oi! Meu nome é Sofia. E ele respondeu: — *My name is* Ethan!",
+      image: "/stories/novo-amigo-nome.webp",
     },
     { kind: "lesson", word: "My name is…", meaning: "Meu nome é…" },
     {
       kind: "narration",
       text: "Como ainda era cedo, Ethan quis saber: — Como vocês falam... *Good morning*?",
+      image: "/stories/novo-amigo-bomdia.webp",
     },
     { kind: "lesson", word: "Good morning", meaning: "Bom dia" },
     {
