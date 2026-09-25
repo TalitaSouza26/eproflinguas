@@ -13,8 +13,8 @@
  *
  * Nem toda fase tem história. Sem ela, a fase abre direto na questão 1.
  *
- * TODO: as cenas da fase 1 já têm ilustração; as das fases 2 e 3 ainda não.
- * Cada `image` vira uma arte quando ela existir, e a locução vira voz gravada.
+ * TODO: as fases 1 e 2 estão ilustradas; falta a 3. Cada `image` vira uma arte
+ * quando ela existir, e a locução vira voz gravada.
  */
 
 export type StoryBeat =
@@ -93,6 +93,7 @@ const NOVO_AMIGO: Story = {
     {
       kind: "narration",
       text: "— Ah! Você quer dizer bom dia! — respondeu Sofia. E Ethan repetiu, contente: — *Good morning*, Sofia!",
+      image: "/stories/novo-amigo-bom-dia-resposta.webp",
     },
   ],
 };
@@ -109,26 +110,30 @@ const NO_RECREIO: Story = {
   number: 2,
   title: "No recreio",
   subtitle: "Ethan precisa de ajuda e Sofia aprende a ser educada em inglês.",
-  cover: "/stories/novo-amigo-capa.webp",
+  cover: "/stories/recreio-brincar.webp",
   beats: [
     {
       kind: "narration",
       text: "No recreio, Ethan precisava de uma borracha. Ele apontou para a da Sofia e pediu: — *Please*?",
+      image: "/stories/recreio-please.webp",
     },
     { kind: "lesson", word: "Please", meaning: "Por favor" },
     {
       kind: "narration",
       text: "Sofia emprestou na hora. Ethan sorriu e disse: — *Thank you*, Sofia!",
+      image: "/stories/recreio-thank-you.webp",
     },
     { kind: "lesson", word: "Thank you", meaning: "Obrigado, obrigada" },
     {
       kind: "narration",
       text: "— De nada! — respondeu Sofia. Aí ela lembrou como se fala em inglês: — *You're welcome*!",
+      image: "/stories/recreio-de-nada.webp",
     },
     { kind: "lesson", word: "You're welcome", meaning: "De nada" },
     {
       kind: "narration",
       text: "Os dois terminaram o dever juntos e ainda deu tempo de brincar antes do sinal.",
+      image: "/stories/recreio-brincar.webp",
     },
   ],
 };
