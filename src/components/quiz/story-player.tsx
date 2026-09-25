@@ -122,7 +122,7 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
           {/* O Bubo espia do canto: quem conta a história é ele, mas a cena é
               da Sofia e do Ethan. */}
           <Image
-            src="/bubo/bubo-leitura.webp"
+            src="/bubo/bubo-leitura-oculos.webp"
             alt=""
             width={947}
             height={1181}
