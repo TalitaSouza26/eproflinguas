@@ -4,36 +4,36 @@ import { ONBOARDING_COOKIE } from "@/lib/onboarding";
 import { PHASES_COOKIE, QUIZZES_COOKIE } from "@/lib/progress";
 
 /**
- * Volta o protótipo ao estado de aluno novo.
+ * Volta o protótipo para trás. Existe porque demonstrar o produto é repetir a
+ * mesma sessão, e o que o aluno fez vive em cookies `httpOnly` que o navegador
+ * não deixa apagar.
  *
- * Existe porque demonstrar o produto é repetir a primeira sessão, e tudo que
- * o aluno já fez — ter sido apresentado, as fases concluídas, os quizzes de
- * hoje — fica em cookies `httpOnly`, que o navegador não deixa apagar.
+ * São dois recomeços, e a diferença importa:
  *
- * Apagar **todas** elas é o ponto: faltar uma deixa o protótipo num meio
- * termo, com a trilha fechada e o aluno sem poder refazê-la.
+ * - **Sem parâmetro**: zera o progresso e devolve para a Início. A marca de
+ *   "já foi apresentado" fica, senão a Home rebateria na hora para a tela do
+ *   Bubo — aluno sem progresso e sem apresentação é recém-chegado.
+ * - **`?primeiro=1`**: apaga também a apresentação e leva para a tela do Bubo.
+ *   É o primeiro acesso de verdade.
  *
- * É rota, e não página, porque no Next só um route handler ou uma server
- * action pode escrever cookie; uma página que tentasse apagar não faria nada.
- *
- * Só responde no modo protótipo. Com Supabase configurado ela devolve o aluno
- * para a Home sem apagar nada: aí o progresso é de verdade.
+ * Só responde no modo protótipo. Com Supabase configurado devolve para a
+ * Início sem apagar nada: aí o progresso é de aluno de verdade.
  */
 export function GET(request: NextRequest) {
-  // Vai direto para a apresentação, e não para a Home: se a Home vier de
-  // cache, o aluno veria o progresso antigo e pensaria que nada foi apagado.
-  const destino = new URL(DEV_AUTH_ENABLED ? "/bem-vindo" : "/inicio", request.url);
+  const primeiroAcesso = request.nextUrl.searchParams.get("primeiro") === "1";
+  const simulando = DEV_AUTH_ENABLED && primeiroAcesso;
+
+  const destino = new URL(simulando ? "/bem-vindo" : "/inicio", request.url);
   const response = NextResponse.redirect(destino);
 
   if (DEV_AUTH_ENABLED) {
-    for (const cookie of [ONBOARDING_COOKIE, PHASES_COOKIE, QUIZZES_COOKIE]) {
+    const apagar = [PHASES_COOKIE, QUIZZES_COOKIE];
+    if (primeiroAcesso) apagar.push(ONBOARDING_COOKIE);
+
+    for (const cookie of apagar) {
       // Caminho e validade explícitos: um apagamento sem `path` pode virar um
       // segundo cookie no caminho da rota, deixando o original de pé.
-      response.cookies.set(cookie, "", {
-        path: "/",
-        maxAge: 0,
-        expires: new Date(0),
-      });
+      response.cookies.set(cookie, "", { path: "/", maxAge: 0, expires: new Date(0) });
     }
   }
 

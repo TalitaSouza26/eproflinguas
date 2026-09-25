@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRightIcon, ReplayIcon } from "@/components/ui/icons";
+import { ArrowRightIcon, PlayIcon, ReplayIcon } from "@/components/ui/icons";
 import { DEV_AUTH_ENABLED } from "@/lib/dev-auth";
 import { studentProgress } from "@/lib/student";
 
@@ -48,24 +47,47 @@ export default async function ConfiguracoesPage() {
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent-600">
             Protótipo
           </p>
-          <h2 className="mt-1.5 text-lg font-extrabold text-deep-900">Recomeçar do zero</h2>
+          <h2 className="mt-1.5 text-lg font-extrabold text-deep-900">Voltar para o começo</h2>
           <p className="mt-1.5 text-[15px] leading-relaxed text-ink-700">
-            Apaga tudo o que foi feito — as fases concluídas, os quizzes de hoje e a apresentação
-            do Bubo — e devolve a aplicação ao estado de um aluno que nunca entrou. Serve para
-            mostrar a primeira sessão de novo.
+            Dois recomeços, porque são situações diferentes de demonstração.
           </p>
 
-          <Link
-            href="/recomecar"
-            className="mt-5 inline-flex items-center gap-2.5 rounded-full border-2 border-ink-100 bg-white
-                       px-6 py-3 text-sm font-bold text-ink-700 transition hover:border-blue-200
-                       hover:text-deep-900 focus-visible:outline-2 focus-visible:outline-offset-2
-                       focus-visible:outline-blue-500"
-          >
-            <ReplayIcon className="size-4" />
-            Recomeçar o protótipo
-            <ArrowRightIcon className="size-4" />
-          </Link>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="/recomecar"
+              className="inline-flex items-center justify-center gap-2.5 rounded-full border-2 border-ink-100
+                         bg-white px-6 py-3 text-sm font-bold text-ink-700 transition hover:border-blue-200
+                         hover:text-deep-900 focus-visible:outline-2 focus-visible:outline-offset-2
+                         focus-visible:outline-blue-500"
+            >
+              <ReplayIcon className="size-4" />
+              Zerar o progresso
+              <ArrowRightIcon className="size-4" />
+            </a>
+
+            <a
+              href="/recomecar?primeiro=1"
+              className="inline-flex items-center justify-center gap-2.5 rounded-full border-2 border-ink-100
+                         bg-white px-6 py-3 text-sm font-bold text-ink-700 transition hover:border-blue-200
+                         hover:text-deep-900 focus-visible:outline-2 focus-visible:outline-offset-2
+                         focus-visible:outline-blue-500"
+            >
+              <PlayIcon className="size-4" />
+              Simular primeiro acesso
+              <ArrowRightIcon className="size-4" />
+            </a>
+          </div>
+
+          <ul className="mt-4 space-y-1.5 text-[13px] leading-relaxed text-ink-500">
+            <li>
+              <span className="font-semibold text-deep-700">Zerar o progresso</span> — apaga fases e
+              missão do dia e abre a Início com tudo em zero.
+            </li>
+            <li>
+              <span className="font-semibold text-deep-700">Simular primeiro acesso</span> — apaga
+              também a apresentação e abre na tela do Bubo, como um aluno que nunca entrou.
+            </li>
+          </ul>
         </section>
       )}
     </div>

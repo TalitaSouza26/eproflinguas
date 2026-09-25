@@ -108,7 +108,7 @@ export function Sidebar({
                      focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           <ReplayIcon className="size-4" />
-          Recomeçar o protótipo
+          Zerar o progresso
         </a>
       )}
 
