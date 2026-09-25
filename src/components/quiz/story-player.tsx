@@ -15,6 +15,19 @@ import {
 import { cancelSpeech, speakParts, splitBilingual, togglePause } from "@/lib/speech";
 import { phrasesInStory, type Story } from "@/lib/quiz/stories";
 
+/**
+ * Moldura das ilustrações.
+ *
+ * Proporção fixa e `object-contain`: a arte entra inteira, nunca cortada, e
+ * todos os cartões ficam com a mesma altura de imagem. As artes são 16:9, com
+ * uma exceção mais larga que recebe uma faixa de fundo em vez de perder as
+ * beiradas — que é onde estão as crianças.
+ */
+const MOLDURA =
+  "relative aspect-[16/9] w-full overflow-hidden rounded-[1.4rem] bg-blue-50";
+
+const TAMANHO = "(min-width: 1024px) 40rem, (min-width: 640px) 60vw, 100vw";
+
 const CTA =
   "inline-flex items-center justify-center gap-2.5 rounded-full bg-accent-500 px-7 py-4 text-lg font-extrabold " +
   "text-white shadow-2xl shadow-black/30 transition hover:bg-accent-600 focus-visible:outline-4 " +
@@ -126,7 +139,7 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
   return (
     <div
       className={`relative z-10 flex w-full flex-col items-center gap-6 text-center ${
-        index === -1 ? "max-w-4xl" : "max-w-xl"
+        index === -1 ? "max-w-4xl" : "max-w-2xl"
       }`}
     >
       {/* Capa: um cartão com a cena e o convite. É o único toque que a
@@ -137,14 +150,9 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
             {/* A cena fica emoldurada, com o branco do cartão em volta — ela
                 não encosta na borda nem é cortada pelo canto arredondado. */}
             <div className="p-3 sm:p-4">
-              <Image
-                src={story.cover}
-                alt=""
-                width={1672}
-                height={941}
-                priority
-                className="h-44 w-full rounded-[1.4rem] object-cover sm:h-full"
-              />
+              <div className={MOLDURA}>
+                <Image src={story.cover} alt="" fill priority sizes={TAMANHO} className="object-contain" />
+              </div>
             </div>
 
             <div className="px-6 pb-6 pt-2 text-left sm:py-8 sm:pl-4 sm:pr-8">
@@ -205,14 +213,9 @@ export function StoryPlayer({ story, quizHref }: { story: Story; quizHref: strin
           <div className="relative w-full overflow-hidden rounded-[2rem] bg-white shadow-2xl">
             {beat.kind === "narration" && beat.image && (
               <div className="p-3 pb-0 sm:p-4 sm:pb-0">
-                <Image
-                  src={beat.image}
-                  alt=""
-                  width={2000}
-                  height={727}
-                  priority
-                  className="h-44 w-full rounded-[1.4rem] object-cover sm:h-56"
-                />
+                <div className={MOLDURA}>
+                  <Image src={beat.image} alt="" fill priority sizes={TAMANHO} className="object-contain" />
+                </div>
               </div>
             )}
 
