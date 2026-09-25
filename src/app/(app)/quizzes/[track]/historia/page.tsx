@@ -35,8 +35,10 @@ export default async function HistoriaPage({
 
   if (!story && !revisao) redirect(quizHref);
 
+  // Centralizado na vertical: o cartão é o único elemento da tela, e encostado
+  // no topo ele deixava metade dela vazia.
   return (
-    <div className="relative isolate flex min-h-[calc(100vh-5rem)] justify-center px-5 pb-10 pt-6 sm:pt-8">
+    <div className="relative isolate flex min-h-[calc(100vh-5rem)] items-center justify-center px-5 py-10">
       <WelcomeBackdrop />
 
       {story ? (
