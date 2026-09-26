@@ -231,48 +231,70 @@ body {
 }
 
 /* Destaque da divisão na Home.
-   Um brilho quente que respira atrás do emblema, com brasas subindo. É lento
-   e de baixa opacidade de propósito: precisa chamar atenção sem virar
-   distração permanente na tela inicial. */
+   Fogo atrás do emblema: dois halos que respiram em ritmos diferentes, com
+   brasas subindo. Continua lento — é laço, e laço rápido na tela inicial vira
+   distração —, mas com presença suficiente para se ver sobre o azul. */
 
 @keyframes divisao-glow {
   0%,
   100% {
-    opacity: 0.4;
-    transform: scale(1);
+    opacity: 0.55;
+    transform: scale(0.8);
   }
   50% {
-    opacity: 0.75;
+    opacity: 1;
     transform: scale(1.1);
+  }
+}
+
+/* O halo de trás: mais largo, mais lento e fora de fase com o da frente. Em
+   fase, os dois pulsavam como um só e o efeito voltava a parecer chapado. */
+@keyframes divisao-halo {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1.05);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.35);
   }
 }
 
 @keyframes ember-rise {
   0% {
     opacity: 0;
-    transform: translateY(8px) scale(0.5);
+    transform: translateY(10px) scale(0.4);
   }
-  25% {
-    opacity: 0.9;
+  20% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.85;
   }
   100% {
     opacity: 0;
-    transform: translateY(-38px) scale(1);
+    transform: translateY(-62px) scale(1.15);
   }
 }
 
 .animate-divisao-glow {
-  animation: divisao-glow 2800ms ease-in-out infinite;
+  animation: divisao-glow 2200ms ease-in-out infinite;
+}
+
+.animate-divisao-halo {
+  animation: divisao-halo 3600ms ease-in-out infinite;
 }
 
 .animate-ember {
-  animation: ember-rise 2600ms ease-out infinite;
+  animation: ember-rise 3000ms ease-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-divisao-glow {
+  .animate-divisao-glow,
+  .animate-divisao-halo {
     animation: none;
-    opacity: 0.5;
+    opacity: 0.55;
   }
 
   .animate-ember {
