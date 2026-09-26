@@ -10,14 +10,17 @@ import { Topbar } from "@/components/layout/topbar";
  */
 export function AppShell({
   signOutAction,
+  devMode,
   children,
 }: {
   signOutAction: () => Promise<void>;
+  /** Modo protótipo: libera o atalho de zerar no cabeçalho. */
+  devMode: boolean;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex min-h-screen flex-col bg-[var(--shell-bg)]">
-      <Topbar signOutAction={signOutAction} />
+      <Topbar signOutAction={signOutAction} devMode={devMode} />
 
       {/* Coluna flex: as telas que ocupam a altura inteira pedem `flex-1`
           aqui dentro, em vez de descontarem a altura do cabeçalho na mão. */}

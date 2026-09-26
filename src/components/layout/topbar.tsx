@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "@/components/layout/nav-items";
-import { HelpIcon, LogoutIcon, SettingsIcon } from "@/components/ui/icons";
+import { HelpIcon, LogoutIcon, ReplayIcon, SettingsIcon } from "@/components/ui/icons";
 import { CURRENT_STUDENT } from "@/lib/home-data";
 
 /**
@@ -23,10 +23,29 @@ const CORNER_IDLE =
 
 const CORNER_ON = "bg-[var(--nav-active-bg)] text-[var(--nav-active-fg)]";
 
-const CORNER_LINKS = [
-  { href: "/configuracoes", label: "Configurações", icon: SettingsIcon },
-  { href: "/ajuda", label: "Central de ajuda", icon: HelpIcon },
-];
+const CONFIGURACOES = {
+  href: "/configuracoes",
+  label: "Configurações",
+  icon: SettingsIcon,
+};
+
+const AJUDA = { href: "/ajuda", label: "Central de ajuda", icon: HelpIcon };
+
+/**
+ * Atalho de demonstração, no lugar da ajuda.
+ *
+ * Zerar e repetir a primeira sessão é o que mais se faz com o protótipo, e o
+ * progresso vive em cookies `httpOnly` que o navegador não deixa apagar — sem
+ * atalho, cada demonstração vira uma ida a Configurações.
+ *
+ * Toma a vaga da ajuda porque ela hoje é uma página vazia. Quando o Supabase
+ * entrar, este atalho some e a ajuda volta sozinha para cá.
+ */
+const ZERAR = {
+  href: "/recomecar?primeiro=1",
+  label: "Zerar o progresso e ver o primeiro acesso",
+  icon: ReplayIcon,
+};
 
 const ITEM_BASE =
   "flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition " +
@@ -86,7 +105,14 @@ function NavLinks({ pathname }: { pathname: string }) {
  * acima de um menu onde "Início" já estava aceso: o item ativo faz esse
  * trabalho agora.
  */
-export function Topbar({ signOutAction }: { signOutAction: () => Promise<void> }) {
+export function Topbar({
+  signOutAction,
+  devMode,
+}: {
+  signOutAction: () => Promise<void>;
+  /** Modo protótipo: troca a ajuda pelo atalho de zerar. */
+  devMode: boolean;
+}) {
   const pathname = usePathname();
 
   return (
@@ -143,21 +169,42 @@ export function Topbar({ signOutAction }: { signOutAction: () => Promise<void> }
               estudar. Sair fica por último, no extremo — encostado nos
               vizinhos, quem mira um acerta o outro, e as consequências são bem
               diferentes. */}
-          {CORNER_LINKS.map(({ href, label, icon: Icon }) => {
-            const open = pathname.startsWith(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                aria-label={label}
-                aria-current={open ? "page" : undefined}
-                title={label}
-                className={`${CORNER_ICON} ${open ? CORNER_ON : CORNER_IDLE}`}
-              >
-                <Icon className="size-5" />
-              </Link>
-            );
-          })}
+          <Link
+            href={CONFIGURACOES.href}
+            aria-label={CONFIGURACOES.label}
+            aria-current={pathname.startsWith(CONFIGURACOES.href) ? "page" : undefined}
+            title={CONFIGURACOES.label}
+            className={`${CORNER_ICON} ${
+              pathname.startsWith(CONFIGURACOES.href) ? CORNER_ON : CORNER_IDLE
+            }`}
+          >
+            <CONFIGURACOES.icon className="size-5" />
+          </Link>
+
+          {devMode ? (
+            // Âncora comum, não <Link>: a rota precisa responder de verdade
+            // para apagar os cookies. Navegação do cliente não a executa.
+            <a
+              href={ZERAR.href}
+              aria-label={ZERAR.label}
+              title={ZERAR.label}
+              className={`${CORNER_ICON} ${CORNER_IDLE}`}
+            >
+              <ZERAR.icon className="size-5" />
+            </a>
+          ) : (
+            <Link
+              href={AJUDA.href}
+              aria-label={AJUDA.label}
+              aria-current={pathname.startsWith(AJUDA.href) ? "page" : undefined}
+              title={AJUDA.label}
+              className={`${CORNER_ICON} ${
+                pathname.startsWith(AJUDA.href) ? CORNER_ON : CORNER_IDLE
+              }`}
+            >
+              <AJUDA.icon className="size-5" />
+            </Link>
+          )}
 
           <form action={signOutAction}>
             <button
