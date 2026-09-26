@@ -7,11 +7,14 @@
  * A escada é uma lista ordenada de propósito: para acrescentar níveis basta
  * incluir itens no fim, sem tocar em nenhuma tela.
  *
- * ATENÇÃO: a Bronze I está em 9 palavras porque é o que a trilha "Primeiras
- * palavras" inteira ensina — a primeira divisão cai exatamente ao fechar a
- * primeira trilha. Os degraus seguintes (50, 100, 200, 400) foram pensados
- * quando uma trilha tinha 16 palavras de núcleo; com o conteúdo atual do
- * 1º–2º eles ficaram longe demais e precisam ser recalibrados.
+ * ATENÇÃO: a Bronze I está em 3 palavras porque é o que a primeira fase
+ * ensina — ela cai junto com a conquista "Primeiro passo", no fim do primeiro
+ * quiz. É de propósito: a escada precisa dar sinal de vida logo, senão o aluno
+ * passa a trilha inteira vendo um emblema apagado.
+ *
+ * Os degraus seguintes (50, 100, 200, 400) foram pensados quando uma trilha
+ * tinha 16 palavras de núcleo; com o conteúdo atual do 1º–2º eles ficaram
+ * longe demais e precisam ser recalibrados.
  */
 
 export type Divisao = {
@@ -42,7 +45,7 @@ export const DIVISOES: Divisao[] = [
   {
     id: "bronze-1",
     name: "Bronze I",
-    words: 9,
+    words: 3,
     image: "/badges/bronze-1-v2.webp",
     tint: { from: "#c25a1c", to: "#f0a05c", soft: "#fdefe4", ink: "#8a3c10" },
   },

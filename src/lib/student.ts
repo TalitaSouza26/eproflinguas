@@ -64,18 +64,27 @@ export async function studentProgress(): Promise<StudentProgress> {
  *
  * Só as trilhas que ainda não têm abertura caem no contador por questão.
  */
+
+/** O que uma fase ensina de novo. */
+export function wordsOfPhase(slug: string, phase: number): number {
+  const story = storyForTrack(slug, phase);
+  if (story) return phrasesInStory(story);
+
+  const gallery = galleryFor(slug, phase);
+  if (gallery) return gallery.words.length;
+
+  // Fase de revisão de uma trilha com abertura: repassa, não ensina.
+  if (storyForTrack(slug, 1) || galleryFor(slug, 1)) return 0;
+
+  return quizForTrack(slug, phase).questions.length;
+}
+
 function wordsLearned(tracks: TrackProgress[]): number {
   let total = 0;
 
   for (const track of tracks) {
     for (let phase = 1; phase <= track.completedPhases; phase++) {
-      const story = storyForTrack(track.slug, phase);
-      const gallery = galleryFor(track.slug, phase);
-
-      if (story) total += phrasesInStory(story);
-      else if (gallery) total += gallery.words.length;
-      else if (storyForTrack(track.slug, 1) || galleryFor(track.slug, 1)) total += 0;
-      else total += quizForTrack(track.slug, phase).questions.length;
+      total += wordsOfPhase(track.slug, phase);
     }
   }
 
