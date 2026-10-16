@@ -5,7 +5,13 @@ import { GalleryPlayer } from "@/components/quiz/gallery-player";
 import { QuizPlayer } from "@/components/quiz/quiz-player";
 import { ReviewIntro } from "@/components/quiz/review-intro";
 import { StoryPlayer } from "@/components/quiz/story-player";
-import { acharTrilha, cenasProntas, palavrasProntas, perguntasDaFase } from "@/lib/demo/trilha";
+import {
+  acharTrilha,
+  cenasProntas,
+  mesmaPalavra,
+  palavrasProntas,
+  perguntasDaFase,
+} from "@/lib/demo/trilha";
 import { useDemoDados } from "@/lib/demo/use-demo-dados";
 import type { Gallery } from "@/lib/quiz/galeria";
 import type { Story, StoryBeat } from "@/lib/quiz/stories";
@@ -69,11 +75,18 @@ export function DemoFase({
 
   if (atual.tipo === "historia") {
     const palavras = palavrasProntas(atual);
-    const significado = (en: string) => palavras.find((p) => p.en === en)?.pt ?? "";
+    // A cena pode marcar "My name is" e o dicionário guardar "My name is…":
+    // é a mesma expressão, com a pontuação da frase colada.
+    const significado = (en: string) => palavras.find((p) => mesmaPalavra(p.en, en))?.pt ?? "";
     const cenas = cenasProntas(atual);
 
     // Cada cena vira duas batidas: a narração, com a palavra entre asteriscos
     // como o player espera, e a tela da palavra nova logo depois.
+    // Uma palavra só é apresentada na primeira vez que aparece. A história
+    // real marca "Good morning" em duas cenas, e ensiná-la duas vezes faria
+    // a mesma tela de palavra nova surgir repetida.
+    const jaEnsinadas: string[] = [];
+
     const beats: StoryBeat[] = cenas.flatMap((c) => {
       const narracao = {
         kind: "narration" as const,
@@ -87,7 +100,19 @@ export function DemoFase({
       // da que fecha uma parte da história, nas histórias que já existem.
       if (!c.palavra) return [narracao];
 
-      return [narracao, { kind: "lesson" as const, word: c.palavra, meaning: significado(c.palavra) }];
+      if (jaEnsinadas.some((j) => mesmaPalavra(j, c.palavra))) return [narracao];
+      jaEnsinadas.push(c.palavra);
+
+      const guardada = palavras.find((p) => mesmaPalavra(p.en, c.palavra));
+      return [
+        narracao,
+        {
+          kind: "lesson" as const,
+          // Mostra a grafia do dicionário, que é a completa.
+          word: guardada?.en ?? c.palavra,
+          meaning: significado(c.palavra),
+        },
+      ];
     });
 
     const historia: Story = {

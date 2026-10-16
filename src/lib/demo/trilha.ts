@@ -151,9 +151,51 @@ export function trilhaVazia(): DemoTrilha {
  * da cena — a figura, quando existe, só entra na revisão.
  */
 export function palavrasProntas(fase: DemoFase): DemoPalavra[] {
-  return fase.palavras.filter(
-    (p) => p.en.trim() && p.pt.trim() && (fase.tipo !== "galeria" || p.imagem),
-  );
+  const lista = fase.tipo === "historia" ? palavrasDaHistoria(fase) : fase.palavras;
+  return lista.filter((p) => p.en.trim() && p.pt.trim() && (fase.tipo !== "galeria" || p.imagem));
+}
+
+/**
+ * As palavras que a história ensina, na ordem em que aparecem.
+ *
+ * Saem das cenas, não da lista: é a cena que ensina, e a lista é só onde a
+ * tradução e a dica ficam guardadas. Assim uma palavra que você tirou da
+ * história para de ser cobrada no quiz sem precisar apagá-la da lista — e se
+ * você a trouxer de volta, a tradução ainda está lá.
+ */
+/**
+ * Duas grafias da mesma palavra.
+ *
+ * A história real marca "My name is" na cena e ensina "My name is…", com
+ * reticências. São a mesma expressão, e tratá-las como duas criaria uma
+ * entrada vazia no dicionário. Compara sem maiúsculas e sem a pontuação do
+ * fim, que é enfeite da frase e não parte da palavra.
+ */
+export function mesmaPalavra(a: string, b: string): boolean {
+  const limpa = (x: string) =>
+    x
+      .trim()
+      .toLowerCase()
+      .replace(/[….,!?;:]+$/u, "")
+      .trim();
+  return limpa(a) === limpa(b) && limpa(a) !== "";
+}
+
+export function palavrasDaHistoria(fase: DemoFase): DemoPalavra[] {
+  const vistas = new Set<string>();
+  const saida: DemoPalavra[] = [];
+
+  for (const cena of fase.cenas) {
+    const en = cena.palavra.trim();
+    if (!en || [...vistas].some((v) => mesmaPalavra(v, en))) continue;
+    vistas.add(en);
+
+    // A entrada guardada ganha: ela tem a grafia completa, a tradução e a dica.
+    const guardada = fase.palavras.find((p) => mesmaPalavra(p.en, en));
+    saida.push(guardada ?? { en, pt: "", imagem: null, dica: "" });
+  }
+
+  return saida;
 }
 
 export function cenasProntas(fase: DemoFase): DemoCena[] {

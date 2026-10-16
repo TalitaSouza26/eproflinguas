@@ -1,13 +1,16 @@
 "use client";
 
-import { Apagar, BOTAO_CLARO, Campo, CampoFigura, Secao } from "@/components/admin/campos";
+import { Apagar, BOTAO_CLARO, CAMPO, Campo, CampoFigura, Secao } from "@/components/admin/campos";
 import {
   cenaVazia,
   dialogoVazio,
-  palavraVazia,
+  mesmaPalavra,
+  palavrasDaHistoria,
   palavrasProntas,
+  palavraVazia,
   TIPOS,
   type DemoFase,
+  type DemoPalavra,
   type TipoFase,
 } from "@/lib/demo/trilha";
 
@@ -35,7 +38,25 @@ export function FaseEditor({
   onMudar: (mudanca: Partial<DemoFase>) => void;
   onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
 }) {
-  const palavras = palavrasProntas(fase);
+  // Na história a lista de palavras é derivada das cenas; na galeria é a
+  // lista digitada. Em ambos os casos é o que o quiz vai cobrar.
+  const palavras = fase.tipo === "historia" ? palavrasDaHistoria(fase) : palavrasProntas(fase);
+
+  /**
+   * Guarda tradução, dica ou figura de uma palavra que veio de uma cena.
+   *
+   * A entrada é criada na primeira vez que se escreve algo nela, e casada sem
+   * diferenciar maiúsculas: "Hello" e "hello" são a mesma palavra.
+   */
+  function guardarPalavra(en: string, mudanca: Partial<DemoPalavra>) {
+    const existe = fase.palavras.some((p) => mesmaPalavra(p.en, en));
+
+    onMudar({
+      palavras: existe
+        ? fase.palavras.map((p) => (mesmaPalavra(p.en, en) ? { ...p, ...mudanca } : p))
+        : [...fase.palavras, { ...palavraVazia(), en, ...mudanca }],
+    });
+  }
 
   function trocarTipo(tipo: TipoFase) {
     onMudar({
@@ -108,14 +129,150 @@ export function FaseEditor({
         )}
       </Secao>
 
-      {(fase.tipo === "galeria" || fase.tipo === "historia") && (
+      {/* Na história a CENA vem primeiro: quem escreve escreve a cena e
+          marca a palavra nela. A lista abaixo é o dicionário do que as
+          cenas marcaram — tradução, dica e figura de cada palavra. */}
+      {fase.tipo === "historia" && (
+        <Secao
+          titulo="As cenas"
+          ajuda="Escreva a cena e marque nela a palavra em inglês. Cena sem palavra é só narração, como a que abre e a que fecha uma parte."
+        >
+          <ul className="space-y-3">
+            {fase.cenas.map((cena, i) => (
+              <li key={i} className="rounded-lg border border-slate-200 p-3">
+                <div className="flex items-start gap-3">
+                  <CampoFigura
+                    imagem={cena.imagem}
+                    rotulo={`Figura da cena ${i + 1}`}
+                    tamanho="h-[88px] w-[120px]"
+                    onEscolher={(arquivo) =>
+                      onFigura(arquivo, (imagem) =>
+                        onMudar({ cenas: fase.cenas.map((c, j) => (j === i ? { ...c, imagem } : c)) }),
+                      )
+                    }
+                  />
+
+                  <div className="grid flex-1 gap-3 sm:grid-cols-3">
+                    <Campo
+                      id={`antes-${indice}-${i}`}
+                      rotulo="Texto antes"
+                      valor={cena.antes}
+                      placeholder="Ele sorriu e acenou: —"
+                      onChange={(antes) =>
+                        onMudar({ cenas: fase.cenas.map((c, j) => (j === i ? { ...c, antes } : c)) })
+                      }
+                    />
+
+                    <label className="block">
+                      <span className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                        Palavra em destaque
+                      </span>
+                      <input
+                        id={`palavra-${indice}-${i}`}
+                        className={CAMPO}
+                        list={`lexico-${indice}`}
+                        value={cena.palavra}
+                        placeholder="Hello"
+                        onChange={(e) =>
+                          onMudar({
+                            cenas: fase.cenas.map((c, j) =>
+                              j === i ? { ...c, palavra: e.target.value } : c,
+                            ),
+                          })
+                        }
+                      />
+                    </label>
+
+                    <Campo
+                      id={`depois-${indice}-${i}`}
+                      rotulo="Texto depois"
+                      valor={cena.depois}
+                      placeholder="!"
+                      onChange={(depois) =>
+                        onMudar({ cenas: fase.cenas.map((c, j) => (j === i ? { ...c, depois } : c)) })
+                      }
+                    />
+                  </div>
+
+                  <Apagar
+                    oque={`cena ${i + 1}`}
+                    onClick={() => onMudar({ cenas: fase.cenas.filter((_, j) => j !== i) })}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {/* Sugere o que já foi marcado, para a mesma palavra não virar
+              duas por uma maiúscula de diferença. */}
+          <datalist id={`lexico-${indice}`}>
+            {palavras.map((p) => (
+              <option key={p.en} value={p.en} />
+            ))}
+          </datalist>
+
+          <button
+            type="button"
+            onClick={() => onMudar({ cenas: [...fase.cenas, cenaVazia()] })}
+            className={`${BOTAO_CLARO} mt-3`}
+          >
+            Mais uma cena
+          </button>
+        </Secao>
+      )}
+
+      {fase.tipo === "historia" && (
+        <Secao
+          titulo="O que as cenas ensinam"
+          ajuda="Uma linha por palavra marcada acima. Diga o que cada uma quer dizer — é isso que o quiz cobra. A figura é opcional: havendo uma, a revisão usa ela para cobrar de outro jeito."
+        >
+          {palavras.length === 0 ? (
+            <p className="text-sm text-slate-500">
+              Nenhuma ainda. Marque uma palavra numa cena acima.
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {palavras.map((palavra) => (
+                <li
+                  key={palavra.en}
+                  className="grid items-start gap-3 rounded-lg border border-slate-200 p-3 sm:grid-cols-[88px_140px_1fr_1fr]"
+                >
+                  <CampoFigura
+                    imagem={palavra.imagem}
+                    rotulo={`Figura de ${palavra.en}`}
+                    onEscolher={(arquivo) =>
+                      onFigura(arquivo, (imagem) => guardarPalavra(palavra.en, { imagem }))
+                    }
+                  />
+
+                  <p className="pt-6 text-sm font-extrabold text-slate-900">{palavra.en}</p>
+
+                  <Campo
+                    id={`pt-${indice}-${palavra.en}`}
+                    rotulo="Quer dizer"
+                    valor={palavra.pt}
+                    placeholder="olá"
+                    onChange={(pt) => guardarPalavra(palavra.en, { pt })}
+                  />
+
+                  <Campo
+                    id={`dica-${indice}-${palavra.en}`}
+                    rotulo="Dica do Bubo"
+                    valor={palavra.dica}
+                    placeholder="opcional"
+                    onChange={(dica) => guardarPalavra(palavra.en, { dica })}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </Secao>
+      )}
+
+      {fase.tipo === "galeria" && (
         <Secao
           titulo="As palavras"
-          ajuda={
-            fase.tipo === "galeria"
-              ? "Palavra, tradução e figura. A figura é obrigatória: o quiz da galeria é de imagem."
-              : "Palavra e tradução. A figura é opcional aqui — se existir, a revisão usa ela para cobrar de outro jeito."
-          }
+          ajuda="Palavra, tradução e figura. A figura é obrigatória: o quiz da galeria é de imagem."
         >
           <ul className="space-y-3">
             {fase.palavras.map((palavra, i) => (
@@ -178,99 +335,6 @@ export function FaseEditor({
           >
             Mais uma palavra
           </button>
-        </Secao>
-      )}
-
-      {fase.tipo === "historia" && (
-        <Secao
-          titulo="As cenas"
-          ajuda="Cada cena é um texto, e pode destacar uma palavra da lista acima — é isso que impede o quiz de cobrar o que a história não ensinou. Cena sem palavra é só narração, como a que abre e a que fecha uma parte."
-        >
-          {(
-            <>
-              <ul className="space-y-3">
-                {fase.cenas.map((cena, i) => (
-                  <li key={i} className="rounded-lg border border-slate-200 p-3">
-                    <div className="flex items-start gap-3">
-                      <CampoFigura
-                        imagem={cena.imagem}
-                        rotulo={`Figura da cena ${i + 1}`}
-                        tamanho="h-[88px] w-[120px]"
-                        onEscolher={(arquivo) =>
-                          onFigura(arquivo, (imagem) =>
-                            onMudar({
-                              cenas: fase.cenas.map((c, j) => (j === i ? { ...c, imagem } : c)),
-                            }),
-                          )
-                        }
-                      />
-
-                      <div className="grid flex-1 gap-3 sm:grid-cols-3">
-                        <Campo
-                          id={`antes-${indice}-${i}`}
-                          rotulo="Texto antes"
-                          valor={cena.antes}
-                          placeholder="Ele sorriu e acenou: —"
-                          onChange={(antes) =>
-                            onMudar({ cenas: fase.cenas.map((c, j) => (j === i ? { ...c, antes } : c)) })
-                          }
-                        />
-
-                        <label className="block">
-                          <span className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">
-                            Palavra em destaque
-                          </span>
-                          <select
-                            id={`palavra-${indice}-${i}`}
-                            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm
-                                       focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-600"
-                            value={cena.palavra}
-                            onChange={(e) =>
-                              onMudar({
-                                cenas: fase.cenas.map((c, j) =>
-                                  j === i ? { ...c, palavra: e.target.value } : c,
-                                ),
-                              })
-                            }
-                          >
-                            <option value="">nenhuma — só narração</option>
-                            {palavras.map((p) => (
-                              <option key={p.en} value={p.en}>
-                                {p.en}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-
-                        <Campo
-                          id={`depois-${indice}-${i}`}
-                          rotulo="Texto depois"
-                          valor={cena.depois}
-                          placeholder="!"
-                          onChange={(depois) =>
-                            onMudar({ cenas: fase.cenas.map((c, j) => (j === i ? { ...c, depois } : c)) })
-                          }
-                        />
-                      </div>
-
-                      <Apagar
-                        oque={`cena ${i + 1}`}
-                        onClick={() => onMudar({ cenas: fase.cenas.filter((_, j) => j !== i) })}
-                      />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                type="button"
-                onClick={() => onMudar({ cenas: [...fase.cenas, cenaVazia()] })}
-                className={`${BOTAO_CLARO} mt-3`}
-              >
-                Mais uma cena
-              </button>
-            </>
-          )}
         </Secao>
       )}
 
