@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { BOTAO, BOTAO_CLARO, Campo } from "@/components/admin/campos";
 import { FaseEditor } from "@/components/admin/fase-editor";
 import { ArrowLeftIcon, ArrowRightIcon, CloseIcon, ReplayIcon } from "@/components/ui/icons";
+import { trilhaDeExemplo } from "@/lib/demo/semente";
 import {
   faseVazia,
   fasesProntas,
@@ -37,13 +38,25 @@ export function Painel() {
   const [faseAberta, setFaseAberta] = useState<number | null>(null);
   const [erro, setErro] = useState<string | null>(null);
 
-  // O que já estiver na aba volta para a tela. É leitura de armazenamento do
-  // navegador, que só existe depois de montar — daí o efeito, e não um valor
-  // inicial: no servidor não há aba, e semear com outro valor quebraria a
-  // hidratação. Roda uma vez, sem cascata.
+  // O que já estiver na aba volta para a tela. Aba limpa abre com a trilha
+  // que o produto já tem, como exemplo trabalhado — tela em branco não ensina
+  // a preencher nada.
+  //
+  // É leitura de armazenamento do navegador, que só existe depois de montar —
+  // daí o efeito, e não um valor inicial: no servidor não há aba, e semear com
+  // outro valor quebraria a hidratação. Roda uma vez, sem cascata.
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- leitura única de sessionStorage no mount
-    setDados(lerDemo() ?? SEM_NADA);
+    const guardado = lerDemo();
+    if (guardado) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- leitura única de sessionStorage no mount
+      setDados(guardado);
+      return;
+    }
+
+    const exemplo = trilhaDeExemplo();
+    const inicial = exemplo ? { trilhas: [exemplo] } : SEM_NADA;
+    setDados(inicial);
+    gravarDemo(inicial);
   }, []);
 
   /** Grava na hora: num protótipo, "salvar" é só mais um passo para esquecer. */
@@ -148,6 +161,13 @@ export function Painel() {
               setDados(SEM_NADA);
               setTrilhaAberta(null);
             }}
+            onExemplo={() => {
+              const exemplo = trilhaDeExemplo();
+              if (!exemplo) return;
+              const novos = { trilhas: [...dados.trilhas, { ...exemplo, id: `${exemplo.id}-${Date.now().toString(36)}` }] };
+              setDados(novos);
+              gravarDemo(novos);
+            }}
           />
         )}
 
@@ -197,12 +217,14 @@ function ListaTrilhas({
   onNova,
   onApagar,
   onLimparTudo,
+  onExemplo,
 }: {
   dados: DemoDados;
   onAbrir: (id: string) => void;
   onNova: () => void;
   onApagar: (id: string) => void;
   onLimparTudo: () => void;
+  onExemplo: () => void;
 }) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white">
@@ -219,9 +241,15 @@ function ListaTrilhas({
       </div>
 
       {dados.trilhas.length === 0 ? (
-        <p className="p-6 text-sm text-slate-500">
-          Nenhuma trilha ainda. Comece por uma — depois você acrescenta as fases dentro dela.
-        </p>
+        <div className="p-6">
+          <p className="text-sm text-slate-500">
+            Nenhuma trilha. Comece por uma — ou traga de volta a trilha do produto, para usar
+            de exemplo.
+          </p>
+          <button type="button" onClick={onExemplo} className={`${BOTAO_CLARO} mt-3`}>
+            Trazer a trilha do produto
+          </button>
+        </div>
       ) : (
         <ul>
           {dados.trilhas.map((t) => {
@@ -359,8 +387,15 @@ function Fases({
                     >
                       {i + 1}
                     </span>
-                    <span className="flex-1 truncate text-sm font-extrabold">
-                      {fase.titulo.trim() || `Fase ${i + 1}`}
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-extrabold">
+                        {fase.titulo.trim() || `Fase ${i + 1}`}
+                      </span>
+                      {fase.subtitulo.trim() && (
+                        <span className="block truncate text-xs text-slate-500">
+                          {fase.subtitulo}
+                        </span>
+                      )}
                     </span>
                     <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-slate-600">
                       {nomeTipo}

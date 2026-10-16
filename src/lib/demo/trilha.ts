@@ -211,13 +211,14 @@ export function gravarDemo(dados: DemoDados): void {
   window.dispatchEvent(new Event(EVENTO_DEMO));
 }
 
+/**
+ * Esvazia o conteúdo — gravando vazio, não apagando a chave.
+ *
+ * Apagar a chave faria a próxima leitura devolver "nada guardado", e o admin
+ * semearia a trilha de exemplo outra vez: apagar não apagaria nada.
+ */
 export function limparDemo(): void {
-  try {
-    window.sessionStorage.removeItem(CHAVE);
-  } catch {
-    // Nada a fazer: já não havia o que apagar.
-  }
-  window.dispatchEvent(new Event(EVENTO_DEMO));
+  gravarDemo({ trilhas: [] });
 }
 
 /** A resposta certa alterna de posição: fixa, a criança decora o lugar. */
