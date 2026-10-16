@@ -85,7 +85,17 @@ export type DemoFase = {
   dialogos: DemoDialogo[];
 };
 
-export type DemoTrilha = { nome: string; fases: DemoFase[] };
+export type DemoTrilha = {
+  /** Identidade estável: o nome muda, os links não podem quebrar. */
+  id: string;
+  nome: string;
+  /** O assunto da trilha, como "Cores" ou "Escola". Aparece na lista. */
+  tema: string;
+  fases: DemoFase[];
+};
+
+/** Tudo que foi montado no admin. */
+export type DemoDados = { trilhas: DemoTrilha[] };
 
 export const palavraVazia = (): DemoPalavra => ({ en: "", pt: "", imagem: null });
 export const cenaVazia = (): DemoCena => ({ antes: "", palavra: "", depois: "", imagem: null });
@@ -105,7 +115,16 @@ export const faseVazia = (tipo: TipoFase = "galeria"): DemoFase => ({
   dialogos: tipo === "dialogo" ? [dialogoVazio()] : [],
 });
 
-export const TRILHA_VAZIA: DemoTrilha = { nome: "", fases: [] };
+export const SEM_NADA: DemoDados = { trilhas: [] };
+
+export function trilhaVazia(): DemoTrilha {
+  return {
+    id: `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+    nome: "",
+    tema: "",
+    fases: [faseVazia("galeria")],
+  };
+}
 
 /**
  * O que está completo o bastante para virar conteúdo.
@@ -135,25 +154,39 @@ export function faseCompleta(trilha: DemoTrilha, i: number): boolean {
   return perguntasDaFase(trilha, i).length > 0;
 }
 
-export function lerDemo(): DemoTrilha | null {
+/** Quantas fases da trilha já rendem conteúdo. */
+export function fasesProntas(trilha: DemoTrilha): number {
+  return trilha.fases.filter((_, i) => faseCompleta(trilha, i)).length;
+}
+
+/** Uma trilha chega ao aluno quando tem nome e ao menos uma fase pronta. */
+export function trilhaNoAr(trilha: DemoTrilha): boolean {
+  return Boolean(trilha.nome.trim()) && fasesProntas(trilha) > 0;
+}
+
+export function acharTrilha(dados: DemoDados | null, id: string): DemoTrilha | undefined {
+  return dados?.trilhas.find((t) => t.id === id);
+}
+
+export function lerDemo(): DemoDados | null {
   if (typeof window === "undefined") return null;
 
   try {
     const bruto = window.sessionStorage.getItem(CHAVE);
     if (!bruto) return null;
 
-    const dados = JSON.parse(bruto) as DemoTrilha;
+    const dados = JSON.parse(bruto) as DemoDados;
     // Um storage de outra versão não pode derrubar a tela do aluno.
-    if (!dados?.nome || !Array.isArray(dados.fases)) return null;
+    if (!Array.isArray(dados?.trilhas)) return null;
     return dados;
   } catch {
     return null;
   }
 }
 
-export function gravarDemo(trilha: DemoTrilha): void {
+export function gravarDemo(dados: DemoDados): void {
   try {
-    window.sessionStorage.setItem(CHAVE, JSON.stringify(trilha));
+    window.sessionStorage.setItem(CHAVE, JSON.stringify(dados));
   } catch {
     // Aba anônima, armazenamento cheio ou bloqueado: a trilha vale só até
     // sair desta tela, que ainda é mais do que nada.

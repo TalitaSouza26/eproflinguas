@@ -7,10 +7,10 @@ export const metadata: Metadata = { title: "Demonstração — eProf Línguas" }
 export default async function DemoQuizPage({
   searchParams,
 }: {
-  searchParams: Promise<{ fase?: string }>;
+  searchParams: Promise<{ trilha?: string; fase?: string }>;
 }) {
-  const { fase } = await searchParams;
+  const { trilha, fase } = await searchParams;
   const numero = Number(fase) >= 1 ? Number(fase) : 1;
 
-  return <DemoFase etapa="quiz" fase={numero} />;
+  return <DemoFase etapa="quiz" trilhaId={trilha ?? ""} fase={numero} />;
 }

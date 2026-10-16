@@ -1,10 +1,10 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { EVENTO_DEMO, lerDemo, type DemoTrilha } from "@/lib/demo/trilha";
+import { EVENTO_DEMO, lerDemo, type DemoDados } from "@/lib/demo/trilha";
 
 /**
- * A trilha de demonstração, para quem só lê.
+ * O conteúdo montado no admin, para quem só lê.
  *
  * `useSyncExternalStore` em vez de `useEffect` com `setState`: a trilha é
  * estado de fora do React — vive no `sessionStorage` — e este é o jeito de
@@ -16,9 +16,9 @@ import { EVENTO_DEMO, lerDemo, type DemoTrilha } from "@/lib/demo/trilha";
  */
 
 let cacheTexto: string | null = null;
-let cacheValor: DemoTrilha | null = null;
+let cacheValor: DemoDados | null = null;
 
-function instantaneo(): DemoTrilha | null {
+function instantaneo(): DemoDados | null {
   const texto = (() => {
     try {
       return window.sessionStorage.getItem("eprof-demo-trilha");
@@ -47,6 +47,6 @@ function assinar(aoMudar: () => void) {
 /** No servidor não há aba, logo não há trilha. */
 const noServidor = () => null;
 
-export function useDemoTrilha(): DemoTrilha | null {
+export function useDemoDados(): DemoDados | null {
   return useSyncExternalStore(assinar, instantaneo, noServidor);
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { MontarTrilha } from "@/components/admin/montar-trilha";
+import { Painel } from "@/components/admin/painel";
 
-export const metadata: Metadata = { title: "Montar trilha — eProf Admin" };
+export const metadata: Metadata = { title: "Trilhas — eProf Admin" };
 
 /**
  * O backoffice de demonstração.
@@ -11,5 +11,5 @@ export const metadata: Metadata = { title: "Montar trilha — eProf Admin" };
  * botão gigante.
  */
 export default function AdminPage() {
-  return <MontarTrilha />;
+  return <Painel />;
 }

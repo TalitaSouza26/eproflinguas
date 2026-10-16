@@ -5,23 +5,32 @@ import { GalleryPlayer } from "@/components/quiz/gallery-player";
 import { QuizPlayer } from "@/components/quiz/quiz-player";
 import { ReviewIntro } from "@/components/quiz/review-intro";
 import { StoryPlayer } from "@/components/quiz/story-player";
-import { cenasProntas, palavrasProntas, perguntasDaFase } from "@/lib/demo/trilha";
-import { useDemoTrilha } from "@/lib/demo/use-demo-trilha";
+import { acharTrilha, cenasProntas, palavrasProntas, perguntasDaFase } from "@/lib/demo/trilha";
+import { useDemoDados } from "@/lib/demo/use-demo-dados";
 import type { Gallery } from "@/lib/quiz/galeria";
 import type { Story, StoryBeat } from "@/lib/quiz/stories";
 
 /**
- * A trilha de demonstração rodando na tela do aluno.
+ * Uma fase da trilha montada no admin, rodando na tela do aluno.
  *
  * Usa os players de verdade — galeria, história, revisão e quiz são os mesmos
  * componentes do produto. Uma imitação mentiria justamente sobre o que se
- * quer conferir: se o conteúdo montado no admin funciona de fato ali dentro.
+ * quer conferir: se o conteúdo montado funciona de fato ali dentro.
  *
- * Fica num componente de navegador porque a trilha vive no `sessionStorage`:
- * o servidor não tem como saber que ela existe.
+ * Fica num componente de navegador porque o conteúdo vive no
+ * `sessionStorage`: o servidor não tem como saber que ele existe.
  */
-export function DemoFase({ etapa, fase }: { etapa: "abertura" | "quiz"; fase: number }) {
-  const trilha = useDemoTrilha();
+export function DemoFase({
+  etapa,
+  trilhaId,
+  fase,
+}: {
+  etapa: "abertura" | "quiz";
+  trilhaId: string;
+  fase: number;
+}) {
+  const dados = useDemoDados();
+  const trilha = acharTrilha(dados, trilhaId);
 
   if (!trilha) return <SemTrilha />;
 
@@ -30,7 +39,7 @@ export function DemoFase({ etapa, fase }: { etapa: "abertura" | "quiz"; fase: nu
   if (!atual) return <SemTrilha />;
 
   const total = trilha.fases.length;
-  const quizHref = `/quizzes/demo/quiz?fase=${fase}`;
+  const quizHref = `/quizzes/demo/quiz?trilha=${trilha.id}&fase=${fase}`;
   const perguntas = perguntasDaFase(trilha, i);
 
   // O diálogo não tem abertura: a conversa já é o conteúdo.
@@ -92,7 +101,7 @@ export function DemoFase({ etapa, fase }: { etapa: "abertura" | "quiz"; fase: nu
 
 function contexto(fase: number, total: number): string {
   const faltam = total - fase;
-  if (faltam <= 0) return "Última fase da trilha de demonstração.";
+  if (faltam <= 0) return "Última fase desta trilha.";
   if (faltam === 1) return "Falta 1 fase nesta trilha.";
   return `Faltam ${faltam} fases nesta trilha.`;
 }
@@ -100,10 +109,10 @@ function contexto(fase: number, total: number): string {
 function SemTrilha() {
   return (
     <div className="relative z-10 mx-auto max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl">
-      <h1 className="text-2xl font-extrabold text-deep-900">Nenhuma trilha de demonstração</h1>
+      <h1 className="text-2xl font-extrabold text-deep-900">Trilha não encontrada</h1>
       <p className="mt-2 text-ink-700">
-        Ela vive só na aba em que foi montada. Se você recarregou numa aba nova ou fechou a
-        anterior, é preciso montar de novo.
+        O conteúdo do admin vive só na aba em que foi montado. Se você recarregou numa aba nova
+        ou fechou a anterior, é preciso montar de novo.
       </p>
       <Link
         href="/admin"
@@ -111,7 +120,7 @@ function SemTrilha() {
                    text-lg font-extrabold text-white transition hover:bg-accent-600
                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
       >
-        Montar trilha
+        Ir ao admin
       </Link>
     </div>
   );
