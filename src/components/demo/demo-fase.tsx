@@ -74,22 +74,31 @@ export function DemoFase({
 
     // Cada cena vira duas batidas: a narração, com a palavra entre asteriscos
     // como o player espera, e a tela da palavra nova logo depois.
-    const beats: StoryBeat[] = cenas.flatMap((c) => [
-      {
+    const beats: StoryBeat[] = cenas.flatMap((c) => {
+      const narracao = {
         kind: "narration" as const,
-        text: `${c.antes} *${c.palavra}* ${c.depois}`.replace(/\s+/g, " ").trim(),
+        text: (c.palavra ? `${c.antes} *${c.palavra}* ${c.depois}` : `${c.antes} ${c.depois}`)
+          .replace(/\s+/g, " ")
+          .trim(),
         ...(c.imagem ? { image: c.imagem } : {}),
-      },
-      { kind: "lesson" as const, word: c.palavra, meaning: significado(c.palavra) },
-    ]);
+      };
+
+      // Cena sem palavra em destaque é só narração — é o caso da que abre e
+      // da que fecha uma parte da história, nas histórias que já existem.
+      if (!c.palavra) return [narracao];
+
+      return [narracao, { kind: "lesson" as const, word: c.palavra, meaning: significado(c.palavra) }];
+    });
 
     const historia: Story = {
       slug: "demo",
       phase: fase,
       part: fase,
       title: atual.titulo || trilha.nome,
-      subtitle: `${palavras.length} ${palavras.length === 1 ? "palavra nova" : "palavras novas"}.`,
-      cover: cenas.find((c) => c.imagem)?.imagem ?? "",
+      subtitle:
+        atual.subtitulo.trim() ||
+        `${palavras.length} ${palavras.length === 1 ? "palavra nova" : "palavras novas"}.`,
+      cover: atual.capa ?? cenas.find((c) => c.imagem)?.imagem ?? "",
       beats,
     };
 

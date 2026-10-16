@@ -73,8 +73,8 @@ export function FaseEditor({
         </div>
       </Secao>
 
-      <Secao titulo="Título da fase" ajuda="Aparece na abertura, acima do conteúdo.">
-        <div className="max-w-sm">
+      <Secao titulo="A abertura" ajuda="O que o aluno vê antes das perguntas.">
+        <div className="grid max-w-xl gap-4 sm:grid-cols-2">
           <Campo
             id={`titulo-${indice}`}
             rotulo="Título"
@@ -82,7 +82,30 @@ export function FaseEditor({
             placeholder={fase.tipo === "revisao" ? "Revisão" : "A família"}
             onChange={(titulo) => onMudar({ titulo })}
           />
+          {fase.tipo === "historia" && (
+            <Campo
+              id={`subtitulo-${indice}`}
+              rotulo="O que acontece nesta parte"
+              valor={fase.subtitulo}
+              placeholder="Sofia conhece um menino que ainda não fala português."
+              onChange={(subtitulo) => onMudar({ subtitulo })}
+            />
+          )}
         </div>
+
+        {fase.tipo === "historia" && (
+          <div className="mt-4 flex items-center gap-3">
+            <CampoFigura
+              imagem={fase.capa}
+              rotulo="Figura da capa da história"
+              tamanho="h-[88px] w-[156px]"
+              onEscolher={(arquivo) => onFigura(arquivo, (capa) => onMudar({ capa }))}
+            />
+            <p className="text-sm text-slate-500">
+              A capa: a cena, não o mascote. Sem ela, o cartão abre só com o texto.
+            </p>
+          </div>
+        )}
       </Secao>
 
       {(fase.tipo === "galeria" || fase.tipo === "historia") && (
@@ -98,7 +121,7 @@ export function FaseEditor({
             {fase.palavras.map((palavra, i) => (
               <li
                 key={i}
-                className="grid items-center gap-3 rounded-lg border border-slate-200 p-3 sm:grid-cols-[88px_1fr_1fr_auto]"
+                className="grid items-start gap-3 rounded-lg border border-slate-200 p-3 sm:grid-cols-[88px_1fr_1fr_1fr_auto]"
               >
                 <CampoFigura
                   imagem={palavra.imagem}
@@ -129,7 +152,16 @@ export function FaseEditor({
                     onMudar({ palavras: fase.palavras.map((p, j) => (j === i ? { ...p, pt } : p)) })
                   }
                 />
-                <div className="justify-self-end">
+                <Campo
+                  id={`dica-${indice}-${i}`}
+                  rotulo="Dica do Bubo"
+                  valor={palavra.dica}
+                  placeholder="opcional"
+                  onChange={(dica) =>
+                    onMudar({ palavras: fase.palavras.map((p, j) => (j === i ? { ...p, dica } : p)) })
+                  }
+                />
+                <div className="justify-self-end pt-6">
                   <Apagar
                     oque={`palavra ${i + 1}`}
                     onClick={() => onMudar({ palavras: fase.palavras.filter((_, j) => j !== i) })}
@@ -152,13 +184,9 @@ export function FaseEditor({
       {fase.tipo === "historia" && (
         <Secao
           titulo="As cenas"
-          ajuda="Cada cena é um texto com uma palavra em destaque. A palavra vem da lista acima, para o quiz nunca cobrar o que a história não ensinou."
+          ajuda="Cada cena é um texto, e pode destacar uma palavra da lista acima — é isso que impede o quiz de cobrar o que a história não ensinou. Cena sem palavra é só narração, como a que abre e a que fecha uma parte."
         >
-          {palavras.length === 0 ? (
-            <p className="text-sm text-slate-500">
-              Complete uma palavra acima para poder destacá-la numa cena.
-            </p>
-          ) : (
+          {(
             <>
               <ul className="space-y-3">
                 {fase.cenas.map((cena, i) => (
@@ -205,7 +233,7 @@ export function FaseEditor({
                               })
                             }
                           >
-                            <option value="">escolha…</option>
+                            <option value="">nenhuma — só narração</option>
                             {palavras.map((p) => (
                               <option key={p.en} value={p.en}>
                                 {p.en}
@@ -317,6 +345,18 @@ export function FaseEditor({
                         }
                       />
                     </div>
+
+                    <Campo
+                      id={`dica-dialogo-${indice}-${i}`}
+                      rotulo="Dica do Bubo"
+                      valor={dialogo.dica}
+                      placeholder="opcional"
+                      onChange={(dica) =>
+                        onMudar({
+                          dialogos: fase.dialogos.map((d, j) => (j === i ? { ...d, dica } : d)),
+                        })
+                      }
+                    />
                   </div>
 
                   <Apagar

@@ -54,12 +54,20 @@ export type DemoPalavra = {
   pt: string;
   /** Obrigatória na galeria, opcional na história. */
   imagem: string | null;
+  /** O apoio que o aluno pede ao Bubo. Opcional. */
+  dica: string;
 };
 
-/** Uma cena da história: texto, uma palavra em destaque, texto. */
+/**
+ * Uma cena da história: texto, uma palavra em destaque, texto.
+ *
+ * A palavra é opcional. As histórias do produto têm cenas que só narram — a
+ * que abre a parte e a que fecha —, e obrigar uma palavra em cada cena
+ * tornaria metade delas impossível de escrever aqui.
+ */
 export type DemoCena = {
   antes: string;
-  /** A palavra em inglês destacada. Vem do léxico da própria fase. */
+  /** A palavra em inglês destacada, do léxico da fase. Vazio = cena só de narração. */
   palavra: string;
   depois: string;
   imagem: string | null;
@@ -75,11 +83,17 @@ export type DemoDialogo = {
   resposta: string;
   /** A outra alternativa — uma fala real, não um absurdo. */
   distrator: string;
+  /** O apoio que o aluno pede ao Bubo. Opcional. */
+  dica: string;
 };
 
 export type DemoFase = {
   tipo: TipoFase;
   titulo: string;
+  /** Só na história: o que acontece nesta parte, dito na capa. */
+  subtitulo: string;
+  /** Só na história: a ilustração da capa. A cena, não o mascote. */
+  capa: string | null;
   palavras: DemoPalavra[];
   cenas: DemoCena[];
   dialogos: DemoDialogo[];
@@ -97,7 +111,7 @@ export type DemoTrilha = {
 /** Tudo que foi montado no admin. */
 export type DemoDados = { trilhas: DemoTrilha[] };
 
-export const palavraVazia = (): DemoPalavra => ({ en: "", pt: "", imagem: null });
+export const palavraVazia = (): DemoPalavra => ({ en: "", pt: "", imagem: null, dica: "" });
 export const cenaVazia = (): DemoCena => ({ antes: "", palavra: "", depois: "", imagem: null });
 export const dialogoVazio = (): DemoDialogo => ({
   situacao: "",
@@ -105,11 +119,14 @@ export const dialogoVazio = (): DemoDialogo => ({
   oQueDiz: "",
   resposta: "",
   distrator: "",
+  dica: "",
 });
 
 export const faseVazia = (tipo: TipoFase = "galeria"): DemoFase => ({
   tipo,
   titulo: "",
+  subtitulo: "",
+  capa: null,
   palavras: tipo === "revisao" || tipo === "dialogo" ? [] : [palavraVazia(), palavraVazia()],
   cenas: [],
   dialogos: tipo === "dialogo" ? [dialogoVazio()] : [],
@@ -140,7 +157,7 @@ export function palavrasProntas(fase: DemoFase): DemoPalavra[] {
 }
 
 export function cenasProntas(fase: DemoFase): DemoCena[] {
-  return fase.cenas.filter((c) => c.palavra.trim() && (c.antes.trim() || c.depois.trim()));
+  return fase.cenas.filter((c) => c.antes.trim() || c.depois.trim() || c.palavra.trim());
 }
 
 export function dialogosProntos(fase: DemoFase): DemoDialogo[] {
@@ -215,11 +232,11 @@ function vizinha<T>(lista: T[], i: number): T {
   return lista[(i + 1) % lista.length];
 }
 
-function daGaleria(fase: DemoFase, prefixo: string): unknown[] {
+function daGaleria(fase: DemoFase, prefixo: string, anterior?: DemoFase): unknown[] {
   const palavras = palavrasProntas(fase);
   if (palavras.length < 2) return [];
 
-  return palavras.map((p, i) => ({
+  const perguntas: unknown[] = palavras.map((p, i) => ({
     id: `${prefixo}-g${i + 1}`,
     format: "image_word",
     topic: fase.titulo || "Demonstração",
@@ -229,7 +246,33 @@ function daGaleria(fase: DemoFase, prefixo: string): unknown[] {
     choices: duasAlternativas(p.en, vizinha(palavras, i).en, i),
     correctChoiceId: i % 2 === 0 ? "a" : "b",
     explanation: `${p.en} significa ${p.pt}.`,
+    ...(p.dica.trim() ? { hint: p.dica.trim() } : {}),
   }));
+
+  // Uma retomada da fase anterior, no fim.
+  //
+  // Sem ela cada fase vira uma ilha: a criança aprende quatro palavras e só
+  // as reencontra na revisão, três fases depois. É o que a trilha "Casa e
+  // família" já faz à mão, e o gerador não fazia.
+  const antigas = anterior ? palavrasProntas(anterior) : [];
+  if (antigas.length >= 2) {
+    const alvo = antigas[0];
+    const outra = antigas[1];
+    perguntas.push({
+      id: `${prefixo}-g0`,
+      format: "image_word",
+      topic: fase.titulo || "Demonstração",
+      prompt: "What is this?",
+      promptTranslation: "O que é isto?",
+      imageUrl: alvo.imagem,
+      choices: duasAlternativas(alvo.en, outra.en, palavras.length),
+      correctChoiceId: palavras.length % 2 === 0 ? "a" : "b",
+      explanation: `${alvo.en} significa ${alvo.pt}.`,
+      ...(alvo.dica.trim() ? { hint: alvo.dica.trim() } : {}),
+    });
+  }
+
+  return perguntas;
 }
 
 function daHistoria(fase: DemoFase, prefixo: string): unknown[] {
@@ -246,6 +289,7 @@ function daHistoria(fase: DemoFase, prefixo: string): unknown[] {
     choices: duasAlternativas(p.en, vizinha(palavras, i).en, i),
     correctChoiceId: i % 2 === 0 ? "a" : "b",
     explanation: `${p.en} significa ${p.pt}.`,
+    ...(p.dica.trim() ? { hint: p.dica.trim() } : {}),
   }));
 }
 
@@ -260,6 +304,7 @@ function doDialogo(fase: DemoFase, prefixo: string): unknown[] {
     choices: duasAlternativas(d.resposta, d.distrator, i),
     correctChoiceId: i % 2 === 0 ? "a" : "b",
     explanation: `Responde-se “${d.resposta}”.`,
+    ...(d.dica.trim() ? { hint: d.dica.trim() } : {}),
   }));
 }
 
@@ -336,9 +381,10 @@ export function perguntasDaFase(trilha: DemoTrilha, i: number): Question[] {
   if (!fase) return [];
 
   const prefixo = `demo${i + 1}`;
+  const anterior = trilha.fases[i - 1];
   const brutas =
     fase.tipo === "galeria"
-      ? daGaleria(fase, prefixo)
+      ? daGaleria(fase, prefixo, anterior)
       : fase.tipo === "historia"
         ? daHistoria(fase, prefixo)
         : fase.tipo === "dialogo"
