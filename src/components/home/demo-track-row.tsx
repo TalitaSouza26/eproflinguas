@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { BoltIcon } from "@/components/ui/icons";
-import { palavrasProntas } from "@/lib/demo/trilha";
+import { faseCompleta } from "@/lib/demo/trilha";
 import { useDemoTrilha } from "@/lib/demo/use-demo-trilha";
 
 /**
@@ -18,7 +18,7 @@ export function DemoTrackRow() {
   if (!trilha) return null;
 
   const nome = trilha.nome;
-  const palavras = palavrasProntas(trilha).length;
+  const fases = trilha.fases.filter((_, i) => faseCompleta(trilha, i)).length;
 
   return (
     <li className="flex items-center gap-3.5">
@@ -27,7 +27,7 @@ export function DemoTrackRow() {
       </span>
 
       <Link
-        href="/quizzes/demo"
+        href="/quizzes/demo?fase=1"
         className="w-40 shrink-0 truncate text-[13px] font-semibold text-blue-600 underline-offset-4
                    hover:underline focus-visible:outline-2 focus-visible:outline-offset-2
                    focus-visible:outline-blue-500"
@@ -36,7 +36,7 @@ export function DemoTrackRow() {
       </Link>
 
       <span className="flex-1 text-[13px] text-ink-500">
-        {palavras} {palavras === 1 ? "palavra" : "palavras"} · montada no admin
+        {fases} {fases === 1 ? "fase" : "fases"} · montada no admin
       </span>
 
       <span className="w-24 shrink-0 text-right text-[11px] font-bold uppercase tracking-wide text-accent-600">

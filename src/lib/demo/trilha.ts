@@ -18,24 +18,121 @@ const CHAVE = "eprof-demo-trilha";
 /** Avisa as telas abertas que a trilha mudou, sem precisar recarregar. */
 export const EVENTO_DEMO = "eprof:demo-trilha";
 
+/**
+ * Os quatro jeitos de uma fase ensinar.
+ *
+ * São os que o produto já sabe desenhar — não há um quinto escondido. A
+ * revisão é o único que não recebe conteúdo: ela se monta do que veio antes.
+ */
+export type TipoFase = "galeria" | "historia" | "dialogo" | "revisao";
+
+export const TIPOS: { tipo: TipoFase; nome: string; resumo: string }[] = [
+  {
+    tipo: "galeria",
+    nome: "Galeria",
+    resumo: "Cartões com figura, palavra e tradução. Para coisa que se desenha.",
+  },
+  {
+    tipo: "historia",
+    nome: "História",
+    resumo: "Cenas com texto e uma palavra em destaque. Para o que só faz sentido numa situação.",
+  },
+  {
+    tipo: "dialogo",
+    nome: "Diálogo",
+    resumo: "Alguém fala com o aluno e ele escolhe o que responder. Sem abertura.",
+  },
+  {
+    tipo: "revisao",
+    nome: "Revisão",
+    resumo: "Gerada: repassa o que a trilha ensinou, sempre por outro caminho.",
+  },
+];
+
 export type DemoPalavra = {
-  /** A palavra em inglês, como aparece no cartão e na alternativa. */
   en: string;
   pt: string;
-  /** A figura, já reduzida, como data URL. Sem figura a palavra não entra no quiz. */
+  /** Obrigatória na galeria, opcional na história. */
   imagem: string | null;
 };
 
-export type DemoTrilha = {
-  nome: string;
-  palavras: DemoPalavra[];
+/** Uma cena da história: texto, uma palavra em destaque, texto. */
+export type DemoCena = {
+  antes: string;
+  /** A palavra em inglês destacada. Vem do léxico da própria fase. */
+  palavra: string;
+  depois: string;
+  imagem: string | null;
 };
 
-export const TRILHA_VAZIA: DemoTrilha = { nome: "", palavras: [] };
+export type DemoDialogo = {
+  /** A situação, em português: o enunciado que o aluno lê. */
+  situacao: string;
+  quemFala: string;
+  /** O que a outra pessoa diz, em inglês. */
+  oQueDiz: string;
+  /** A resposta certa, em inglês. */
+  resposta: string;
+  /** A outra alternativa — uma fala real, não um absurdo. */
+  distrator: string;
+};
 
-/** Só palavras completas viram conteúdo: as outras são rascunho de digitação. */
-export function palavrasProntas(trilha: DemoTrilha): DemoPalavra[] {
-  return trilha.palavras.filter((p) => p.en.trim() && p.pt.trim() && p.imagem);
+export type DemoFase = {
+  tipo: TipoFase;
+  titulo: string;
+  palavras: DemoPalavra[];
+  cenas: DemoCena[];
+  dialogos: DemoDialogo[];
+};
+
+export type DemoTrilha = { nome: string; fases: DemoFase[] };
+
+export const palavraVazia = (): DemoPalavra => ({ en: "", pt: "", imagem: null });
+export const cenaVazia = (): DemoCena => ({ antes: "", palavra: "", depois: "", imagem: null });
+export const dialogoVazio = (): DemoDialogo => ({
+  situacao: "",
+  quemFala: "",
+  oQueDiz: "",
+  resposta: "",
+  distrator: "",
+});
+
+export const faseVazia = (tipo: TipoFase = "galeria"): DemoFase => ({
+  tipo,
+  titulo: "",
+  palavras: tipo === "revisao" || tipo === "dialogo" ? [] : [palavraVazia(), palavraVazia()],
+  cenas: [],
+  dialogos: tipo === "dialogo" ? [dialogoVazio()] : [],
+});
+
+export const TRILHA_VAZIA: DemoTrilha = { nome: "", fases: [] };
+
+/**
+ * O que está completo o bastante para virar conteúdo.
+ *
+ * A galeria exige figura porque o quiz dela é de imagem: sem a figura não há
+ * pergunta. A história não exige, porque ali a palavra é ensinada pelo texto
+ * da cena — a figura, quando existe, só entra na revisão.
+ */
+export function palavrasProntas(fase: DemoFase): DemoPalavra[] {
+  return fase.palavras.filter(
+    (p) => p.en.trim() && p.pt.trim() && (fase.tipo !== "galeria" || p.imagem),
+  );
+}
+
+export function cenasProntas(fase: DemoFase): DemoCena[] {
+  return fase.cenas.filter((c) => c.palavra.trim() && (c.antes.trim() || c.depois.trim()));
+}
+
+export function dialogosProntos(fase: DemoFase): DemoDialogo[] {
+  return fase.dialogos.filter(
+    (d) => d.situacao.trim() && d.oQueDiz.trim() && d.resposta.trim() && d.distrator.trim(),
+  );
+}
+
+/** Uma fase está pronta quando rende ao menos uma pergunta. */
+export function faseCompleta(trilha: DemoTrilha, i: number): boolean {
+  return perguntasDaFase(trilha, i).length > 0;
 }
 
 export function lerDemo(): DemoTrilha | null {
@@ -47,7 +144,7 @@ export function lerDemo(): DemoTrilha | null {
 
     const dados = JSON.parse(bruto) as DemoTrilha;
     // Um storage de outra versão não pode derrubar a tela do aluno.
-    if (!dados?.nome || !Array.isArray(dados.palavras)) return null;
+    if (!dados?.nome || !Array.isArray(dados.fases)) return null;
     return dados;
   } catch {
     return null;
@@ -73,35 +170,159 @@ export function limparDemo(): void {
   window.dispatchEvent(new Event(EVENTO_DEMO));
 }
 
-/**
- * As perguntas saem das palavras, não da digitação.
- *
- * Mesma receita da trilha "Casa e família": uma questão de imagem por palavra,
- * o distrator vindo da própria lista — o aluno escolhe entre duas coisas do
- * mesmo assunto, nunca entre um sofá e um cachorro — e a resposta certa
- * alternando de posição, senão a criança decora o lugar em vez da palavra.
- */
-export function perguntasDa(trilha: DemoTrilha): Question[] {
-  const palavras = palavrasProntas(trilha);
+/** A resposta certa alterna de posição: fixa, a criança decora o lugar. */
+function duasAlternativas(certa: string, errada: string, indice: number) {
+  const a = { id: "a", label: certa };
+  const b = { id: "b", label: errada };
+  return indice % 2 === 0 ? [a, b] : [b, a];
+}
+
+/** O par da palavra dentro da própria lista — nunca um distrator de outro assunto. */
+function vizinha<T>(lista: T[], i: number): T {
+  return lista[(i + 1) % lista.length];
+}
+
+function daGaleria(fase: DemoFase, prefixo: string): unknown[] {
+  const palavras = palavrasProntas(fase);
   if (palavras.length < 2) return [];
 
-  return palavras.map((palavra, i) => {
-    const distrator = palavras[(i + 1) % palavras.length];
-    const certa = { id: "a", label: palavra.en };
-    const errada = { id: "b", label: distrator.en };
+  return palavras.map((p, i) => ({
+    id: `${prefixo}-g${i + 1}`,
+    format: "image_word",
+    topic: fase.titulo || "Demonstração",
+    prompt: "What is this?",
+    promptTranslation: "O que é isto?",
+    imageUrl: p.imagem,
+    choices: duasAlternativas(p.en, vizinha(palavras, i).en, i),
+    correctChoiceId: i % 2 === 0 ? "a" : "b",
+    explanation: `${p.en} significa ${p.pt}.`,
+  }));
+}
 
-    return questionSchema.parse({
-      id: `demo-q${i + 1}`,
-      format: "image_word",
-      topic: trilha.nome || "Demonstração",
-      prompt: "What is this?",
-      promptTranslation: "O que é isto?",
-      imageUrl: palavra.imagem,
-      choices: i % 2 === 0 ? [certa, errada] : [errada, certa],
-      correctChoiceId: "a",
+function daHistoria(fase: DemoFase, prefixo: string): unknown[] {
+  const palavras = palavrasProntas(fase);
+  if (palavras.length < 2) return [];
+
+  // A história ensina pelo texto, então o quiz dela cobra por texto também:
+  // o significado em português e o aluno escolhe a palavra em inglês.
+  return palavras.map((p, i) => ({
+    id: `${prefixo}-h${i + 1}`,
+    format: "meaning_word",
+    topic: fase.titulo || "Demonstração",
+    prompt: p.pt,
+    choices: duasAlternativas(p.en, vizinha(palavras, i).en, i),
+    correctChoiceId: i % 2 === 0 ? "a" : "b",
+    explanation: `${p.en} significa ${p.pt}.`,
+  }));
+}
+
+function doDialogo(fase: DemoFase, prefixo: string): unknown[] {
+  return dialogosProntos(fase).map((d, i) => ({
+    id: `${prefixo}-d${i + 1}`,
+    format: "situation_reply",
+    topic: fase.titulo || "Demonstração",
+    prompt: d.situacao,
+    speakerLine: d.oQueDiz,
+    ...(d.quemFala.trim() ? { speaker: d.quemFala.trim() } : {}),
+    choices: duasAlternativas(d.resposta, d.distrator, i),
+    correctChoiceId: i % 2 === 0 ? "a" : "b",
+    explanation: `Responde-se “${d.resposta}”.`,
+  }));
+}
+
+/**
+ * A revisão, gerada do que a trilha ensinou.
+ *
+ * A regra é uma: cada palavra volta **num formato diferente do que a ensinou**.
+ * Quem aprendeu pela figura é cobrado por texto; quem aprendeu pelo texto é
+ * cobrado pela figura, quando ela existe. Repetir a mesma pergunta do mesmo
+ * jeito não é revisar — é repetir, e foi o que a revisão escrita à mão acabou
+ * virando.
+ *
+ * Por isso ela não se escreve: muda uma palavra da trilha e a revisão
+ * acompanha sozinha.
+ */
+function daRevisao(trilha: DemoTrilha, ate: number, prefixo: string): unknown[] {
+  const ensinadas: { palavra: DemoPalavra; porFigura: boolean; titulo: string }[] = [];
+
+  for (const fase of trilha.fases.slice(0, ate)) {
+    if (fase.tipo !== "galeria" && fase.tipo !== "historia") continue;
+    for (const palavra of palavrasProntas(fase)) {
+      ensinadas.push({ palavra, porFigura: fase.tipo === "galeria", titulo: fase.titulo });
+    }
+  }
+
+  if (ensinadas.length < 2) return [];
+
+  return ensinadas.map(({ palavra, porFigura }, i) => {
+    const outra = vizinha(ensinadas, i).palavra;
+    const base = {
+      id: `${prefixo}-r${i + 1}`,
+      topic: "Revisão",
       explanation: `${palavra.en} significa ${palavra.pt}.`,
-    });
+    };
+
+    // Ensinada pela figura: agora vem por texto.
+    if (porFigura) {
+      return {
+        ...base,
+        format: "meaning_word",
+        prompt: palavra.pt,
+        choices: duasAlternativas(palavra.en, outra.en, i),
+        correctChoiceId: i % 2 === 0 ? "a" : "b",
+      };
+    }
+
+    // Ensinada pelo texto: volta pela figura, quando houver uma.
+    if (palavra.imagem) {
+      return {
+        ...base,
+        format: "image_word",
+        prompt: "What is this?",
+        promptTranslation: "O que é isto?",
+        imageUrl: palavra.imagem,
+        choices: duasAlternativas(palavra.en, outra.en, i),
+        correctChoiceId: i % 2 === 0 ? "a" : "b",
+      };
+    }
+
+    // Sem figura, inverte o sentido da pergunta: palavra → significado.
+    return {
+      ...base,
+      format: "word_meaning",
+      prompt: palavra.en,
+      choices: duasAlternativas(palavra.pt, outra.pt, i),
+      correctChoiceId: i % 2 === 0 ? "a" : "b",
+    };
   });
+}
+
+/** As perguntas de uma fase. Nenhuma é digitada: todas saem do conteúdo. */
+export function perguntasDaFase(trilha: DemoTrilha, i: number): Question[] {
+  const fase = trilha.fases[i];
+  if (!fase) return [];
+
+  const prefixo = `demo${i + 1}`;
+  const brutas =
+    fase.tipo === "galeria"
+      ? daGaleria(fase, prefixo)
+      : fase.tipo === "historia"
+        ? daHistoria(fase, prefixo)
+        : fase.tipo === "dialogo"
+          ? doDialogo(fase, prefixo)
+          : daRevisao(trilha, i, prefixo);
+
+  // Conteúdo meio digitado não pode derrubar a tela do aluno: o que não passa
+  // na validação do produto simplesmente não vira pergunta.
+  return brutas.flatMap((q) => {
+    const r = questionSchema.safeParse(q);
+    return r.success ? [r.data] : [];
+  });
+}
+
+/** A fase tem uma tela antes do quiz? O diálogo vai direto às perguntas. */
+export function faseTemAbertura(fase: DemoFase): boolean {
+  return fase.tipo !== "dialogo";
 }
 
 /**

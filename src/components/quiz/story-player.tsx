@@ -68,15 +68,22 @@ function Narration({ text }: { text: string }) {
 export function StoryPlayer({
   story,
   quizHref,
+  parts,
 }: {
   story: Story;
   quizHref: string;
+  /**
+   * Quantas partes a história tem na trilha. Vem de fora quando a trilha não
+   * está no catálogo — é o caso da trilha montada no admin, que o
+   * `partsInTrack` não conhece e contaria como zero.
+   */
+  parts?: number;
 }) {
   // -1 é a capa; story.beats.length é o fim.
   const [index, setIndex] = useState(-1);
   const total = story.beats.length;
   const phrases = phrasesInStory(story);
-  const parts = partsInTrack(story.slug);
+  const partes = parts ?? partsInTrack(story.slug);
   const beat = index >= 0 && index < total ? story.beats[index] : undefined;
 
   const next = useCallback(() => setIndex((i) => i + 1), []);
@@ -92,26 +99,38 @@ export function StoryPlayer({
           história pede antes de tocar — daí em diante ela anda sozinha. */}
       {index === -1 && (
         <div className="relative w-full">
-          <div className="grid overflow-hidden rounded-[2rem] bg-white shadow-2xl sm:grid-cols-[1.15fr_1fr]">
+          <div
+            className={`grid overflow-hidden rounded-[2rem] bg-white shadow-2xl ${
+              story.cover ? "sm:grid-cols-[1.15fr_1fr]" : ""
+            }`}
+          >
             {/* A cena fica emoldurada, com o branco do cartão em volta — ela
-                não encosta na borda nem é cortada pelo canto arredondado. */}
-            <div className="p-3 sm:p-4">
-              <div className={MOLDURA}>
-                <Image
-                  src={story.cover}
-                  alt=""
-                  fill
-                  priority
-                  sizes={TAMANHO}
-                  className="object-contain"
-                />
+                não encosta na borda nem é cortada pelo canto arredondado.
+
+                História sem capa não desenha a moldura: um retângulo cinza
+                vazio ao lado do título parece defeito, e o cartão fica melhor
+                só com o texto. Acontece em história montada no admin antes de
+                existir figura. */}
+            {story.cover && (
+              <div className="p-3 sm:p-4">
+                <div className={MOLDURA}>
+                  <Image
+                    src={story.cover}
+                    alt=""
+                    fill
+                    priority
+                    unoptimized={story.cover.startsWith("data:")}
+                    sizes={TAMANHO}
+                    className="object-contain"
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="px-6 pb-6 pt-2 text-left sm:py-8 sm:pl-4 sm:pr-8">
               {/* A história é uma só; o que muda é a parte. */}
               <p className="inline-flex rounded-full bg-blue-50 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-700">
-                Parte {story.part} de {parts}
+                Parte {story.part} de {partes}
               </p>
 
               <h1 className="mt-4 text-3xl font-extrabold leading-tight text-deep-900 sm:text-4xl">
@@ -125,7 +144,7 @@ export function StoryPlayer({
                   ensino em vez de escrito à mão. */}
               <p className="mt-5 inline-flex items-center gap-2.5 rounded-2xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700">
                 <BookIcon className="size-5" />
-                {phrases} frases em inglês
+                {phrases} {phrases === 1 ? "frase" : "frases"} em inglês
               </p>
 
               <button
@@ -179,6 +198,9 @@ export function StoryPlayer({
                     alt=""
                     fill
                     priority
+                    // Figura enviada no admin vem como data URL, que o
+                    // otimizador do Next não serve.
+                    unoptimized={beat.image.startsWith("data:")}
                     sizes={TAMANHO}
                     className="object-contain"
                   />

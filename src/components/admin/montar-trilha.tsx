@@ -2,29 +2,22 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { BOTAO, BOTAO_CLARO, Campo } from "@/components/admin/campos";
+import { FaseEditor } from "@/components/admin/fase-editor";
 import { ArrowRightIcon, CheckIcon, CloseIcon, ReplayIcon } from "@/components/ui/icons";
 import {
+  faseCompleta,
+  faseVazia,
   gravarDemo,
   lerDemo,
   limparDemo,
-  palavrasProntas,
-  perguntasDa,
+  perguntasDaFase,
   reduzirImagem,
+  TIPOS,
   TRILHA_VAZIA,
-  type DemoPalavra,
+  type DemoFase,
   type DemoTrilha,
 } from "@/lib/demo/trilha";
-
-const CAMPO =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 " +
-  "placeholder:text-slate-400 focus-visible:outline-2 focus-visible:outline-offset-1 " +
-  "focus-visible:outline-blue-600";
-
-const BOTAO =
-  "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold " +
-  "transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600";
-
-const vazia = (): DemoPalavra => ({ en: "", pt: "", imagem: null });
 
 /**
  * Montar uma trilha e vê-la na tela do aluno.
@@ -33,12 +26,13 @@ const vazia = (): DemoPalavra => ({ en: "", pt: "", imagem: null });
  * morre com ela. É a parte que vale provar antes de existir banco — se o
  * fluxo de montar está certo, guardar é detalhe depois.
  *
- * Tudo sai das palavras. Você não escreve pergunta: cadastra a palavra com a
- * figura, e o quiz é gerado — distrator da própria lista, resposta alternando
- * de posição. É a mesma receita da trilha "Casa e família".
+ * Nenhuma pergunta é digitada. Em qualquer tipo de fase, o quiz sai do
+ * conteúdo: as palavras, as conversas, ou — na revisão — o que as fases
+ * anteriores ensinaram.
  */
 export function MontarTrilha() {
   const [trilha, setTrilha] = useState<DemoTrilha>(TRILHA_VAZIA);
+  const [aberta, setAberta] = useState(0);
   const [noAr, setNoAr] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -54,47 +48,50 @@ export function MontarTrilha() {
     if (guardada) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- leitura única de sessionStorage no mount
       setTrilha(guardada);
-       
       setNoAr(true);
     } else {
-       
-      setTrilha({ nome: "", palavras: [vazia(), vazia(), vazia()] });
+      setTrilha({ nome: "", fases: [faseVazia("galeria")] });
     }
   }, []);
 
-  const prontas = palavrasProntas(trilha);
-  const podePublicar = Boolean(trilha.nome.trim()) && prontas.length >= 2;
+  const prontas = trilha.fases.filter((_, i) => faseCompleta(trilha, i));
+  const podePublicar = Boolean(trilha.nome.trim()) && prontas.length > 0;
 
-  function mexer(i: number, campo: keyof DemoPalavra, valor: string | null) {
-    setTrilha((t) => ({
-      ...t,
-      palavras: t.palavras.map((p, j) => (j === i ? { ...p, [campo]: valor } : p)),
-    }));
+  function mexer(mudanca: Partial<DemoTrilha>) {
+    setTrilha((t) => ({ ...t, ...mudanca }));
     setNoAr(false);
   }
 
-  async function subirImagem(i: number, arquivo: File | undefined) {
+  function mexerFase(i: number, mudanca: Partial<DemoFase>) {
+    mexer({ fases: trilha.fases.map((f, j) => (j === i ? { ...f, ...mudanca } : f)) });
+  }
+
+  async function comFigura(arquivo: File | undefined, aplicar: (dataUrl: string) => void) {
     if (!arquivo) return;
     setErro(null);
     try {
-      mexer(i, "imagem", await reduzirImagem(arquivo));
+      aplicar(await reduzirImagem(arquivo));
     } catch (e) {
       setErro(e instanceof Error ? e.message : "não consegui usar essa imagem");
     }
   }
 
   function publicar() {
-    gravarDemo({ nome: trilha.nome.trim(), palavras: prontas });
+    // Só o que rende pergunta vai para o aluno: fase meio digitada viraria
+    // uma tela vazia no meio da trilha.
+    gravarDemo({
+      nome: trilha.nome.trim(),
+      fases: trilha.fases.filter((_, i) => faseCompleta(trilha, i)),
+    });
     setNoAr(true);
   }
 
-  function apagar() {
+  function recomecar() {
     limparDemo();
-    setTrilha({ nome: "", palavras: [vazia(), vazia(), vazia()] });
+    setTrilha({ nome: "", fases: [faseVazia("galeria")] });
+    setAberta(0);
     setNoAr(false);
   }
-
-  const perguntas = perguntasDa(trilha).length;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -124,146 +121,124 @@ export function MontarTrilha() {
         </p>
 
         <section className="rounded-xl border border-slate-200 bg-white p-6">
-          <h2 className="text-base font-extrabold">1 · A trilha</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            O nome que o aluno vê na lista de trilhas.
-          </p>
+          <h2 className="text-base font-extrabold">A trilha</h2>
+          <p className="mt-1 text-sm text-slate-500">O nome que o aluno vê na lista de trilhas.</p>
 
-          <label className="mt-4 block max-w-sm">
-            <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
-              Nome
-            </span>
-            <input
+          <div className="mt-4 max-w-sm">
+            <Campo
               id="nome-trilha"
-              className={CAMPO}
-              value={trilha.nome}
+              rotulo="Nome"
+              valor={trilha.nome}
               placeholder="Cores e números"
-              onChange={(e) => {
-                setTrilha((t) => ({ ...t, nome: e.target.value }));
-                setNoAr(false);
-              }}
+              onChange={(nome) => mexer({ nome })}
             />
-          </label>
+          </div>
         </section>
 
-        <section className="mt-5 rounded-xl border border-slate-200 bg-white p-6">
-          <h2 className="text-base font-extrabold">2 · As palavras</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Palavra, tradução e figura. A figura é obrigatória: o quiz é de imagem, e
-            quem responde ainda não lê. Mínimo de duas palavras.
-          </p>
+        <section className="mt-5 rounded-xl border border-slate-200 bg-white">
+          <div className="border-b border-slate-200 p-6">
+            <h2 className="text-base font-extrabold">As fases</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Na ordem em que o aluno percorre. Uma trilha costuma terminar numa fase de
+              revisão.
+            </p>
+          </div>
 
-          <ul className="mt-5 space-y-3">
-            {trilha.palavras.map((palavra, i) => {
-              const completa = palavra.en.trim() && palavra.pt.trim() && palavra.imagem;
+          <ul>
+            {trilha.fases.map((fase, i) => {
+              const perguntas = perguntasDaFase(trilha, i).length;
+              const nomeTipo = TIPOS.find((t) => t.tipo === fase.tipo)?.nome ?? fase.tipo;
+              const estaAberta = aberta === i;
+
               return (
-                <li
-                  key={i}
-                  className="grid items-center gap-3 rounded-lg border border-slate-200 p-3
-                             sm:grid-cols-[88px_1fr_1fr_auto]"
-                >
-                  {/* A figura é o campo mais importante da linha, então ocupa
-                      a primeira coluna e mostra o que foi escolhido. */}
-                  <label className="relative block h-[88px] w-[88px] shrink-0 cursor-pointer overflow-hidden rounded-lg border border-dashed border-slate-300 bg-slate-50">
-                    {palavra.imagem ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={palavra.imagem}
-                        alt=""
-                        className="absolute inset-0 size-full object-cover"
-                      />
-                    ) : (
-                      <span className="absolute inset-0 flex items-center justify-center px-2 text-center text-[11px] font-semibold text-slate-400">
-                        Escolher figura
-                      </span>
-                    )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="sr-only"
-                      aria-label={`Figura da palavra ${i + 1}`}
-                      onChange={(e) => subirImagem(i, e.target.files?.[0])}
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">
-                      Inglês
-                    </span>
-                    <input
-                      id={`en-${i}`}
-                      className={CAMPO}
-                      value={palavra.en}
-                      placeholder="Red"
-                      onChange={(e) => mexer(i, "en", e.target.value)}
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">
-                      Português
-                    </span>
-                    <input
-                      id={`pt-${i}`}
-                      className={CAMPO}
-                      value={palavra.pt}
-                      placeholder="vermelho"
-                      onChange={(e) => mexer(i, "pt", e.target.value)}
-                    />
-                  </label>
-
-                  <div className="flex items-center gap-2 justify-self-end">
-                    {completa ? (
-                      <CheckIcon className="size-5 text-emerald-600" />
-                    ) : (
-                      <span className="w-5" />
-                    )}
+                <li key={i} className="border-b border-slate-200 last:border-b-0">
+                  <div className="flex items-center gap-3 px-6 py-4">
                     <button
                       type="button"
-                      aria-label={`Remover palavra ${i + 1}`}
-                      onClick={() => {
-                        setTrilha((t) => ({
-                          ...t,
-                          palavras: t.palavras.filter((_, j) => j !== i),
-                        }));
-                        setNoAr(false);
-                      }}
-                      className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700
-                                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                      aria-expanded={estaAberta}
+                      onClick={() => setAberta(estaAberta ? -1 : i)}
+                      className="flex flex-1 items-center gap-3 text-left focus-visible:outline-2
+                                 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                     >
-                      <CloseIcon className="size-4" />
+                      <span
+                        className={`flex size-7 shrink-0 items-center justify-center rounded-lg text-xs font-extrabold ${
+                          perguntas > 0
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        {i + 1}
+                      </span>
+                      <span className="text-sm font-extrabold">
+                        {fase.titulo.trim() || `Fase ${i + 1}`}
+                      </span>
+                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-slate-600">
+                        {nomeTipo}
+                      </span>
+                      <span className="text-xs text-slate-500">
+                        {perguntas > 0
+                          ? `${perguntas} ${perguntas === 1 ? "pergunta" : "perguntas"}`
+                          : "incompleta"}
+                      </span>
                     </button>
+
+                    {trilha.fases.length > 1 && (
+                      <button
+                        type="button"
+                        aria-label={`Remover fase ${i + 1}`}
+                        onClick={() => {
+                          mexer({ fases: trilha.fases.filter((_, j) => j !== i) });
+                          setAberta(0);
+                        }}
+                        className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700
+                                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                      >
+                        <CloseIcon className="size-4" />
+                      </button>
+                    )}
                   </div>
+
+                  {estaAberta && (
+                    <div className="px-6 pb-6">
+                      <FaseEditor
+                        fase={fase}
+                        indice={i}
+                        perguntas={perguntas}
+                        onMudar={(m) => mexerFase(i, m)}
+                        onFigura={comFigura}
+                      />
+                    </div>
+                  )}
                 </li>
               );
             })}
           </ul>
 
-          {erro && <p className="mt-3 text-sm font-semibold text-red-700">{erro}</p>}
-
-          <button
-            type="button"
-            onClick={() => setTrilha((t) => ({ ...t, palavras: [...t.palavras, vazia()] }))}
-            className={`${BOTAO} mt-4 border border-slate-300 bg-white text-slate-700 hover:bg-slate-50`}
-          >
-            Mais uma palavra
-          </button>
+          <div className="flex flex-wrap gap-2 p-6">
+            <button
+              type="button"
+              onClick={() => {
+                mexer({ fases: [...trilha.fases, faseVazia("galeria")] });
+                setAberta(trilha.fases.length);
+              }}
+              className={BOTAO_CLARO}
+            >
+              Mais uma fase
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                mexer({ fases: [...trilha.fases, faseVazia("revisao")] });
+                setAberta(trilha.fases.length);
+              }}
+              className={BOTAO_CLARO}
+            >
+              Fase de revisão no fim
+            </button>
+          </div>
         </section>
 
-        <section className="mt-5 rounded-xl border border-slate-200 bg-white p-6">
-          <h2 className="text-base font-extrabold">3 · O quiz</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Não se escreve pergunta aqui. Cada palavra pronta vira uma questão de imagem
-            com duas alternativas, o distrator sai da própria lista e a resposta certa
-            alterna de posição.
-          </p>
-
-          <p className="mt-4 text-sm font-semibold text-slate-700">
-            {perguntas > 0
-              ? `${perguntas} ${perguntas === 1 ? "pergunta" : "perguntas"} a partir de ${prontas.length} palavras.`
-              : "Complete ao menos duas palavras para o quiz existir."}
-          </p>
-        </section>
+        {erro && <p className="mt-4 text-sm font-semibold text-red-700">{erro}</p>}
 
         <div className="mt-7 flex flex-wrap items-center gap-3">
           <button
@@ -276,15 +251,15 @@ export function MontarTrilha() {
           </button>
 
           {noAr && (
-            <Link href="/inicio" className={`${BOTAO} border border-slate-300 bg-white text-slate-700 hover:bg-slate-50`}>
-              Ver na tela do aluno
+            <Link href="/quizzes/demo?fase=1" className={BOTAO_CLARO}>
+              Jogar a trilha
               <ArrowRightIcon className="size-4" />
             </Link>
           )}
 
           <button
             type="button"
-            onClick={apagar}
+            onClick={recomecar}
             className={`${BOTAO} ml-auto text-slate-500 hover:bg-slate-100 hover:text-slate-800`}
           >
             <ReplayIcon className="size-4" />
@@ -295,15 +270,16 @@ export function MontarTrilha() {
         {!podePublicar && (
           <p className="mt-3 text-sm text-slate-500">
             Falta {trilha.nome.trim() ? "" : "dar um nome à trilha"}
-            {!trilha.nome.trim() && prontas.length < 2 ? " e " : ""}
-            {prontas.length < 2 ? "completar duas palavras com figura" : ""}.
+            {!trilha.nome.trim() && prontas.length === 0 ? " e " : ""}
+            {prontas.length === 0 ? "completar ao menos uma fase" : ""}.
           </p>
         )}
 
         {noAr && (
           <p className="mt-3 flex items-center gap-2 text-sm font-semibold text-emerald-700">
             <CheckIcon className="size-4" />
-            No ar. A trilha aparece na tela de Início e dá para jogar.
+            No ar com {prontas.length} {prontas.length === 1 ? "fase" : "fases"}. A trilha aparece
+            na tela de Início.
           </p>
         )}
       </main>
