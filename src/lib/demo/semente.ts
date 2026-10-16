@@ -72,6 +72,7 @@ function faseDaHistoria(fase: number): DemoFase | null {
     palavras,
     cenas,
     dialogos: [],
+    ajustes: {},
   };
 }
 

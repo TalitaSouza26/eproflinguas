@@ -87,6 +87,27 @@ export type DemoDialogo = {
   dica: string;
 };
 
+/**
+ * O que você mudou numa pergunta gerada.
+ *
+ * As perguntas saem do conteúdo, e isso resolve a maioria dos casos — mas
+ * não todos: um enunciado que fica melhor com outras palavras, uma
+ * explicação mais clara, um distrator que ficou fácil demais. Em vez de
+ * largar a geração e passar a digitar tudo, guarda-se só a diferença.
+ *
+ * A chave é o assunto da pergunta (a palavra, ou a fala da conversa) e não
+ * a posição: assim reordenar o conteúdo não embaralha os ajustes.
+ */
+export type AjustePergunta = {
+  prompt?: string;
+  explicacao?: string;
+  dica?: string;
+  /** A alternativa errada, escolhida entre as palavras da fase. */
+  distrator?: string;
+  /** Tirada do quiz, sem apagar o conteúdo que a gerou. */
+  fora?: boolean;
+};
+
 export type DemoFase = {
   tipo: TipoFase;
   titulo: string;
@@ -97,6 +118,8 @@ export type DemoFase = {
   palavras: DemoPalavra[];
   cenas: DemoCena[];
   dialogos: DemoDialogo[];
+  /** Os retoques nas perguntas geradas, por assunto. */
+  ajustes: Record<string, AjustePergunta>;
 };
 
 export type DemoTrilha = {
@@ -130,6 +153,7 @@ export const faseVazia = (tipo: TipoFase = "galeria"): DemoFase => ({
   palavras: tipo === "revisao" || tipo === "dialogo" ? [] : [palavraVazia(), palavraVazia()],
   cenas: [],
   dialogos: tipo === "dialogo" ? [dialogoVazio()] : [],
+  ajustes: {},
 });
 
 export const SEM_NADA: DemoDados = { trilhas: [] };
@@ -263,6 +287,9 @@ export function limparDemo(): void {
   gravarDemo({ trilhas: [] });
 }
 
+/** Uma pergunta gerada, com o assunto que a identifica entre as suas. */
+export type Gerada = { chave: string; bruta: Record<string, unknown> };
+
 /** A resposta certa alterna de posição: fixa, a criança decora o lugar. */
 function duasAlternativas(certa: string, errada: string, indice: number) {
   const a = { id: "a", label: certa };
@@ -275,21 +302,24 @@ function vizinha<T>(lista: T[], i: number): T {
   return lista[(i + 1) % lista.length];
 }
 
-function daGaleria(fase: DemoFase, prefixo: string, anterior?: DemoFase): unknown[] {
+function daGaleria(fase: DemoFase, prefixo: string, anterior?: DemoFase): Gerada[] {
   const palavras = palavrasProntas(fase);
   if (palavras.length < 2) return [];
 
-  const perguntas: unknown[] = palavras.map((p, i) => ({
-    id: `${prefixo}-g${i + 1}`,
-    format: "image_word",
-    topic: fase.titulo || "Demonstração",
-    prompt: "What is this?",
-    promptTranslation: "O que é isto?",
-    imageUrl: p.imagem,
-    choices: duasAlternativas(p.en, vizinha(palavras, i).en, i),
-    correctChoiceId: i % 2 === 0 ? "a" : "b",
-    explanation: `${p.en} significa ${p.pt}.`,
-    ...(p.dica.trim() ? { hint: p.dica.trim() } : {}),
+  const perguntas: Gerada[] = palavras.map((p, i) => ({
+    chave: p.en,
+    bruta: {
+      id: `${prefixo}-g${i + 1}`,
+      format: "image_word",
+      topic: fase.titulo || "Demonstração",
+      prompt: "What is this?",
+      promptTranslation: "O que é isto?",
+      imageUrl: p.imagem,
+      choices: duasAlternativas(p.en, vizinha(palavras, i).en, i),
+      correctChoiceId: i % 2 === 0 ? "a" : "b",
+      explanation: `${p.en} significa ${p.pt}.`,
+      ...(p.dica.trim() ? { hint: p.dica.trim() } : {}),
+    },
   }));
 
   // Uma retomada da fase anterior, no fim.
@@ -302,52 +332,61 @@ function daGaleria(fase: DemoFase, prefixo: string, anterior?: DemoFase): unknow
     const alvo = antigas[0];
     const outra = antigas[1];
     perguntas.push({
-      id: `${prefixo}-g0`,
-      format: "image_word",
-      topic: fase.titulo || "Demonstração",
-      prompt: "What is this?",
-      promptTranslation: "O que é isto?",
-      imageUrl: alvo.imagem,
-      choices: duasAlternativas(alvo.en, outra.en, palavras.length),
-      correctChoiceId: palavras.length % 2 === 0 ? "a" : "b",
-      explanation: `${alvo.en} significa ${alvo.pt}.`,
-      ...(alvo.dica.trim() ? { hint: alvo.dica.trim() } : {}),
+      chave: `retomada:${alvo.en}`,
+      bruta: {
+        id: `${prefixo}-g0`,
+        format: "image_word",
+        topic: fase.titulo || "Demonstração",
+        prompt: "What is this?",
+        promptTranslation: "O que é isto?",
+        imageUrl: alvo.imagem,
+        choices: duasAlternativas(alvo.en, outra.en, palavras.length),
+        correctChoiceId: palavras.length % 2 === 0 ? "a" : "b",
+        explanation: `${alvo.en} significa ${alvo.pt}.`,
+        ...(alvo.dica.trim() ? { hint: alvo.dica.trim() } : {}),
+      },
     });
   }
 
   return perguntas;
 }
 
-function daHistoria(fase: DemoFase, prefixo: string): unknown[] {
+function daHistoria(fase: DemoFase, prefixo: string): Gerada[] {
   const palavras = palavrasProntas(fase);
   if (palavras.length < 2) return [];
 
   // A história ensina pelo texto, então o quiz dela cobra por texto também:
   // o significado em português e o aluno escolhe a palavra em inglês.
   return palavras.map((p, i) => ({
-    id: `${prefixo}-h${i + 1}`,
-    format: "meaning_word",
-    topic: fase.titulo || "Demonstração",
-    prompt: p.pt,
-    choices: duasAlternativas(p.en, vizinha(palavras, i).en, i),
-    correctChoiceId: i % 2 === 0 ? "a" : "b",
-    explanation: `${p.en} significa ${p.pt}.`,
-    ...(p.dica.trim() ? { hint: p.dica.trim() } : {}),
+    chave: p.en,
+    bruta: {
+      id: `${prefixo}-h${i + 1}`,
+      format: "meaning_word",
+      topic: fase.titulo || "Demonstração",
+      prompt: p.pt,
+      choices: duasAlternativas(p.en, vizinha(palavras, i).en, i),
+      correctChoiceId: i % 2 === 0 ? "a" : "b",
+      explanation: `${p.en} significa ${p.pt}.`,
+      ...(p.dica.trim() ? { hint: p.dica.trim() } : {}),
+    },
   }));
 }
 
-function doDialogo(fase: DemoFase, prefixo: string): unknown[] {
+function doDialogo(fase: DemoFase, prefixo: string): Gerada[] {
   return dialogosProntos(fase).map((d, i) => ({
-    id: `${prefixo}-d${i + 1}`,
-    format: "situation_reply",
-    topic: fase.titulo || "Demonstração",
-    prompt: d.situacao,
-    speakerLine: d.oQueDiz,
-    ...(d.quemFala.trim() ? { speaker: d.quemFala.trim() } : {}),
-    choices: duasAlternativas(d.resposta, d.distrator, i),
-    correctChoiceId: i % 2 === 0 ? "a" : "b",
-    explanation: `Responde-se “${d.resposta}”.`,
-    ...(d.dica.trim() ? { hint: d.dica.trim() } : {}),
+    chave: d.oQueDiz,
+    bruta: {
+      id: `${prefixo}-d${i + 1}`,
+      format: "situation_reply",
+      topic: fase.titulo || "Demonstração",
+      prompt: d.situacao,
+      speakerLine: d.oQueDiz,
+      ...(d.quemFala.trim() ? { speaker: d.quemFala.trim() } : {}),
+      choices: duasAlternativas(d.resposta, d.distrator, i),
+      correctChoiceId: i % 2 === 0 ? "a" : "b",
+      explanation: `Responde-se “${d.resposta}”.`,
+      ...(d.dica.trim() ? { hint: d.dica.trim() } : {}),
+    },
   }));
 }
 
@@ -363,13 +402,13 @@ function doDialogo(fase: DemoFase, prefixo: string): unknown[] {
  * Por isso ela não se escreve: muda uma palavra da trilha e a revisão
  * acompanha sozinha.
  */
-function daRevisao(trilha: DemoTrilha, ate: number, prefixo: string): unknown[] {
-  const ensinadas: { palavra: DemoPalavra; porFigura: boolean; titulo: string }[] = [];
+function daRevisao(trilha: DemoTrilha, ate: number, prefixo: string): Gerada[] {
+  const ensinadas: { palavra: DemoPalavra; porFigura: boolean }[] = [];
 
   for (const fase of trilha.fases.slice(0, ate)) {
     if (fase.tipo !== "galeria" && fase.tipo !== "historia") continue;
     for (const palavra of palavrasProntas(fase)) {
-      ensinadas.push({ palavra, porFigura: fase.tipo === "galeria", titulo: fase.titulo });
+      ensinadas.push({ palavra, porFigura: fase.tipo === "galeria" });
     }
   }
 
@@ -381,41 +420,93 @@ function daRevisao(trilha: DemoTrilha, ate: number, prefixo: string): unknown[] 
       id: `${prefixo}-r${i + 1}`,
       topic: "Revisão",
       explanation: `${palavra.en} significa ${palavra.pt}.`,
+      ...(palavra.dica.trim() ? { hint: palavra.dica.trim() } : {}),
     };
 
     // Ensinada pela figura: agora vem por texto.
     if (porFigura) {
       return {
-        ...base,
-        format: "meaning_word",
-        prompt: palavra.pt,
-        choices: duasAlternativas(palavra.en, outra.en, i),
-        correctChoiceId: i % 2 === 0 ? "a" : "b",
+        chave: palavra.en,
+        bruta: {
+          ...base,
+          format: "meaning_word",
+          prompt: palavra.pt,
+          choices: duasAlternativas(palavra.en, outra.en, i),
+          correctChoiceId: i % 2 === 0 ? "a" : "b",
+        },
       };
     }
 
     // Ensinada pelo texto: volta pela figura, quando houver uma.
     if (palavra.imagem) {
       return {
-        ...base,
-        format: "image_word",
-        prompt: "What is this?",
-        promptTranslation: "O que é isto?",
-        imageUrl: palavra.imagem,
-        choices: duasAlternativas(palavra.en, outra.en, i),
-        correctChoiceId: i % 2 === 0 ? "a" : "b",
+        chave: palavra.en,
+        bruta: {
+          ...base,
+          format: "image_word",
+          prompt: "What is this?",
+          promptTranslation: "O que é isto?",
+          imageUrl: palavra.imagem,
+          choices: duasAlternativas(palavra.en, outra.en, i),
+          correctChoiceId: i % 2 === 0 ? "a" : "b",
+        },
       };
     }
 
     // Sem figura, inverte o sentido da pergunta: palavra → significado.
     return {
-      ...base,
-      format: "word_meaning",
-      prompt: palavra.en,
-      choices: duasAlternativas(palavra.pt, outra.pt, i),
-      correctChoiceId: i % 2 === 0 ? "a" : "b",
+      chave: palavra.en,
+      bruta: {
+        ...base,
+        format: "word_meaning",
+        prompt: palavra.en,
+        choices: duasAlternativas(palavra.pt, outra.pt, i),
+        correctChoiceId: i % 2 === 0 ? "a" : "b",
+      },
     };
   });
+}
+
+/**
+ * Aplica o que você mudou numa pergunta gerada.
+ *
+ * Trocar o distrator mexe na alternativa errada sem tocar na certa nem na
+ * posição dela: a alternância continua valendo.
+ */
+function comAjuste(g: Gerada, ajuste: AjustePergunta | undefined): Record<string, unknown> {
+  if (!ajuste) return g.bruta;
+
+  const bruta = { ...g.bruta };
+
+  if (ajuste.prompt?.trim()) bruta.prompt = ajuste.prompt.trim();
+  if (ajuste.explicacao?.trim()) bruta.explanation = ajuste.explicacao.trim();
+  if (ajuste.dica?.trim()) bruta.hint = ajuste.dica.trim();
+
+  if (ajuste.distrator?.trim()) {
+    const certa = bruta.correctChoiceId as string;
+    bruta.choices = (bruta.choices as { id: string; label: string }[]).map((c) =>
+      c.id === certa ? c : { ...c, label: ajuste.distrator!.trim() },
+    );
+  }
+
+  return bruta;
+}
+
+/** As perguntas que uma fase rende, com assunto e tudo — para o editor. */
+export function geradasDaFase(trilha: DemoTrilha, i: number): Gerada[] {
+  const fase = trilha.fases[i];
+  if (!fase) return [];
+
+  const prefixo = `demo${i + 1}`;
+  const anterior = trilha.fases[i - 1];
+
+  return fase.tipo === "galeria"
+    ? daGaleria(fase, prefixo, anterior)
+    : fase.tipo === "historia"
+      ? daHistoria(fase, prefixo)
+      : fase.tipo === "dialogo"
+        ? doDialogo(fase, prefixo)
+        : daRevisao(trilha, i, prefixo);
 }
 
 /** As perguntas de uma fase. Nenhuma é digitada: todas saem do conteúdo. */
@@ -423,21 +514,13 @@ export function perguntasDaFase(trilha: DemoTrilha, i: number): Question[] {
   const fase = trilha.fases[i];
   if (!fase) return [];
 
-  const prefixo = `demo${i + 1}`;
-  const anterior = trilha.fases[i - 1];
-  const brutas =
-    fase.tipo === "galeria"
-      ? daGaleria(fase, prefixo, anterior)
-      : fase.tipo === "historia"
-        ? daHistoria(fase, prefixo)
-        : fase.tipo === "dialogo"
-          ? doDialogo(fase, prefixo)
-          : daRevisao(trilha, i, prefixo);
-
   // Conteúdo meio digitado não pode derrubar a tela do aluno: o que não passa
   // na validação do produto simplesmente não vira pergunta.
-  return brutas.flatMap((q) => {
-    const r = questionSchema.safeParse(q);
+  return geradasDaFase(trilha, i).flatMap((g) => {
+    const ajuste = fase.ajustes?.[g.chave];
+    if (ajuste?.fora) return [];
+
+    const r = questionSchema.safeParse(comAjuste(g, ajuste));
     return r.success ? [r.data] : [];
   });
 }

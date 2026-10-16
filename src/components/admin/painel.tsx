@@ -193,9 +193,8 @@ export function Painel() {
             </button>
 
             <FaseEditor
-              fase={fase}
+              trilha={trilha}
               indice={faseAberta}
-              perguntas={perguntasDaFase(trilha, faseAberta).length}
               onMudar={(m) =>
                 mexerTrilha(trilha.id, {
                   fases: trilha.fases.map((f, j) => (j === faseAberta ? { ...f, ...m } : f)),

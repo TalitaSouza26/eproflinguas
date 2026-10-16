@@ -1,6 +1,7 @@
 "use client";
 
 import { Apagar, BOTAO_CLARO, CAMPO, Campo, CampoFigura, Secao } from "@/components/admin/campos";
+import { QuizEditor } from "@/components/admin/quiz-editor";
 import {
   cenaVazia,
   dialogoVazio,
@@ -10,6 +11,7 @@ import {
   palavraVazia,
   TIPOS,
   type DemoFase,
+  type DemoTrilha,
   type DemoPalavra,
   type TipoFase,
 } from "@/lib/demo/trilha";
@@ -25,19 +27,17 @@ import {
  * anteriores ensinaram.
  */
 export function FaseEditor({
-  fase,
+  trilha,
   indice,
-  perguntas,
   onMudar,
   onFigura,
 }: {
-  fase: DemoFase;
+  trilha: DemoTrilha;
   indice: number;
-  /** Quantas perguntas esta fase já rende, contadas pelo gerador. */
-  perguntas: number;
   onMudar: (mudanca: Partial<DemoFase>) => void;
   onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
 }) {
+  const fase = trilha.fases[indice];
   // Na história a lista de palavras é derivada das cenas; na galeria é a
   // lista digitada. Em ambos os casos é o que o quiz vai cobrar.
   const palavras = fase.tipo === "historia" ? palavrasDaHistoria(fase) : palavrasProntas(fase);
@@ -446,17 +446,11 @@ export function FaseEditor({
         titulo="O quiz"
         ajuda={
           fase.tipo === "revisao"
-            ? "Não se escreve. A revisão repassa tudo que as fases anteriores ensinaram, sempre por um caminho diferente do que ensinou: quem aprendeu pela figura é cobrado por texto, e vice-versa."
-            : "Não se escreve. Sai do conteúdo acima, com o distrator vindo da própria lista e a resposta alternando de posição."
+            ? "Geradas do que as fases anteriores ensinaram, sempre por um caminho diferente do que ensinou. Abra uma para retocar o que quiser."
+            : "Geradas do conteúdo acima, com o distrator vindo da própria lista e a resposta alternando de posição. Abra uma para retocar o que quiser."
         }
       >
-        <p className="text-sm font-semibold text-slate-700">
-          {perguntas > 0
-            ? `${perguntas} ${perguntas === 1 ? "pergunta" : "perguntas"}.`
-            : fase.tipo === "revisao"
-              ? "Nenhuma ainda: a revisão precisa de ao menos duas palavras ensinadas antes dela."
-              : "Nenhuma ainda: falta completar o conteúdo acima."}
-        </p>
+        <QuizEditor trilha={trilha} indice={indice} onMudar={onMudar} />
       </Secao>
     </div>
   );
