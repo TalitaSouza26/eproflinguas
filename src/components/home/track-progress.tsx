@@ -1,3 +1,4 @@
+import { DemoTrackRow } from "@/components/home/demo-track-row";
 import { BookIcon, LockIcon } from "@/components/ui/icons";
 import { progressOf } from "@/lib/tracks";
 import { studentProgress } from "@/lib/student";
@@ -65,6 +66,9 @@ export async function TrackProgress() {
             </li>
           );
         })}
+
+        {/* A trilha montada no admin, quando existe nesta aba. */}
+        <DemoTrackRow />
       </ul>
     </section>
   );

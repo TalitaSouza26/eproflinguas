@@ -1,0 +1,352 @@
+{
+  "name": "eProf Línguas",
+  "version": 1,
+  "color": {
+    "themes": [
+      {
+        "id": "azul",
+        "name": "Azul"
+      }
+    ],
+    "tokens": [
+      {
+        "name": "cabecalho-fundo",
+        "value": {
+          "azul": "#0c2464"
+        },
+        "usage": "Em todas as telas: o azul da barra de cima e o fundo do documento. É ele que separa a casca do conteúdo."
+      },
+      {
+        "name": "cabecalho-titulo",
+        "value": {
+          "azul": "#ffffff"
+        },
+        "usage": "Na barra de cima: o nome do aluno. É claro porque está sobre azul escuro."
+      },
+      {
+        "name": "cabecalho-item",
+        "value": {
+          "azul": "#d8e4fb"
+        },
+        "usage": "Na barra de cima: os itens do menu em repouso — Início, Quizzes, Conquistas."
+      },
+      {
+        "name": "cabecalho-apagado",
+        "value": {
+          "azul": "#a9c2f2"
+        },
+        "usage": "Na barra de cima: a palavra \"Aluno\" sob o nome e os ícones do canto direito — engrenagem, ajuda e sair."
+      },
+      {
+        "name": "menu-aberto-fundo",
+        "value": {
+          "azul": "#ffffff"
+        },
+        "usage": "Na barra de cima: a pílula branca atrás do item da tela aberta. O menu é escuro, então o item ativo vira um card claro."
+      },
+      {
+        "name": "menu-aberto-texto",
+        "value": {
+          "azul": "{acao-600}"
+        },
+        "usage": "Na barra de cima: o texto do item da tela aberta, sobre a pílula branca."
+      },
+      {
+        "name": "menu-aberto-icone",
+        "value": {
+          "azul": "{destaque-500}"
+        },
+        "usage": "Na barra de cima: o ícone do item da tela aberta. É o único laranja do cabeçalho."
+      },
+      {
+        "name": "conteudo-topo",
+        "value": {
+          "azul": "#143a9e"
+        },
+        "usage": "Em todas as telas: o topo do gradiente de fundo, logo abaixo da barra de cima."
+      },
+      {
+        "name": "conteudo-base",
+        "value": {
+          "azul": "#0d2870"
+        },
+        "usage": "Em todas as telas: a base do gradiente de fundo, no pé da página."
+      },
+      {
+        "name": "conteudo-brilho",
+        "value": {
+          "azul": "#22d3ee"
+        },
+        "usage": "Nos cards azuis da Início — \"Continue sua trilha\" e \"Divisão atual\": um brilho ciano no canto inferior direito, a 34% de opacidade. Nunca chapado."
+      },
+      {
+        "name": "destaque-500",
+        "value": {
+          "azul": "#f97316"
+        },
+        "usage": "A cor de \"faça isto\", uma por tela: o botão laranja (Continuar estudando, Começar o quiz, Próxima), a barra de progresso da trilha e da missão, o ícone do menu aberto e o fogo atrás da divisão conquistada."
+      },
+      {
+        "name": "destaque-600",
+        "value": {
+          "azul": "#e35d05"
+        },
+        "usage": "O mesmo botão laranja, sob o cursor. É o único estado de hover do botão principal."
+      },
+      {
+        "name": "destaque-50",
+        "value": {
+          "azul": "#fff4ec"
+        },
+        "usage": "Fundo do selo redondo que acompanha um título em card branco: o alvo da Missão do dia e o troféu de Suas conquistas."
+      },
+      {
+        "name": "acao-700",
+        "value": {
+          "azul": "#1a45b4"
+        },
+        "usage": "Em card branco, sobre fundo azul claro: o rótulo \"PARTE 1 DE 3\" e \"3 frases em inglês\" na capa da história, e o nome de quem fala no balão do quiz. Também é o azul do link sob o cursor."
+      },
+      {
+        "name": "acao-600",
+        "value": {
+          "azul": "#1f56e0"
+        },
+        "usage": "O azul de link: \"Fazer agora\" na Missão do dia, \"Ver todas\" em Suas conquistas, e o texto do item de menu aberto."
+      },
+      {
+        "name": "acao-500",
+        "value": {
+          "azul": "#2f6bff"
+        },
+        "usage": "O anel que aparece em volta de qualquer botão ou link navegado pelo teclado, em todas as telas."
+      },
+      {
+        "name": "acao-200",
+        "value": {
+          "azul": "#bdd2ff"
+        },
+        "usage": "No quiz: a borda da alternativa quando o cursor passa por cima, antes de responder."
+      },
+      {
+        "name": "acao-100",
+        "value": {
+          "azul": "#dbe7ff"
+        },
+        "usage": "Na história: o retângulo claro que destaca a palavra em inglês no meio da frase. Também é o texto claro dentro dos cards azuis."
+      },
+      {
+        "name": "acao-50",
+        "value": {
+          "azul": "#eef4ff"
+        },
+        "usage": "Fundo de apoio dentro de card branco: a dica do Bubo no quiz, o balão de fala, e a moldura das ilustrações da história."
+      },
+      {
+        "name": "acerto-700",
+        "value": {
+          "azul": "#12813c"
+        },
+        "usage": "No quiz, depois de responder: o texto \"Muito bem!\" e a explicação."
+      },
+      {
+        "name": "acerto-600",
+        "value": {
+          "azul": "#16a34a"
+        },
+        "usage": "No quiz, depois de responder: a borda e o selo de confirmação da alternativa certa."
+      },
+      {
+        "name": "acerto-50",
+        "value": {
+          "azul": "#ecfdf3"
+        },
+        "usage": "No quiz, depois de responder: o fundo da alternativa certa e da faixa de explicação."
+      },
+      {
+        "name": "erro-700",
+        "value": {
+          "azul": "#b31d1d"
+        },
+        "usage": "No quiz, depois de responder: o texto \"Quase!\" e a explicação."
+      },
+      {
+        "name": "erro-600",
+        "value": {
+          "azul": "#dc2626"
+        },
+        "usage": "No quiz, depois de responder: a borda e o xis da alternativa errada."
+      },
+      {
+        "name": "erro-50",
+        "value": {
+          "azul": "#fef2f2"
+        },
+        "usage": "No quiz, depois de responder: o fundo da alternativa errada e da faixa de explicação."
+      },
+      {
+        "name": "texto-900",
+        "value": {
+          "azul": "#0f2247"
+        },
+        "usage": "Em card branco: a pergunta do quiz, a palavra nova da galeria e os títulos de card. É o texto mais escuro do produto."
+      },
+      {
+        "name": "texto-800",
+        "value": {
+          "azul": "#17386a"
+        },
+        "usage": "Em card branco: palavra em negrito no meio de uma frase, como os nomes dos botões citados em Configurações, e o link \"Esqueceu sua senha?\" no login."
+      },
+      {
+        "name": "texto-700",
+        "value": {
+          "azul": "#33415c"
+        },
+        "usage": "Em card branco: o texto corrido — a narração da história e as explicações."
+      },
+      {
+        "name": "texto-500",
+        "value": {
+          "azul": "#64748b"
+        },
+        "usage": "Em card branco: legendas e contagens — \"Complete 2 quizzes hoje\", \"9 palavras\", a tradução sob a palavra nova."
+      },
+      {
+        "name": "texto-300",
+        "value": {
+          "azul": "#cbd5e1"
+        },
+        "usage": "Na moldura tracejada da figura que ainda não foi desenhada, no quiz e na galeria: a borda e o ícone."
+      },
+      {
+        "name": "texto-100",
+        "value": {
+          "azul": "#e9eef5"
+        },
+        "usage": "Em card branco: a borda da alternativa antes de responder e o trilho vazio das barras de progresso."
+      },
+      {
+        "name": "texto-50",
+        "value": {
+          "azul": "#f6f8fb"
+        },
+        "usage": "Em card branco: o fundo do botão secundário — \"Voltar\" na história e na galeria."
+      }
+    ]
+  },
+  "type": {
+    "families": {
+      "sans": "Nunito, ui-sans-serif, system-ui, sans-serif"
+    },
+    "groups": [
+      {
+        "name": "Texto",
+        "family": "sans",
+        "styles": [
+          {
+            "name": "display",
+            "fontSize": "28px",
+            "lineHeight": "1.1",
+            "fontWeight": 800,
+            "usage": "Saudação da Home e títulos de tela."
+          },
+          {
+            "name": "enunciado",
+            "fontSize": "26px",
+            "lineHeight": "1.2",
+            "fontWeight": 800,
+            "usage": "A pergunta do quiz."
+          },
+          {
+            "name": "titulo",
+            "fontSize": "20px",
+            "lineHeight": "1.3",
+            "fontWeight": 800,
+            "usage": "Título de card."
+          },
+          {
+            "name": "corpo",
+            "fontSize": "15px",
+            "lineHeight": "1.6",
+            "fontWeight": 400,
+            "usage": "Texto corrido dentro de card."
+          },
+          {
+            "name": "legenda",
+            "fontSize": "13px",
+            "lineHeight": "1.5",
+            "fontWeight": 400,
+            "usage": "Apoio e contagens."
+          },
+          {
+            "name": "rotulo",
+            "fontSize": "11px",
+            "lineHeight": "1.4",
+            "fontWeight": 700,
+            "letterSpacing": "0.18em",
+            "usage": "Maiúsculas acima do card: DIVISÃO ATUAL, PALAVRA NOVA, NOVA CONQUISTA."
+          }
+        ]
+      }
+    ]
+  },
+  "spacing": {
+    "tokens": [
+      {
+        "name": "space-2",
+        "value": "8px",
+        "usage": "Entre o ícone e o rótulo dentro de um botão."
+      },
+      {
+        "name": "space-3",
+        "value": "12px",
+        "usage": "Entre as alternativas empilhadas do quiz."
+      },
+      {
+        "name": "space-4",
+        "value": "16px",
+        "usage": "Respiro lateral mínimo da página no celular."
+      },
+      {
+        "name": "space-6",
+        "value": "24px",
+        "usage": "Entre os blocos da tela Início."
+      },
+      {
+        "name": "space-8",
+        "value": "32px",
+        "usage": "Respiro interno do card branco do quiz, e respiro lateral da página no desktop."
+      }
+    ]
+  },
+  "radius": {
+    "tokens": [
+      {
+        "name": "radius-total",
+        "value": "9999px",
+        "usage": "Botões, pílulas, selos e o avatar do aluno. É o raio mais usado do produto inteiro."
+      },
+      {
+        "name": "radius-12",
+        "value": "12px",
+        "usage": "Itens do menu e botões de ícone da barra de cima."
+      },
+      {
+        "name": "radius-16",
+        "value": "16px",
+        "usage": "Cards azuis da Início, alternativas do quiz e a faixa de explicação."
+      },
+      {
+        "name": "radius-24",
+        "value": "24px",
+        "usage": "O card branco do quiz e o balão de fala."
+      },
+      {
+        "name": "radius-32",
+        "value": "32px",
+        "usage": "O cartão da história e o da galeria — o maior raio, para a tela que é só um cartão."
+      }
+    ]
+  }
+}

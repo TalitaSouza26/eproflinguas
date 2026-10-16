@@ -53,6 +53,8 @@ export function QuizImage({
       width={512}
       height={512}
       priority={priority}
+      // Figura enviada pelo admin vem como data URL, que o otimizador não serve.
+      unoptimized={src.startsWith("data:")}
       onError={() => setMissing(true)}
       className={className}
     />

@@ -57,10 +57,16 @@ const baseQuestion = z.object({
   promptTranslation: z.string().max(120).optional(),
 });
 
-/** Caminho local (/quiz/dog.webp) ou URL absoluta. */
+/**
+ * Caminho local (/quiz/dog.webp), URL absoluta, ou `data:` — este último para
+ * a figura que o admin sobe na trilha de demonstração, que não tem arquivo.
+ */
 const imagePath = z
   .string()
-  .refine((v) => v.startsWith("/") || /^https?:\/\//.test(v), "informe um caminho ou URL de imagem");
+  .refine(
+    (v) => v.startsWith("/") || /^https?:\/\//.test(v) || v.startsWith("data:image/"),
+    "informe um caminho, uma URL ou uma imagem enviada",
+  );
 
 export const questionSchema = z
   .discriminatedUnion("format", [

@@ -40,7 +40,7 @@ export function GalleryPlayer({
       <div className="relative z-10 w-full max-w-3xl">
         <header className="text-center">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-200 sm:text-sm">
-            Fase {gallery.phase} · Casa e família
+            Fase {gallery.phase} · {gallery.track}
           </p>
           <h1 className="mt-2 text-4xl font-extrabold leading-tight text-white drop-shadow sm:text-5xl">
             {gallery.title}

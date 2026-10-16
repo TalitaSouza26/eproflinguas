@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "@/components/layout/nav-items";
-import { HelpIcon, LogoutIcon, ReplayIcon, SettingsIcon } from "@/components/ui/icons";
+import { DocumentIcon, HelpIcon, LogoutIcon, ReplayIcon, SettingsIcon } from "@/components/ui/icons";
 import { CURRENT_STUDENT } from "@/lib/home-data";
 
 /**
@@ -47,21 +47,32 @@ const ZERAR = {
   icon: ReplayIcon,
 };
 
+/**
+ * Atalho para o backoffice, depois de Conquistas.
+ *
+ * Só no modo protótipo, e só para testar: em produção o painel de conteúdo é
+ * outro sistema, feito à parte, e não um item no menu do aluno. Quando o
+ * Supabase entrar, este item some junto com o modo protótipo.
+ */
+const ADMIN = { href: "/admin", label: "Admin", icon: DocumentIcon };
+
 const ITEM_BASE =
   "flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 sm:px-4";
 
 /**
- * Os três destinos do estudo.
+ * Os destinos do estudo, mais o atalho do admin no modo protótipo.
  *
  * Existem duas vezes no cabeçalho, em lugares diferentes conforme a largura —
  * daí serem um componente e não marcação repetida. Só um dos dois aparece de
  * cada vez.
  */
-function NavLinks({ pathname }: { pathname: string }) {
+function NavLinks({ pathname, devMode }: { pathname: string; devMode: boolean }) {
+  const itens = devMode ? [...NAV_ITEMS, ADMIN] : NAV_ITEMS;
+
   return (
     <ul className="flex items-center gap-1">
-      {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+      {itens.map(({ href, label, icon: Icon }) => {
         const active = pathname === href || pathname.startsWith(`${href}/`);
         return (
           <li key={href}>
@@ -137,7 +148,7 @@ export function Topbar({
           aria-label="Menu principal"
           className="absolute left-1/2 hidden -translate-x-1/2 lg:block"
         >
-          <NavLinks pathname={pathname} />
+          <NavLinks pathname={pathname} devMode={devMode} />
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
@@ -227,7 +238,7 @@ export function Topbar({
         className="overflow-x-auto px-2 pb-2 sm:px-6 sm:pb-3 lg:hidden"
       >
         <div className="flex justify-center">
-          <NavLinks pathname={pathname} />
+          <NavLinks pathname={pathname} devMode={devMode} />
         </div>
       </nav>
     </header>

@@ -17,6 +17,8 @@ export type Gallery = {
   phase: number;
   /** Assunto do bloco, ex.: "A família". */
   title: string;
+  /** Nome da trilha, mostrado na tarja acima do título. */
+  track: string;
   words: Word[];
 };
 
@@ -24,6 +26,7 @@ const GALLERIES: Gallery[] = CASA_FAMILIA_PHASES.map((fase, i) => ({
   slug: "casa-familia",
   phase: i + 1,
   title: fase.title,
+  track: "Casa e família",
   words: fase.words,
 }));
 
