@@ -247,6 +247,29 @@ export function trilhaNoAr(trilha: DemoTrilha): boolean {
   return Boolean(trilha.nome.trim()) && fasesProntas(trilha) > 0;
 }
 
+/**
+ * Quantas palavras a trilha ensinou até certa fase.
+ *
+ * É o que a revisão tem para repassar. Diálogo não conta: ele treina uma
+ * resposta inteira, não uma palavra isolada que se possa cobrar de outro jeito.
+ */
+export function ensinadasAte(trilha: DemoTrilha, ate: number): number {
+  return trilha.fases
+    .slice(0, ate)
+    .filter((f) => f.tipo === "galeria" || f.tipo === "historia")
+    .reduce((soma, f) => soma + palavrasProntas(f).length, 0);
+}
+
+/**
+ * A revisão só existe depois de haver o que revisar.
+ *
+ * Duas palavras é o mínimo: com uma só não há nem distrator, e a pergunta
+ * fica sem a outra alternativa.
+ */
+export function podeRevisar(trilha: DemoTrilha, ate: number): boolean {
+  return ensinadasAte(trilha, ate) >= 2;
+}
+
 export function acharTrilha(dados: DemoDados | null, id: string): DemoTrilha | undefined {
   return dados?.trilhas.find((t) => t.id === id);
 }

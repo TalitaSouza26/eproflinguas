@@ -13,6 +13,7 @@ import {
   lerDemo,
   limparDemo,
   perguntasDaFase,
+  podeRevisar,
   reduzirImagem,
   SEM_NADA,
   TIPOS,
@@ -433,16 +434,26 @@ function Fases({
           >
             Nova fase
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              onMudar({ fases: [...trilha.fases, faseVazia("revisao")] });
-              onAbrirFase(trilha.fases.length);
-            }}
-            className={BOTAO_CLARO}
-          >
-            Fase de revisão no fim
-          </button>
+          {/* A revisão só pode existir depois de haver o que revisar: ela se
+              monta do que as fases anteriores ensinaram, e criada antes
+              nasceria vazia. */}
+          {podeRevisar(trilha, trilha.fases.length) ? (
+            <button
+              type="button"
+              onClick={() => {
+                onMudar({ fases: [...trilha.fases, faseVazia("revisao")] });
+                onAbrirFase(trilha.fases.length);
+              }}
+              className={BOTAO_CLARO}
+            >
+              Fase de revisão no fim
+            </button>
+          ) : (
+            <p className="self-center text-sm text-slate-500">
+              A revisão entra depois: ela repassa o que a trilha ensinou, e precisa de ao
+              menos duas palavras ensinadas antes dela.
+            </p>
+          )}
         </div>
       </section>
 

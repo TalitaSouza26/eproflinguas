@@ -8,6 +8,7 @@ import {
   mesmaPalavra,
   palavrasDaHistoria,
   palavrasProntas,
+  podeRevisar,
   palavraVazia,
   TIPOS,
   type DemoFase,
@@ -73,21 +74,32 @@ export function FaseEditor({
         <div className="grid gap-2 sm:grid-cols-2">
           {TIPOS.map(({ tipo, nome, resumo }) => {
             const ativo = fase.tipo === tipo;
+            // A revisão se monta do que veio antes: numa fase sem nada antes
+            // dela, nasceria vazia.
+            const bloqueado = tipo === "revisao" && !podeRevisar(trilha, indice);
+
             return (
               <button
                 key={tipo}
                 type="button"
                 aria-pressed={ativo}
+                disabled={bloqueado}
                 onClick={() => trocarTipo(tipo)}
                 className={`rounded-lg border p-3 text-left transition focus-visible:outline-2
                             focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
-                              ativo
-                                ? "border-blue-600 bg-blue-50"
-                                : "border-slate-200 bg-white hover:bg-slate-50"
+                              bloqueado
+                                ? "cursor-not-allowed border-slate-200 bg-slate-50 opacity-60"
+                                : ativo
+                                  ? "border-blue-600 bg-blue-50"
+                                  : "border-slate-200 bg-white hover:bg-slate-50"
                             }`}
               >
                 <span className="block text-sm font-extrabold text-slate-900">{nome}</span>
-                <span className="mt-0.5 block text-xs leading-relaxed text-slate-500">{resumo}</span>
+                <span className="mt-0.5 block text-xs leading-relaxed text-slate-500">
+                  {bloqueado
+                    ? "Precisa de ao menos duas palavras ensinadas nas fases anteriores."
+                    : resumo}
+                </span>
               </button>
             );
           })}
