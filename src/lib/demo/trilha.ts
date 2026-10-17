@@ -290,11 +290,22 @@ export function limparDemo(): void {
 /** Uma pergunta gerada, com o assunto que a identifica entre as suas. */
 export type Gerada = { chave: string; bruta: Record<string, unknown> };
 
-/** A resposta certa alterna de posição: fixa, a criança decora o lugar. */
+/**
+ * As duas alternativas, com a certa alternando de posição.
+ *
+ * Devolve TAMBÉM qual é a certa, e sempre a mesma: o que alterna é a ordem
+ * na tela, não a identidade. Antes quem chamava escrevia o
+ * `correctChoiceId` por conta própria e seguia a mesma alternância — o que
+ * marcava o distrator como resposta certa em toda pergunta de índice ímpar.
+ * Devolvendo as duas coisas juntas, não há como elas discordarem.
+ */
 function duasAlternativas(certa: string, errada: string, indice: number) {
   const a = { id: "a", label: certa };
   const b = { id: "b", label: errada };
-  return indice % 2 === 0 ? [a, b] : [b, a];
+  return {
+    choices: indice % 2 === 0 ? [a, b] : [b, a],
+    correctChoiceId: "a",
+  };
 }
 
 /** O par da palavra dentro da própria lista — nunca um distrator de outro assunto. */
@@ -315,8 +326,7 @@ function daGaleria(fase: DemoFase, prefixo: string, anterior?: DemoFase): Gerada
       prompt: "What is this?",
       promptTranslation: "O que é isto?",
       imageUrl: p.imagem,
-      choices: duasAlternativas(p.en, vizinha(palavras, i).en, i),
-      correctChoiceId: i % 2 === 0 ? "a" : "b",
+      ...duasAlternativas(p.en, vizinha(palavras, i).en, i),
       explanation: `${p.en} significa ${p.pt}.`,
       ...(p.dica.trim() ? { hint: p.dica.trim() } : {}),
     },
@@ -340,8 +350,7 @@ function daGaleria(fase: DemoFase, prefixo: string, anterior?: DemoFase): Gerada
         prompt: "What is this?",
         promptTranslation: "O que é isto?",
         imageUrl: alvo.imagem,
-        choices: duasAlternativas(alvo.en, outra.en, palavras.length),
-        correctChoiceId: palavras.length % 2 === 0 ? "a" : "b",
+        ...duasAlternativas(alvo.en, outra.en, palavras.length),
         explanation: `${alvo.en} significa ${alvo.pt}.`,
         ...(alvo.dica.trim() ? { hint: alvo.dica.trim() } : {}),
       },
@@ -364,8 +373,7 @@ function daHistoria(fase: DemoFase, prefixo: string): Gerada[] {
       format: "meaning_word",
       topic: fase.titulo || "Demonstração",
       prompt: p.pt,
-      choices: duasAlternativas(p.en, vizinha(palavras, i).en, i),
-      correctChoiceId: i % 2 === 0 ? "a" : "b",
+      ...duasAlternativas(p.en, vizinha(palavras, i).en, i),
       explanation: `${p.en} significa ${p.pt}.`,
       ...(p.dica.trim() ? { hint: p.dica.trim() } : {}),
     },
@@ -382,8 +390,7 @@ function doDialogo(fase: DemoFase, prefixo: string): Gerada[] {
       prompt: d.situacao,
       speakerLine: d.oQueDiz,
       ...(d.quemFala.trim() ? { speaker: d.quemFala.trim() } : {}),
-      choices: duasAlternativas(d.resposta, d.distrator, i),
-      correctChoiceId: i % 2 === 0 ? "a" : "b",
+      ...duasAlternativas(d.resposta, d.distrator, i),
       explanation: `Responde-se “${d.resposta}”.`,
       ...(d.dica.trim() ? { hint: d.dica.trim() } : {}),
     },
@@ -431,8 +438,7 @@ function daRevisao(trilha: DemoTrilha, ate: number, prefixo: string): Gerada[] {
           ...base,
           format: "meaning_word",
           prompt: palavra.pt,
-          choices: duasAlternativas(palavra.en, outra.en, i),
-          correctChoiceId: i % 2 === 0 ? "a" : "b",
+          ...duasAlternativas(palavra.en, outra.en, i),
         },
       };
     }
@@ -447,8 +453,7 @@ function daRevisao(trilha: DemoTrilha, ate: number, prefixo: string): Gerada[] {
           prompt: "What is this?",
           promptTranslation: "O que é isto?",
           imageUrl: palavra.imagem,
-          choices: duasAlternativas(palavra.en, outra.en, i),
-          correctChoiceId: i % 2 === 0 ? "a" : "b",
+          ...duasAlternativas(palavra.en, outra.en, i),
         },
       };
     }
@@ -460,8 +465,7 @@ function daRevisao(trilha: DemoTrilha, ate: number, prefixo: string): Gerada[] {
         ...base,
         format: "word_meaning",
         prompt: palavra.en,
-        choices: duasAlternativas(palavra.pt, outra.pt, i),
-        correctChoiceId: i % 2 === 0 ? "a" : "b",
+        ...duasAlternativas(palavra.pt, outra.pt, i),
       },
     };
   });
