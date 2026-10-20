@@ -179,7 +179,29 @@ function PassoFase({
         A fase é a unidade do quiz: palavras, história e perguntas ficam ligadas a ela.
       </Ajuda>
 
-      <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
+      {/* O tipo vem primeiro porque é ele que decide o resto: uma revisão não
+          se escreve, se monta do que veio antes, e um diálogo nem abertura
+          tem. Escolher depois de escrever é escrever para jogar fora. */}
+      <div>
+        <span className="mb-2 block text-xs font-bold text-slate-600">Tipo da fase</span>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {TIPOS_FASE.map(({ tipo, nome, resumo }) => (
+            <Escolha
+              key={tipo}
+              nome={nome}
+              resumo={resumo}
+              ativo={fase.tipo === tipo}
+              // A revisão se monta do que veio antes: numa trilha sem nada
+              // antes dela, nasceria vazia.
+              bloqueado={tipo === "Revisao" && !podeRevisao}
+              motivo="Precisa de ao menos duas palavras ensinadas antes desta fase."
+              onClick={() => onMudar({ tipo: tipo as TipoFase })}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_120px]">
         <Campo
           id="fase-titulo"
           rotulo="Título"
@@ -203,25 +225,6 @@ function PassoFase({
           placeholder="Sofia conhece um menino que ainda não fala português."
           onChange={(descricao) => onMudar({ descricao })}
         />
-      </div>
-
-      <div className="mt-5">
-        <span className="mb-2 block text-xs font-bold text-slate-600">Tipo da fase</span>
-        <div className="grid gap-2 sm:grid-cols-3">
-          {TIPOS_FASE.map(({ tipo, nome, resumo }) => (
-            <Escolha
-              key={tipo}
-              nome={nome}
-              resumo={resumo}
-              ativo={fase.tipo === tipo}
-              // A revisão se monta do que veio antes: numa trilha sem nada
-              // antes dela, nasceria vazia.
-              bloqueado={tipo === "Revisao" && !podeRevisao}
-              motivo="Precisa de ao menos duas palavras ensinadas antes desta fase."
-              onClick={() => onMudar({ tipo: tipo as TipoFase })}
-            />
-          ))}
-        </div>
       </div>
 
       <div className="mt-5">
