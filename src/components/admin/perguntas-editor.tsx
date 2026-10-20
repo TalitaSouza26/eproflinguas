@@ -82,7 +82,7 @@ export function PerguntasEditor({
         <section className="rounded-xl bg-blue-50 p-4">
           <h4 className="text-sm font-extrabold text-slate-900">Criar a partir das palavras</h4>
           <p className="mt-0.5 text-xs text-slate-600">
-            Gera enunciado, dica, feedbacks e alternativas usando as palavras e a história da
+            Gera enunciado, dica, feedbacks e alternativas usando as palavras e as cenas da
             fase. Depois é só revisar.
           </p>
 

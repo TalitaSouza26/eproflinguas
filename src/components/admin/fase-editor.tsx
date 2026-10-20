@@ -42,7 +42,7 @@ import {
  * pertence, e os campos dos dois ficam na tela da trilha. Pedi-los de novo
  * aqui seria perguntar o que a pessoa acabou de responder ao clicar.
  */
-const PASSOS = ["Fase", "Palavras", "História", "Perguntas", "Revisão"] as const;
+const PASSOS = ["Fase", "Palavras", "Cenas", "Perguntas", "Revisão"] as const;
 
 /**
  * O editor de uma fase, aberto dentro da linha dela.
@@ -176,7 +176,7 @@ function PassoFase({
   return (
     <div>
       <Ajuda>
-        A fase é a unidade do quiz: palavras, história e perguntas ficam ligadas a ela.
+        A fase é a unidade do quiz: palavras, cenas e perguntas ficam ligadas a ela.
       </Ajuda>
 
       {/* O tipo vem primeiro porque é ele que decide o resto: uma revisão não
@@ -413,7 +413,7 @@ function PassoPalavras({
   );
 }
 
-/* ───────────────────────────── 3 · História ───────────────────────────── */
+/* ───────────────────────────── 3 · Cenas ───────────────────────────── */
 
 function PassoHistoria({
   banco,
@@ -454,7 +454,7 @@ function PassoHistoria({
 
       <div className="flex flex-wrap gap-2">
         <button type="button" onClick={() => adicionar("Historia")} className={BOTAO_AZUL}>
-          + Card de história
+          + Card de cena
         </button>
         <button type="button" onClick={() => adicionar("Palavra")} className={BOTAO_CLARO}>
           + Card de palavra
@@ -482,7 +482,7 @@ function PassoHistoria({
                     {i + 1}
                   </span>
                   <Chip cor={card.tipo === "Historia" ? "azul" : "atencao"}>
-                    {card.tipo === "Historia" ? "História" : "Palavra"}
+                    {card.tipo === "Historia" ? "Cena" : "Palavra"}
                   </Chip>
 
                   <button
@@ -638,7 +638,7 @@ function PassoPerguntas({
       <Ajuda>
         {fase.tipo === "Revisao"
           ? "A revisão repassa as palavras das fases anteriores, sempre por um caminho diferente do que as ensinou."
-          : "Crie o quiz da fase usando as palavras e a história dos passos anteriores. Tudo é gravado junto quando você salvar a fase."}
+          : "Crie o quiz da fase usando as palavras e as cenas dos passos anteriores. Tudo é gravado junto quando você salvar a fase."}
       </Ajuda>
 
       {fase.tipo === "Revisao" && trilha && palavras.length >= 2 && (
@@ -678,8 +678,8 @@ function PassoRevisao({
   palavrasDoQuiz: Palavra[];
 }) {
   const cards = cardsOrdenados(fase);
-  const historia = cards.filter((c) => c.tipo === "Historia").length;
-  const dePalavra = cards.length - historia;
+  const cenas = cards.filter((c) => c.tipo === "Historia").length;
+  const dePalavra = cards.length - cenas;
   const alternativas = fase.perguntas.reduce((s, p) => s + p.alternativas.length, 0);
   const corretas = fase.perguntas.filter((p) => p.alternativas.some((a) => a.correta)).length;
 
@@ -707,7 +707,7 @@ function PassoRevisao({
     {
       tabela: "Card",
       estado: `${cards.length} cards`,
-      detalhe: `${historia} de história e ${dePalavra} de palavra, ordem de 1 a ${cards.length || 0}`,
+      detalhe: `${cenas} de cena e ${dePalavra} de palavra, ordem de 1 a ${cards.length || 0}`,
     },
     {
       tabela: "Pergunta",

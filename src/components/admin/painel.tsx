@@ -883,7 +883,7 @@ function AbaPerguntas({
     <>
       <h1 className="text-3xl font-extrabold">Perguntas</h1>
       <p className="mt-1 max-w-2xl text-sm leading-relaxed text-blue-100">
-        Escolha uma fase montada e crie as perguntas a partir das palavras e da história dela.
+        Escolha uma fase montada e crie as perguntas a partir das palavras e das cenas dela.
       </p>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[260px_1fr]">
@@ -923,7 +923,7 @@ function AbaPerguntas({
               {TIPOS_FASE.find((t) => t.tipo === atual.fase.tipo)?.nome}
             </Chip>
             <span className="text-xs text-slate-500">
-              {doQuiz.length} palavras · {atual.fase.cards.length} cards da história
+              {doQuiz.length} palavras · {atual.fase.cards.length} cards
             </span>
             <ul className="flex w-full flex-wrap gap-1.5">
               {doQuiz.map((p) => (
