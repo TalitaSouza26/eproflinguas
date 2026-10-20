@@ -23,8 +23,10 @@ import {
 import {
   BANCO_VAZIO,
   ensinadasAntes,
+  ensinadasDoTema,
   faseCompleta,
   faseVazia,
+  gerarRevisaoDoTema,
   fasesDaTrilha,
   gravarBanco,
   lerBanco,
@@ -127,6 +129,40 @@ export function Painel() {
             },
       ),
     });
+  }
+
+  /**
+   * A revisão que fecha o tema.
+   *
+   * Nasce com as perguntas prontas, geradas do que as fases do tema
+   * ensinaram — uma revisão vazia não revisa nada, e quem a cria quer
+   * conferir, não digitar de novo as mesmas nove palavras.
+   */
+  function novaRevisao(trilha: Trilha, tema: Tema) {
+    const perguntas = gerarRevisaoDoTema(banco, tema);
+    if (perguntas.length === 0) return;
+
+    const nova: Fase = {
+      ...faseVazia(tema.fases.length + 1, "Revisao"),
+      titulo: tema.titulo.trim() ? `Revisão: ${tema.titulo}` : "Revisão",
+      descricao: `Repassa as ${perguntas.length} palavras deste tema.`,
+      perguntas,
+    };
+
+    guardar({
+      ...banco,
+      trilhas: banco.trilhas.map((t) =>
+        t.id !== trilha.id
+          ? t
+          : {
+              ...t,
+              temas: t.temas.map((x) =>
+                x.id === tema.id ? { ...x, fases: [...x.fases, nova] } : x,
+              ),
+            },
+      ),
+    });
+    setFaseAberta(nova.id);
   }
 
   function novaFase(trilha: Trilha, tema: Tema) {
@@ -251,6 +287,7 @@ export function Painel() {
           <MontarTrilhas
             banco={banco}
             onNovaFase={novaFase}
+            onNovaRevisao={novaRevisao}
             onApagarFase={apagarFase}
             onMudarFase={mexerFase}
             onNovaPalavra={(palavra) =>
@@ -343,6 +380,7 @@ export function Painel() {
 function MontarTrilhas({
   banco,
   onNovaFase,
+  onNovaRevisao,
   onApagarFase,
   onMudarFase,
   onNovaPalavra,
@@ -363,6 +401,7 @@ function MontarTrilhas({
 }: {
   banco: Banco;
   onNovaFase: (trilha: Trilha, tema: Tema) => void;
+  onNovaRevisao: (trilha: Trilha, tema: Tema) => void;
   onApagarFase: (trilhaId: string, temaId: string, faseId: string) => void;
   onMudarFase: (temaId: string, faseId: string, m: Partial<Fase>) => void;
   onNovaPalavra: (palavra: Palavra) => void;
@@ -391,6 +430,7 @@ function MontarTrilhas({
         trilha={trilha}
         onVoltar={() => onAbrirTrilha(null)}
         onNovaFase={onNovaFase}
+        onNovaRevisao={onNovaRevisao}
         onApagarFase={onApagarFase}
         onMudarFase={onMudarFase}
         onNovaPalavra={onNovaPalavra}
@@ -513,6 +553,7 @@ function TrilhaAberta({
   trilha,
   onVoltar,
   onNovaFase,
+  onNovaRevisao,
   onApagarFase,
   onMudarFase,
   onNovaPalavra,
@@ -530,6 +571,7 @@ function TrilhaAberta({
   trilha: Trilha;
   onVoltar: () => void;
   onNovaFase: (trilha: Trilha, tema: Tema) => void;
+  onNovaRevisao: (trilha: Trilha, tema: Tema) => void;
   onApagarFase: (trilhaId: string, temaId: string, faseId: string) => void;
   onMudarFase: (temaId: string, faseId: string, m: Partial<Fase>) => void;
   onNovaPalavra: (palavra: Palavra) => void;
@@ -644,6 +686,7 @@ function TrilhaAberta({
               aberto={temaAberto === tema.id}
               onAbrir={() => onAbrirTema(temaAberto === tema.id ? null : tema.id)}
               onNovaFase={() => onNovaFase(trilha, tema)}
+            onNovaRevisao={() => onNovaRevisao(trilha, tema)}
               onApagarFase={(faseId) => onApagarFase(trilha.id, tema.id, faseId)}
               onMudarFase={(faseId, m) => onMudarFase(tema.id, faseId, m)}
               onNovaPalavra={onNovaPalavra}
@@ -683,6 +726,7 @@ function BlocoTema({
   aberto,
   onAbrir,
   onNovaFase,
+  onNovaRevisao,
   onApagarFase,
   onMudarFase,
   onNovaPalavra,
@@ -698,6 +742,7 @@ function BlocoTema({
   aberto: boolean;
   onAbrir: () => void;
   onNovaFase: () => void;
+  onNovaRevisao: () => void;
   onApagarFase: (faseId: string) => void;
   onMudarFase: (faseId: string, m: Partial<Fase>) => void;
   onNovaPalavra: (palavra: Palavra) => void;
@@ -709,6 +754,8 @@ function BlocoTema({
 }) {
   const fases = [...tema.fases].sort((a, b) => a.ordem - b.ordem);
   const pendentes = fases.filter((f) => !faseCompleta(f)).length;
+  const temRevisao = fases.some((f) => f.tipo === "Revisao");
+  const podeRevisarTema = ensinadasDoTema(banco, tema).length >= 2;
 
   return (
     <section className="rounded-2xl bg-white text-slate-900">
@@ -789,9 +836,19 @@ function BlocoTema({
           )}
 
           <div className="flex flex-wrap items-center justify-between gap-3 p-5 pt-4">
-            <button type="button" onClick={onNovaFase} className={BOTAO_CLARO}>
-              + Nova fase neste tema
-            </button>
+            <span className="flex flex-wrap items-center gap-2">
+              <button type="button" onClick={onNovaFase} className={BOTAO_CLARO}>
+                + Nova fase neste tema
+              </button>
+
+              {/* A revisão fecha o tema: ela cobra o que as fases dele
+                  ensinaram, e por isso só existe depois delas. */}
+              {podeRevisarTema && !temRevisao && (
+                <button type="button" onClick={onNovaRevisao} className={BOTAO_CLARO}>
+                  + Revisão deste tema
+                </button>
+              )}
+            </span>
 
             {/* Não há confirmar: grava a cada tecla. O botão só fecha o tema
                 — mas sem ele a tela não diz que já está gravado. */}

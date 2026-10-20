@@ -278,24 +278,34 @@ export function fasesProntas(trilha: Trilha): number {
 }
 
 /**
- * As Palavras que a trilha ensinou antes de certa fase.
+ * As Palavras que um tema ensinou, até certa fase dele.
  *
- * É o que a revisão tem para repassar. Fase de diálogo não conta: ali se
- * treina uma resposta inteira, não a palavra isolada.
+ * É o que a revisão tem para repassar — e ela fecha o tema, não a trilha:
+ * cobrar numa revisão palavras de um tema que acabou três temas atrás não
+ * é revisar o que se acabou de aprender.
+ *
+ * Fase de diálogo não conta: ali se treina uma resposta inteira, não a
+ * palavra isolada.
  */
-export function ensinadasAntes(banco: Banco, trilha: Trilha, faseId: string): Palavra[] {
-  const todas = fasesDaTrilha(trilha);
-  const i = todas.findIndex(({ fase }) => fase.id === faseId);
-  const ate = i < 0 ? todas.length : i;
+export function ensinadasDoTema(banco: Banco, tema: Tema, ateFaseId?: string): Palavra[] {
+  const fases = [...tema.fases].sort((a, b) => a.ordem - b.ordem);
+  const i = ateFaseId ? fases.findIndex((f) => f.id === ateFaseId) : -1;
+  const ate = i < 0 ? fases.length : i;
 
   const saida: Palavra[] = [];
-  for (const { fase } of todas.slice(0, ate)) {
+  for (const fase of fases.slice(0, ate)) {
     if (fase.tipo !== "Aprendizado") continue;
     for (const palavra of palavrasDaFase(banco, fase)) {
       if (!saida.some((p) => p.id === palavra.id)) saida.push(palavra);
     }
   }
   return saida;
+}
+
+/** O mesmo, achando o tema a que a fase pertence. */
+export function ensinadasAntes(banco: Banco, trilha: Trilha, faseId: string): Palavra[] {
+  const tema = trilha.temas.find((t) => t.fases.some((f) => f.id === faseId));
+  return tema ? ensinadasDoTema(banco, tema, faseId) : [];
 }
 
 /**
@@ -393,14 +403,14 @@ export function gerarPergunta(
 }
 
 /** As perguntas de uma revisão, montadas do que as fases anteriores ensinaram. */
-export function gerarRevisao(banco: Banco, trilha: Trilha, fase: Fase): Pergunta[] {
-  const ensinadas = ensinadasAntes(banco, trilha, fase.id);
+export function gerarRevisaoDoTema(banco: Banco, tema: Tema, ateFaseId?: string): Pergunta[] {
+  const ensinadas = ensinadasDoTema(banco, tema, ateFaseId);
   if (ensinadas.length < 2) return [];
 
   // A figura, quando existe, está no Card de palavra da fase que ensinou.
   const comFiguras: Fase = {
-    ...fase,
-    cards: fasesDaTrilha(trilha).flatMap(({ fase: f }) =>
+    ...faseVazia(1),
+    cards: tema.fases.flatMap((f) =>
       f.cards.filter((c) => c.tipo === "Palavra" && c.imagem),
     ),
   };
@@ -414,6 +424,12 @@ export function gerarRevisao(banco: Banco, trilha: Trilha, fase: Fase): Pergunta
       }),
     )
     .filter((p): p is Pergunta => Boolean(p));
+}
+
+/** O mesmo, para a fase de revisão que já está no tema. */
+export function gerarRevisao(banco: Banco, trilha: Trilha, fase: Fase): Pergunta[] {
+  const tema = trilha.temas.find((t) => t.fases.some((f) => f.id === fase.id));
+  return tema ? gerarRevisaoDoTema(banco, tema, fase.id) : [];
 }
 
 /* ───────────────────────── para a tela do aluno ───────────────────────── */
