@@ -530,31 +530,29 @@ function PassoHistoria({
                 </div>
 
                 {abertoId === card.id && (
-                  <div className="grid gap-5 border-t border-slate-100 p-3 lg:grid-cols-[300px_1fr]">
+                  <div className="flex flex-wrap items-start gap-4 border-t border-slate-100 p-3">
                     <PreviaDoCard card={card} palavra={acharPalavra(banco, card.palavraId)} />
 
-                    <div className="grid content-start gap-3">
-                      <div>
-                        <span className="mb-1 block text-xs font-bold text-slate-600">
-                          Imagem
-                        </span>
-                        <CampoFigura
-                          imagem={card.imagem}
-                          rotulo={`Imagem do card ${i + 1}`}
-                          tamanho="h-[72px] w-[112px]"
-                          onEscolher={(a) => onFigura(a, (imagem) => mexer(card.id, { imagem }))}
-                        />
-                      </div>
+                    <div>
+                      <span className="mb-1 block text-xs font-bold text-slate-600">Imagem</span>
+                      <CampoFigura
+                        imagem={card.imagem}
+                        rotulo={`Imagem do card ${i + 1}`}
+                        tamanho="h-[72px] w-[112px]"
+                        onEscolher={(a) => onFigura(a, (imagem) => mexer(card.id, { imagem }))}
+                      />
+                    </div>
 
-                      {card.tipo === "Historia" ? (
-                        <>
-                          <Campo
-                            id={`antes-${card.id}`}
-                            rotulo="Texto antes"
-                            valor={card.textoAntes}
-                            placeholder="Ele sorriu e acenou: —"
-                            onChange={(textoAntes) => mexer(card.id, { textoAntes })}
-                          />
+                    {card.tipo === "Historia" ? (
+                      <div className="grid min-w-[280px] max-w-xl flex-1 content-start gap-3">
+                        <Campo
+                          id={`antes-${card.id}`}
+                          rotulo="Texto antes"
+                          valor={card.textoAntes}
+                          placeholder="Ele sorriu e acenou: —"
+                          onChange={(textoAntes) => mexer(card.id, { textoAntes })}
+                        />
+                        <div className="grid gap-3 sm:grid-cols-[1fr_120px]">
                           <Campo
                             id={`destaque-${card.id}`}
                             rotulo="Destaque"
@@ -569,43 +567,43 @@ function PassoHistoria({
                             placeholder="!"
                             onChange={(textoDepois) => mexer(card.id, { textoDepois })}
                           />
-                        </>
-                      ) : (
-                        <>
-                          <label className="block">
-                            <span className="mb-1 block text-xs font-bold text-slate-600">
-                              Palavra relacionada
-                            </span>
-                            <select
-                              className={CAMPO}
-                              value={card.palavraId ?? ""}
-                              onChange={(e) => {
-                                const p = palavras.find((x) => x.id === e.target.value);
-                                mexer(card.id, {
-                                  palavraId: p?.id ?? null,
-                                  destaque: p?.ingles ?? card.destaque,
-                                  traducao: p?.traducao ?? card.traducao,
-                                });
-                              }}
-                            >
-                              <option value="">Escolha uma palavra da fase</option>
-                              {palavras.map((p) => (
-                                <option key={p.id} value={p.id}>
-                                  {p.ingles} — {p.traducao}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                          <Campo
-                            id={`traducao-${card.id}`}
-                            rotulo="Tradução mostrada"
-                            valor={card.traducao}
-                            placeholder="olá"
-                            onChange={(traducao) => mexer(card.id, { traducao })}
-                          />
-                        </>
-                      )}
-                    </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grid min-w-[280px] max-w-xl flex-1 content-start gap-3 sm:grid-cols-2">
+                        <label className="block">
+                          <span className="mb-1 block text-xs font-bold text-slate-600">
+                            Palavra relacionada
+                          </span>
+                          <select
+                            className={CAMPO}
+                            value={card.palavraId ?? ""}
+                            onChange={(e) => {
+                              const p = palavras.find((x) => x.id === e.target.value);
+                              mexer(card.id, {
+                                palavraId: p?.id ?? null,
+                                destaque: p?.ingles ?? card.destaque,
+                                traducao: p?.traducao ?? card.traducao,
+                              });
+                            }}
+                          >
+                            <option value="">Escolha uma palavra da fase</option>
+                            {palavras.map((p) => (
+                              <option key={p.id} value={p.id}>
+                                {p.ingles} — {p.traducao}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <Campo
+                          id={`traducao-${card.id}`}
+                          rotulo="Tradução mostrada"
+                          valor={card.traducao}
+                          placeholder="olá"
+                          onChange={(traducao) => mexer(card.id, { traducao })}
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </li>
@@ -797,7 +795,7 @@ function PreviaDoCard({ card, palavra }: { card: Card; palavra: Palavra | undefi
   const temTexto = card.textoAntes || card.destaque || card.textoDepois;
 
   return (
-    <aside className="h-fit rounded-xl bg-deep-900 p-4 text-white">
+    <aside className="h-fit w-[260px] shrink-0 rounded-xl bg-deep-900 p-3 text-white">
       <p className="text-[11px] font-bold uppercase tracking-wide text-blue-200">
         Prévia do aluno
       </p>
