@@ -6,18 +6,20 @@ import { QuizPlayer } from "@/components/quiz/quiz-player";
 import { ReviewIntro } from "@/components/quiz/review-intro";
 import { StoryPlayer } from "@/components/quiz/story-player";
 import {
+  aberturaEhGaleria,
+  acharPalavra,
   acharTrilha,
-  cenasProntas,
-  mesmaPalavra,
-  palavrasProntas,
-  perguntasDaFase,
-} from "@/lib/demo/trilha";
-import { useDemoDados } from "@/lib/demo/use-demo-dados";
+  cardsOrdenados,
+  faseTemAbertura,
+  fasesDaTrilha,
+  perguntasParaOQuiz,
+} from "@/lib/demo/banco";
+import { useBanco } from "@/lib/demo/use-banco";
 import type { Gallery } from "@/lib/quiz/galeria";
 import type { Story, StoryBeat } from "@/lib/quiz/stories";
 
 /**
- * Uma fase da trilha montada no admin, rodando na tela do aluno.
+ * Uma fase montada no admin, rodando na tela do aluno.
  *
  * Usa os players de verdade — galeria, história, revisão e quiz são os mesmos
  * componentes do produto. Uma imitação mentiria justamente sobre o que se
@@ -35,21 +37,26 @@ export function DemoFase({
   trilhaId: string;
   fase: number;
 }) {
-  const dados = useDemoDados();
-  const trilha = acharTrilha(dados, trilhaId);
+  const banco = useBanco();
+  const trilha = acharTrilha(banco, trilhaId);
 
-  if (!trilha) return <SemTrilha />;
+  if (!banco || !trilha) return <SemTrilha />;
 
-  const i = fase - 1;
-  const atual = trilha.fases[i];
+  const todas = fasesDaTrilha(trilha);
+  const atual = todas[fase - 1]?.fase;
   if (!atual) return <SemTrilha />;
 
-  const total = trilha.fases.length;
+  const total = todas.length;
   const quizHref = `/quizzes/demo/quiz?trilha=${trilha.id}&fase=${fase}`;
-  const perguntas = perguntasDaFase(trilha, i);
+  const perguntas = perguntasParaOQuiz(banco, atual);
 
-  // O diálogo não tem abertura: a conversa já é o conteúdo.
-  if (etapa === "quiz" || atual.tipo === "dialogo") {
+  if (etapa === "quiz" || !faseTemAbertura(atual)) {
+    // Sem cards e sem ser diálogo, a fase ainda abre com o Bubo: é o caso da
+    // revisão, a única em que a criança cairia direto numa pergunta.
+    if (etapa === "abertura" && atual.tipo !== "Dialogo") {
+      return <ReviewIntro questions={perguntas.length} quizHref={quizHref} />;
+    }
+
     return (
       <QuizPlayer
         trackSlug="demo"
@@ -62,75 +69,59 @@ export function DemoFase({
     );
   }
 
-  if (atual.tipo === "galeria") {
+  const cards = cardsOrdenados(atual);
+
+  // Só cards de palavra, todos com figura: é a galeria "Olha e aprende".
+  if (aberturaEhGaleria(atual)) {
     const galeria: Gallery = {
       slug: "demo",
       phase: fase,
       title: atual.titulo || trilha.nome,
       track: trilha.nome,
-      words: palavrasProntas(atual).map((p) => ({ en: p.en, pt: p.pt, image: p.imagem ?? "" })),
+      words: cards.map((c) => ({
+        en: acharPalavra(banco, c.palavraId)?.ingles ?? c.destaque,
+        pt: c.traducao || (acharPalavra(banco, c.palavraId)?.traducao ?? ""),
+        image: c.imagem ?? "",
+      })),
     };
     return <GalleryPlayer gallery={galeria} quizHref={quizHref} />;
   }
 
-  if (atual.tipo === "historia") {
-    const palavras = palavrasProntas(atual);
-    // A cena pode marcar "My name is" e o dicionário guardar "My name is…":
-    // é a mesma expressão, com a pontuação da frase colada.
-    const significado = (en: string) => palavras.find((p) => mesmaPalavra(p.en, en))?.pt ?? "";
-    const cenas = cenasProntas(atual);
-
-    // Cada cena vira duas batidas: a narração, com a palavra entre asteriscos
-    // como o player espera, e a tela da palavra nova logo depois.
-    // Uma palavra só é apresentada na primeira vez que aparece. A história
-    // real marca "Good morning" em duas cenas, e ensiná-la duas vezes faria
-    // a mesma tela de palavra nova surgir repetida.
-    const jaEnsinadas: string[] = [];
-
-    const beats: StoryBeat[] = cenas.flatMap((c) => {
-      const narracao = {
-        kind: "narration" as const,
-        text: (c.palavra ? `${c.antes} *${c.palavra}* ${c.depois}` : `${c.antes} ${c.depois}`)
-          .replace(/\s+/g, " ")
-          .trim(),
-        ...(c.imagem ? { image: c.imagem } : {}),
-      };
-
-      // Cena sem palavra em destaque é só narração — é o caso da que abre e
-      // da que fecha uma parte da história, nas histórias que já existem.
-      if (!c.palavra) return [narracao];
-
-      if (jaEnsinadas.some((j) => mesmaPalavra(j, c.palavra))) return [narracao];
-      jaEnsinadas.push(c.palavra);
-
-      const guardada = palavras.find((p) => mesmaPalavra(p.en, c.palavra));
-      return [
-        narracao,
-        {
+  // Os cards viram as batidas da história, na mesma ordem: o de história
+  // narra, o de palavra para tudo e mostra o que ela quer dizer.
+  const beats: StoryBeat[] = cards.map((c) =>
+    c.tipo === "Historia"
+      ? {
+          kind: "narration" as const,
+          text: (c.destaque
+            ? `${c.textoAntes} *${c.destaque}* ${c.textoDepois}`
+            : `${c.textoAntes} ${c.textoDepois}`
+          )
+            .replace(/\s+/g, " ")
+            .trim(),
+          ...(c.imagem ? { image: c.imagem } : {}),
+        }
+      : {
           kind: "lesson" as const,
-          // Mostra a grafia do dicionário, que é a completa.
-          word: guardada?.en ?? c.palavra,
-          meaning: significado(c.palavra),
+          word: acharPalavra(banco, c.palavraId)?.ingles || c.destaque,
+          meaning: c.traducao || (acharPalavra(banco, c.palavraId)?.traducao ?? ""),
         },
-      ];
-    });
+  );
 
-    const historia: Story = {
-      slug: "demo",
-      phase: fase,
-      part: fase,
-      title: atual.titulo || trilha.nome,
-      subtitle:
-        atual.subtitulo.trim() ||
-        `${palavras.length} ${palavras.length === 1 ? "palavra nova" : "palavras novas"}.`,
-      cover: atual.capa ?? cenas.find((c) => c.imagem)?.imagem ?? "",
-      beats,
-    };
+  const novas = cards.filter((c) => c.tipo === "Palavra").length;
 
-    return <StoryPlayer story={historia} quizHref={quizHref} parts={total} />;
-  }
+  const historia: Story = {
+    slug: "demo",
+    phase: fase,
+    part: fase,
+    title: atual.titulo || trilha.nome,
+    subtitle:
+      atual.descricao.trim() || `${novas} ${novas === 1 ? "palavra nova" : "palavras novas"}.`,
+    cover: atual.imagemCapa ?? cards.find((c) => c.imagem)?.imagem ?? "",
+    beats,
+  };
 
-  return <ReviewIntro questions={perguntas.length} quizHref={quizHref} />;
+  return <StoryPlayer story={historia} quizHref={quizHref} parts={total} />;
 }
 
 function contexto(fase: number, total: number): string {

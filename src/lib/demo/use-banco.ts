@@ -1,12 +1,12 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { EVENTO_DEMO, lerDemo, type DemoDados } from "@/lib/demo/trilha";
+import { CHAVE_BANCO, EVENTO_DEMO, lerBanco, type Banco } from "@/lib/demo/banco";
 
 /**
  * O conteúdo montado no admin, para quem só lê.
  *
- * `useSyncExternalStore` em vez de `useEffect` com `setState`: a trilha é
+ * `useSyncExternalStore` em vez de `useEffect` com `setState`: o conteúdo é
  * estado de fora do React — vive no `sessionStorage` — e este é o jeito de
  * assinar uma fonte externa sem provocar uma renderização em cascata.
  *
@@ -16,12 +16,12 @@ import { EVENTO_DEMO, lerDemo, type DemoDados } from "@/lib/demo/trilha";
  */
 
 let cacheTexto: string | null = null;
-let cacheValor: DemoDados | null = null;
+let cacheValor: Banco | null = null;
 
-function instantaneo(): DemoDados | null {
+function instantaneo(): Banco | null {
   const texto = (() => {
     try {
-      return window.sessionStorage.getItem("eprof-demo-trilha");
+      return window.sessionStorage.getItem(CHAVE_BANCO);
     } catch {
       return null;
     }
@@ -29,14 +29,14 @@ function instantaneo(): DemoDados | null {
 
   if (texto !== cacheTexto) {
     cacheTexto = texto;
-    cacheValor = lerDemo();
+    cacheValor = lerBanco();
   }
   return cacheValor;
 }
 
 function assinar(aoMudar: () => void) {
   window.addEventListener(EVENTO_DEMO, aoMudar);
-  // Montar a trilha noutra aba da mesma sessão também avisa esta.
+  // Montar conteúdo noutra aba da mesma sessão também avisa esta.
   window.addEventListener("storage", aoMudar);
   return () => {
     window.removeEventListener(EVENTO_DEMO, aoMudar);
@@ -44,9 +44,9 @@ function assinar(aoMudar: () => void) {
   };
 }
 
-/** No servidor não há aba, logo não há trilha. */
+/** No servidor não há aba, logo não há conteúdo. */
 const noServidor = () => null;
 
-export function useDemoDados(): DemoDados | null {
+export function useBanco(): Banco | null {
   return useSyncExternalStore(assinar, instantaneo, noServidor);
 }

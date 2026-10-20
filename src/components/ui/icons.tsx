@@ -133,6 +133,15 @@ export function ChevronDownIcon({ className }: IconProps) {
   );
 }
 
+export function CopyIcon({ className }: IconProps) {
+  return (
+    <svg {...strokeProps} aria-hidden className={className}>
+      <rect x="8.5" y="8.5" width="10" height="10" rx="2" />
+      <path d="M15.5 5.5h-9a2 2 0 0 0-2 2v9" />
+    </svg>
+  );
+}
+
 export function CapIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden className={className}>
