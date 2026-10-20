@@ -79,6 +79,14 @@ export function CardEditor({
 
             {card.tipo === "Historia" ? (
               <>
+                {/* Também na cena: é a palavra que a cena ensina, e
+                    escolhê-la poupa digitar o destaque de novo. */}
+                <SelecionarPalavra
+                  card={card}
+                  palavras={palavras}
+                  ajuda="A palavra que esta cena ensina. Escolher preenche o destaque."
+                  onMudar={onMudar}
+                />
                 <Campo
                   id={`antes-${card.id}`}
                   rotulo="Texto antes"
@@ -106,33 +114,12 @@ export function CardEditor({
               </>
             ) : (
               <>
-                <label className="block">
-                  <span className="mb-1 block text-xs font-bold text-slate-600">
-                    Palavra relacionada
-                  </span>
-                  <select
-                    className={CAMPO}
-                    value={card.palavraId ?? ""}
-                    onChange={(e) => {
-                      const p = palavras.find((x) => x.id === e.target.value);
-                      onMudar({
-                        palavraId: p?.id ?? null,
-                        destaque: p?.ingles ?? card.destaque,
-                        traducao: p?.traducao ?? card.traducao,
-                      });
-                    }}
-                  >
-                    <option value="">Escolha uma palavra da fase</option>
-                    {palavras.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.ingles} — {p.traducao}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mt-1 block text-[11px] text-slate-500">
-                    Escolher a palavra preenche o destaque e a tradução com os dados dela.
-                  </span>
-                </label>
+                <SelecionarPalavra
+                  card={card}
+                  palavras={palavras}
+                  ajuda="Escolher a palavra preenche o destaque e a tradução com os dados dela."
+                  onMudar={onMudar}
+                />
 
                 <Campo
                   id={`traducao-${card.id}`}
@@ -215,5 +202,49 @@ function PreviaGrande({ card, palavra }: { card: Card; palavra: Palavra | undefi
         )}
       </div>
     </aside>
+  );
+}
+
+/**
+ * A Palavra do banco a que este card se liga.
+ *
+ * Escolher preenche o destaque e a tradução: são os dados dela, e digitá-los
+ * de novo só cria a chance de escrever diferente do que o banco guarda.
+ */
+function SelecionarPalavra({
+  card,
+  palavras,
+  ajuda,
+  onMudar,
+}: {
+  card: Card;
+  palavras: Palavra[];
+  ajuda: string;
+  onMudar: (m: Partial<Card>) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-bold text-slate-600">Palavra relacionada</span>
+      <select
+        className={CAMPO}
+        value={card.palavraId ?? ""}
+        onChange={(e) => {
+          const p = palavras.find((x) => x.id === e.target.value);
+          onMudar({
+            palavraId: p?.id ?? null,
+            destaque: p?.ingles ?? card.destaque,
+            traducao: p?.traducao ?? card.traducao,
+          });
+        }}
+      >
+        <option value="">Nenhuma</option>
+        {palavras.map((p) => (
+          <option key={p.id} value={p.id}>
+            {p.ingles} ({p.traducao})
+          </option>
+        ))}
+      </select>
+      <span className="mt-1 block text-[11px] text-slate-500">{ajuda}</span>
+    </label>
   );
 }
