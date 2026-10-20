@@ -6,7 +6,6 @@ import {
   Apagar,
   BOTAO_AZUL,
   BOTAO_CLARO,
-  BOTAO_FORTE,
   CAMPO,
   Campo,
   CampoFigura,
@@ -23,221 +22,139 @@ import {
   ensinadasAntes,
   gerarRevisao,
   novoId,
+  palavrasDaFase as palavrasLigadas,
   perguntaPronta,
   TIPOS_FASE,
   type Banco,
   type Card,
   type Fase,
   type Palavra,
+  type Tema,
   type TipoCard,
   type TipoFase,
   type Trilha,
 } from "@/lib/demo/banco";
 
 /**
- * O rascunho de uma fase: trilha, tema, fase, palavras, cards e perguntas.
+ * As etapas de montar uma fase.
  *
- * Tudo junto porque é assim que o conteúdo é pensado — "a fase 2 de
- * Cumprimentos" —, e não tabela por tabela. Nada é gravado até salvar: quem
- * desiste no meio não deixa uma trilha vazia para trás.
- */
-export type Rascunho = {
-  /** `null` = criar uma trilha nova. */
-  trilhaId: string | null;
-  trilha: { nome: string; descricao: string; ordem: number; ativa: boolean };
-  /** `null` = criar um tema novo. */
-  temaId: string | null;
-  tema: { titulo: string; ordem: number };
-  fase: Fase;
-  /** Palavras criadas aqui, que ainda não existem no banco. */
-  palavrasNovas: Palavra[];
-  /** A fase já existia? Então salvar atualiza em vez de criar. */
-  existente: boolean;
-};
-
-/**
- * Os passos de montar uma fase.
- *
- * Trilha e tema não estão aqui: a fase é criada de dentro do tema a que ela
+ * Trilha e tema não estão aqui: a fase é criada dentro do tema a que ela
  * pertence, e os campos dos dois ficam na tela da trilha. Pedi-los de novo
  * aqui seria perguntar o que a pessoa acabou de responder ao clicar.
  */
 const PASSOS = ["Fase", "Palavras", "História", "Perguntas", "Revisão"] as const;
 
+/**
+ * O editor de uma fase, aberto dentro da linha dela.
+ *
+ * Não é um modal. A fase é um item de uma lista de fases, de um tema, de uma
+ * trilha — e um modal apaga justamente esse contexto na hora em que ele mais
+ * importa. Aberta no lugar, dá para ver a fase anterior enquanto se escreve a
+ * seguinte.
+ *
+ * Grava a cada tecla, como o resto da tela. Não há rascunho nem "salvar":
+ * salvar era o que o modal precisava para poder ser cancelado.
+ */
 export function FaseEditor({
   banco,
-  rascunho,
+  trilha,
+  tema,
+  fase,
   onMudar,
-  onSalvar,
-  onFechar,
+  onNovaPalavra,
   onFigura,
 }: {
   banco: Banco;
-  rascunho: Rascunho;
-  onMudar: (r: Rascunho) => void;
-  onSalvar: () => void;
-  onFechar: () => void;
+  trilha: Trilha;
+  tema: Tema;
+  fase: Fase;
+  onMudar: (m: Partial<Fase>) => void;
+  onNovaPalavra: (palavra: Palavra) => void;
   onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
 }) {
   const [passo, setPasso] = useState(0);
 
-  const { fase } = rascunho;
-  const trilha = banco.trilhas.find((t) => t.id === rascunho.trilhaId);
-
-  // O editor de perguntas precisa enxergar as palavras criadas aqui, que
-  // ainda não estão no banco.
-  const bancoDoRascunho: Banco = {
-    ...banco,
-    palavras: [...banco.palavras, ...rascunho.palavrasNovas],
-  };
-
-  const palavrasDaFase = fase.palavras
-    .slice()
-    .sort((a, b) => a.ordem - b.ordem)
-    .map((l) => acharPalavra(bancoDoRascunho, l.palavraId))
-    .filter((p): p is Palavra => Boolean(p));
+  const palavras = palavrasLigadas(banco, fase);
 
   // Na revisão o que se cobra não são as palavras desta fase: são as que a
   // trilha ensinou antes dela.
-  const revisadas = trilha ? ensinadasAntes(bancoDoRascunho, trilha, fase.id) : [];
-  const palavrasDoQuiz = fase.tipo === "Revisao" ? revisadas : palavrasDaFase;
-
-  function mexerFase(m: Partial<Fase>) {
-    onMudar({ ...rascunho, fase: { ...fase, ...m } });
-  }
-
-  const caminho = [
-    rascunho.trilha.nome.trim() || "Trilha sem nome",
-    rascunho.tema.titulo.trim() || "Tema sem título",
-  ].join(" / ");
+  const revisadas = ensinadasAntes(banco, trilha, fase.id);
+  const palavrasDoQuiz = fase.tipo === "Revisao" ? revisadas : palavras;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-deep-900/70 p-4 sm:p-8">
-      <div className="w-full max-w-4xl rounded-2xl bg-white shadow-2xl">
-        <header className="flex items-start justify-between gap-4 border-b border-slate-200 p-6 pb-4">
-          <div className="min-w-0">
-            <h2 className="text-xl font-extrabold text-slate-900">
-              {rascunho.existente ? "Editar fase" : "Nova fase"}
-              {fase.titulo.trim() ? `: ${fase.titulo}` : ""}
-            </h2>
-            <p className="mt-0.5 text-xs text-slate-500">
-              {caminho}
-            </p>
-          </div>
-
+    <div className="rounded-xl bg-slate-50 p-4">
+      <nav className="flex flex-wrap gap-1 border-b border-slate-200 pb-3">
+        {PASSOS.map((nome, i) => (
           <button
+            key={nome}
             type="button"
-            aria-label="Fechar"
-            onClick={onFechar}
-            className="rounded-full p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700
-                       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            onClick={() => setPasso(i)}
+            aria-current={passo === i}
+            className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold transition
+                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
+                          passo === i
+                            ? "text-accent-600"
+                            : "text-slate-500 hover:bg-slate-200 hover:text-slate-700"
+                        }`}
           >
-            <CloseIcon className="size-5" />
+            <span
+              className={`flex size-5 items-center justify-center rounded-full text-[10px] ${
+                passo === i ? "bg-accent-500 text-white" : "bg-slate-200 text-slate-500"
+              }`}
+            >
+              {i + 1}
+            </span>
+            {nome}
           </button>
-        </header>
+        ))}
+      </nav>
 
-        <nav className="flex flex-wrap gap-1 border-b border-slate-200 px-6 py-3">
-          {PASSOS.map((nome, i) => (
-            <button
-              key={nome}
-              type="button"
-              onClick={() => setPasso(i)}
-              aria-current={passo === i}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold transition
-                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
-                            passo === i
-                              ? "text-accent-600"
-                              : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-                          }`}
-            >
-              <span
-                className={`flex size-5 items-center justify-center rounded-full text-[10px] ${
-                  passo === i ? "bg-accent-500 text-white" : "bg-slate-100 text-slate-500"
-                }`}
-              >
-                {i + 1}
-              </span>
-              {nome}
-            </button>
-          ))}
-        </nav>
-
-        <div className="max-h-[62vh] overflow-y-auto p-6">
-          {passo === 0 && (
-            <PassoFase
-              fase={fase}
-              podeRevisao={revisadas.length >= 2}
-              onMudar={mexerFase}
-              onFigura={onFigura}
-            />
-          )}
-          {passo === 1 && (
-            <PassoPalavras
-              banco={bancoDoRascunho}
-              rascunho={rascunho}
-              palavras={palavrasDaFase}
-              onMudar={onMudar}
-            />
-          )}
-          {passo === 2 && (
-            <PassoHistoria
-              banco={bancoDoRascunho}
-              fase={fase}
-              palavras={palavrasDaFase}
-              onMudar={mexerFase}
-              onFigura={onFigura}
-            />
-          )}
-          {passo === 3 && (
-            <PassoPerguntas
-              banco={bancoDoRascunho}
-              trilha={trilha}
-              fase={fase}
-              palavras={palavrasDoQuiz}
-              onMudar={mexerFase}
-              onFigura={onFigura}
-            />
-          )}
-          {passo === 4 && (
-            <PassoRevisao
-              banco={bancoDoRascunho}
-              rascunho={rascunho}
-              palavras={palavrasDaFase}
-              palavrasDoQuiz={palavrasDoQuiz}
-            />
-          )}
-        </div>
-
-        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 p-6 pt-4">
-          <p className="text-[11px] text-slate-500">
-            Rascunho: nada é gravado até você salvar a fase.
-          </p>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={passo === 0}
-              onClick={() => setPasso((p) => Math.max(0, p - 1))}
-              className={`${BOTAO_CLARO} border-transparent disabled:cursor-not-allowed disabled:opacity-40`}
-            >
-              Voltar
-            </button>
-
-            {passo < PASSOS.length - 1 && (
-              <button
-                type="button"
-                onClick={() => setPasso((p) => p + 1)}
-                className={BOTAO_AZUL}
-              >
-                Próximo: {PASSOS[passo + 1]}
-              </button>
-            )}
-
-            <button type="button" onClick={onSalvar} className={BOTAO_FORTE}>
-              Salvar fase
-            </button>
-          </div>
-        </footer>
+      <div className="pt-4">
+        {passo === 0 && (
+          <PassoFase
+            fase={fase}
+            podeRevisao={revisadas.length >= 2}
+            onMudar={onMudar}
+            onFigura={onFigura}
+          />
+        )}
+        {passo === 1 && (
+          <PassoPalavras
+            banco={banco}
+            fase={fase}
+            palavras={palavras}
+            onMudar={onMudar}
+            onNovaPalavra={onNovaPalavra}
+          />
+        )}
+        {passo === 2 && (
+          <PassoHistoria
+            banco={banco}
+            fase={fase}
+            palavras={palavras}
+            onMudar={onMudar}
+            onFigura={onFigura}
+          />
+        )}
+        {passo === 3 && (
+          <PassoPerguntas
+            banco={banco}
+            trilha={trilha}
+            fase={fase}
+            palavras={palavrasDoQuiz}
+            onMudar={onMudar}
+            onFigura={onFigura}
+          />
+        )}
+        {passo === 4 && (
+          <PassoRevisao
+            trilha={trilha}
+            tema={tema}
+            fase={fase}
+            palavras={palavras}
+            palavrasDoQuiz={palavrasDoQuiz}
+          />
+        )}
       </div>
     </div>
   );
@@ -327,14 +244,16 @@ function PassoFase({
 
 function PassoPalavras({
   banco,
-  rascunho,
+  fase,
   palavras,
   onMudar,
+  onNovaPalavra,
 }: {
   banco: Banco;
-  rascunho: Rascunho;
+  fase: Fase;
   palavras: Palavra[];
-  onMudar: (r: Rascunho) => void;
+  onMudar: (m: Partial<Fase>) => void;
+  onNovaPalavra: (palavra: Palavra) => void;
 }) {
   const [busca, setBusca] = useState("");
   const [traducao, setTraducao] = useState("");
@@ -344,7 +263,7 @@ function PassoPalavras({
     ? banco.palavras
         .filter(
           (p) =>
-            !rascunho.fase.palavras.some((l) => l.palavraId === p.id) &&
+            !fase.palavras.some((l) => l.palavraId === p.id) &&
             (p.ingles.toLowerCase().includes(alvo) || p.traducao.toLowerCase().includes(alvo)),
         )
         .slice(0, 6)
@@ -352,14 +271,7 @@ function PassoPalavras({
 
   function ligar(palavraId: string) {
     onMudar({
-      ...rascunho,
-      fase: {
-        ...rascunho.fase,
-        palavras: [
-          ...rascunho.fase.palavras,
-          { palavraId, ordem: rascunho.fase.palavras.length + 1 },
-        ],
-      },
+      palavras: [...fase.palavras, { palavraId, ordem: fase.palavras.length + 1 }],
     });
     setBusca("");
     setTraducao("");
@@ -367,34 +279,14 @@ function PassoPalavras({
 
   function criar() {
     if (!busca.trim() || !traducao.trim()) return;
-    const nova: Palavra = {
-      id: novoId("pal"),
-      ingles: busca.trim(),
-      traducao: traducao.trim(),
-    };
-    onMudar({
-      ...rascunho,
-      palavrasNovas: [...rascunho.palavrasNovas, nova],
-      fase: {
-        ...rascunho.fase,
-        palavras: [
-          ...rascunho.fase.palavras,
-          { palavraId: nova.id, ordem: rascunho.fase.palavras.length + 1 },
-        ],
-      },
-    });
-    setBusca("");
-    setTraducao("");
+    const nova: Palavra = { id: novoId("pal"), ingles: busca.trim(), traducao: traducao.trim() };
+    // A Palavra é global: nasce no banco, e a fase só guarda a ligação.
+    onNovaPalavra(nova);
+    ligar(nova.id);
   }
 
   function reordenar(lista: Palavra[]) {
-    onMudar({
-      ...rascunho,
-      fase: {
-        ...rascunho.fase,
-        palavras: lista.map((p, i) => ({ palavraId: p.id, ordem: i + 1 })),
-      },
-    });
+    onMudar({ palavras: lista.map((p, i) => ({ palavraId: p.id, ordem: i + 1 })) });
   }
 
   return (
@@ -415,7 +307,7 @@ function PassoPalavras({
       </label>
 
       {achadas.length > 0 && (
-        <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-200">
+        <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
           {achadas.map((p) => (
             <li key={p.id} className="flex items-center gap-3 px-3 py-2">
               <span className="min-w-0 flex-1 truncate text-sm">
@@ -468,7 +360,7 @@ function PassoPalavras({
           {palavras.map((p, i) => (
             <li
               key={p.id}
-              className="flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-2"
+              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2"
             >
               <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-blue-50 text-[11px] font-extrabold text-blue-700">
                 {i + 1}
@@ -770,47 +662,39 @@ function PassoPerguntas({
 /* ───────────────────────────── 5 · Revisão ───────────────────────────── */
 
 function PassoRevisao({
-  banco,
-  rascunho,
+  trilha,
+  tema,
+  fase,
   palavras,
   palavrasDoQuiz,
 }: {
-  banco: Banco;
-  rascunho: Rascunho;
+  trilha: Trilha;
+  tema: Tema;
+  fase: Fase;
   palavras: Palavra[];
   palavrasDoQuiz: Palavra[];
 }) {
-  const { fase } = rascunho;
   const cards = cardsOrdenados(fase);
   const historia = cards.filter((c) => c.tipo === "Historia").length;
-  const deSPalavra = cards.length - historia;
+  const dePalavra = cards.length - historia;
   const alternativas = fase.perguntas.reduce((s, p) => s + p.alternativas.length, 0);
   const corretas = fase.perguntas.filter((p) => p.alternativas.some((a) => a.correta)).length;
 
   const linhas: { tabela: string; estado: string; detalhe: string }[] = [
     {
       tabela: "Trilha",
-      estado: rascunho.trilhaId ? "Usar existente" : "Criar",
-      detalhe: `${rascunho.trilha.nome.trim() || "sem nome"}, ordem ${rascunho.trilha.ordem}`,
+      estado: trilha.ativa ? "Ativa" : "Inativa",
+      detalhe: `${trilha.nome.trim() || "sem nome"}, ordem ${trilha.ordem}`,
     },
     {
       tabela: "Tema",
-      estado: rascunho.temaId ? "Usar existente" : "Criar",
-      detalhe: `${rascunho.tema.titulo.trim() || "sem título"}, ordem ${rascunho.tema.ordem}`,
+      estado: `Ordem ${tema.ordem}`,
+      detalhe: tema.titulo.trim() || "sem título",
     },
     {
       tabela: "Fase",
-      estado: rascunho.existente ? "Atualizar" : "Criar",
-      detalhe: `${fase.titulo.trim() || "sem título"}, ${fase.tipo}, ordem ${fase.ordem}`,
-    },
-    {
-      tabela: "Palavra",
-      estado: rascunho.palavrasNovas.length
-        ? `${rascunho.palavrasNovas.length} nova(s)`
-        : "Nenhuma nova",
-      detalhe: rascunho.palavrasNovas.length
-        ? rascunho.palavrasNovas.map((p) => p.ingles).join(", ")
-        : "Todas já existem no banco, nada é duplicado.",
+      estado: fase.tipo,
+      detalhe: `${fase.titulo.trim() || "sem título"}, ordem ${fase.ordem}`,
     },
     {
       tabela: "FasePalavra",
@@ -820,7 +704,7 @@ function PassoRevisao({
     {
       tabela: "Card",
       estado: `${cards.length} cards`,
-      detalhe: `${historia} de história e ${deSPalavra} de palavra, ordem de 1 a ${cards.length || 0}`,
+      detalhe: `${historia} de história e ${dePalavra} de palavra, ordem de 1 a ${cards.length || 0}`,
     },
     {
       tabela: "Pergunta",
@@ -832,13 +716,13 @@ function PassoRevisao({
     {
       tabela: "Alternativa",
       estado: `${alternativas} alternativas`,
-      detalhe: `Ligadas às perguntas acima, ${corretas} marcadas como corretas`,
+      detalhe: `Ligadas às perguntas acima, ${corretas} com uma correta marcada`,
     },
   ];
 
   const validacoes: { ok: boolean; texto: string }[] = [
-    { ok: Boolean(rascunho.trilha.nome.trim()), texto: "Trilha preenchida" },
-    { ok: Boolean(rascunho.tema.titulo.trim()), texto: "Tema preenchido" },
+    { ok: Boolean(trilha.nome.trim()), texto: "Trilha preenchida" },
+    { ok: Boolean(tema.titulo.trim()), texto: "Tema preenchido" },
     { ok: Boolean(fase.titulo.trim() && fase.ordem > 0), texto: "Fase com título e ordem" },
     {
       ok: fase.tipo === "Revisao" ? palavrasDoQuiz.length >= 2 : palavras.length >= 1,
@@ -847,10 +731,7 @@ function PassoRevisao({
           ? "Pelo menos duas palavras ensinadas antes desta fase"
           : "Pelo menos uma palavra na fase",
     },
-    {
-      ok: fase.tipo === "Dialogo" || cards.length > 0,
-      texto: "Cards da abertura em ordem",
-    },
+    { ok: fase.tipo === "Dialogo" || cards.length > 0, texto: "Cards da abertura em ordem" },
     {
       ok: fase.perguntas.length > 0 && fase.perguntas.every(perguntaPronta),
       texto: "Perguntas com enunciado, duas ou mais alternativas e uma correta",
@@ -860,11 +741,11 @@ function PassoRevisao({
   return (
     <div>
       <Ajuda>
-        Confira o que será gravado em cada tabela. Os relacionamentos e as ordens são criados
+        O que esta fase ocupa em cada tabela. Os relacionamentos e as ordens são criados
         automaticamente.
       </Ajuda>
 
-      <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
+      <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
         {linhas.map((l) => (
           <li key={l.tabela} className="grid gap-1 px-4 py-3 sm:grid-cols-[130px_150px_1fr]">
             <span className="text-sm font-extrabold text-slate-900">{l.tabela}</span>
@@ -889,12 +770,6 @@ function PassoRevisao({
           </li>
         ))}
       </ul>
-
-      {banco.trilhas.length === 0 && (
-        <p className="mt-4 text-xs text-slate-500">
-          Esta será a primeira trilha do banco.
-        </p>
-      )}
     </div>
   );
 }

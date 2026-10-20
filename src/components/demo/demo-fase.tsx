@@ -10,6 +10,7 @@ import {
   acharPalavra,
   acharTrilha,
   cardsOrdenados,
+  faseCompleta,
   faseTemAbertura,
   fasesDaTrilha,
   perguntasParaOQuiz,
@@ -42,7 +43,9 @@ export function DemoFase({
 
   if (!banco || !trilha) return <SemTrilha />;
 
-  const todas = fasesDaTrilha(trilha);
+  // Só as fases que rendem pergunta. Uma fase recém-criada no admin existe
+  // desde o primeiro clique, e sem este filtro o aluno cairia num quiz vazio.
+  const todas = fasesDaTrilha(trilha).filter(({ fase }) => faseCompleta(fase));
   const atual = todas[fase - 1]?.fase;
   if (!atual) return <SemTrilha />;
 

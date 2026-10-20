@@ -4,11 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Apagar, BOTAO_CLARO, BOTAO_FORTE, Campo, Chip } from "@/components/admin/campos";
-import { FaseEditor, type Rascunho } from "@/components/admin/fase-editor";
+import { FaseEditor } from "@/components/admin/fase-editor";
 import { PerguntasEditor } from "@/components/admin/perguntas-editor";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  ChevronDownIcon,
   LogoutIcon,
   ReplayIcon,
 } from "@/components/ui/icons";
@@ -21,7 +22,6 @@ import {
   gravarBanco,
   lerBanco,
   limparBanco,
-  novoId,
   palavrasDaFase,
   perguntasProntas,
   reduzirImagem,
@@ -31,6 +31,7 @@ import {
   trilhaNoAr,
   type Banco,
   type Fase,
+  type Palavra,
   type Tema,
   type Trilha,
 } from "@/lib/demo/banco";
@@ -50,7 +51,7 @@ import { bancoDeExemplo } from "@/lib/demo/semente";
 export function Painel() {
   const [banco, setBanco] = useState<Banco>(BANCO_VAZIO);
   const [aba, setAba] = useState<"trilhas" | "perguntas">("trilhas");
-  const [rascunho, setRascunho] = useState<Rascunho | null>(null);
+  const [faseAberta, setFaseAberta] = useState<string | null>(null);
   const [faseDasPerguntas, setFaseDasPerguntas] = useState<string | null>(null);
   const [trilhaAberta, setTrilhaAberta] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -91,80 +92,51 @@ export function Painel() {
     }
   }
 
-  /* ─────────────── abrir o editor de fase ─────────────── */
+  /* ─────────────── trilha, tema e fase ─────────────── */
 
-  function novaFase(trilha?: Trilha, tema?: Tema) {
-    const ordem = tema ? tema.fases.length + 1 : 1;
-    setRascunho({
-      trilhaId: trilha?.id ?? null,
-      trilha: trilha
-        ? { nome: trilha.nome, descricao: trilha.descricao, ordem: trilha.ordem, ativa: trilha.ativa }
-        : { nome: "", descricao: "", ordem: banco.trilhas.length + 1, ativa: true },
-      temaId: tema?.id ?? null,
-      tema: tema
-        ? { titulo: tema.titulo, ordem: tema.ordem }
-        : { titulo: "", ordem: (trilha?.temas.length ?? 0) + 1 },
-      fase: faseVazia(ordem),
-      palavrasNovas: [],
-      existente: false,
+  /**
+   * Mexe numa fase da trilha aberta.
+   *
+   * Grava na hora, como o resto da tela: a fase é editada no lugar onde ela
+   * mora, e não num rascunho que precisa ser salvo.
+   */
+  function mexerFase(temaId: string, faseId: string, mudanca: Partial<Fase>) {
+    guardar({
+      ...banco,
+      trilhas: banco.trilhas.map((t) =>
+        t.id !== trilhaAberta
+          ? t
+          : {
+              ...t,
+              temas: t.temas.map((tema) =>
+                tema.id !== temaId
+                  ? tema
+                  : {
+                      ...tema,
+                      fases: tema.fases.map((f) => (f.id === faseId ? { ...f, ...mudanca } : f)),
+                    },
+              ),
+            },
+      ),
     });
   }
 
-  function editarFase(trilha: Trilha, tema: Tema, fase: Fase) {
-    setRascunho({
-      trilhaId: trilha.id,
-      trilha: { nome: trilha.nome, descricao: trilha.descricao, ordem: trilha.ordem, ativa: trilha.ativa },
-      temaId: tema.id,
-      tema: { titulo: tema.titulo, ordem: tema.ordem },
-      fase: structuredClone(fase),
-      palavrasNovas: [],
-      existente: true,
+  function novaFase(trilha: Trilha, tema: Tema) {
+    const nova = faseVazia(tema.fases.length + 1);
+    guardar({
+      ...banco,
+      trilhas: banco.trilhas.map((t) =>
+        t.id !== trilha.id
+          ? t
+          : {
+              ...t,
+              temas: t.temas.map((x) =>
+                x.id === tema.id ? { ...x, fases: [...x.fases, nova] } : x,
+              ),
+            },
+      ),
     });
-  }
-
-  /** Grava o rascunho: cria o que não existe, atualiza o que existe. */
-  function salvarRascunho() {
-    if (!rascunho) return;
-
-    const palavras = [...banco.palavras, ...rascunho.palavrasNovas];
-
-    const trilhaId = rascunho.trilhaId ?? novoId("tri");
-    const temaId = rascunho.temaId ?? novoId("tem");
-
-    const trilhas = [...banco.trilhas];
-    let iTrilha = trilhas.findIndex((t) => t.id === trilhaId);
-
-    if (iTrilha < 0) {
-      trilhas.push({ id: trilhaId, ...rascunho.trilha, temas: [] });
-      iTrilha = trilhas.length - 1;
-    } else {
-      trilhas[iTrilha] = { ...trilhas[iTrilha], ...rascunho.trilha };
-    }
-
-    const temas = [...trilhas[iTrilha].temas];
-    let iTema = temas.findIndex((t) => t.id === temaId);
-
-    if (iTema < 0) {
-      temas.push({ id: temaId, ...rascunho.tema, fases: [] });
-      iTema = temas.length - 1;
-    } else {
-      temas[iTema] = { ...temas[iTema], ...rascunho.tema };
-    }
-
-    // A fase pode ter mudado de tema: tira de onde estava antes.
-    const fases = temas[iTema].fases.filter((f) => f.id !== rascunho.fase.id);
-    fases.push(rascunho.fase);
-    temas[iTema] = { ...temas[iTema], fases };
-
-    for (let j = 0; j < temas.length; j++) {
-      if (j === iTema) continue;
-      temas[j] = { ...temas[j], fases: temas[j].fases.filter((f) => f.id !== rascunho.fase.id) };
-    }
-
-    trilhas[iTrilha] = { ...trilhas[iTrilha], temas };
-
-    guardar({ trilhas, palavras });
-    setRascunho(null);
+    setFaseAberta(nova.id);
   }
 
   function apagarFase(trilhaId: string, temaId: string, faseId: string) {
@@ -271,8 +243,14 @@ export function Painel() {
           <MontarTrilhas
             banco={banco}
             onNovaFase={novaFase}
-            onEditarFase={editarFase}
             onApagarFase={apagarFase}
+            onMudarFase={mexerFase}
+            onNovaPalavra={(palavra) =>
+              guardar({ ...banco, palavras: [...banco.palavras, palavra] })
+            }
+            onFigura={comFigura}
+            faseAberta={faseAberta}
+            onAbrirFase={setFaseAberta}
             onNovaTrilha={() => {
               const nova = trilhaVazia(banco.trilhas.length + 1);
               guardar({ ...banco, trilhas: [...banco.trilhas, nova] });
@@ -344,16 +322,6 @@ export function Painel() {
         )}
       </main>
 
-      {rascunho && (
-        <FaseEditor
-          banco={banco}
-          rascunho={rascunho}
-          onMudar={setRascunho}
-          onSalvar={salvarRascunho}
-          onFechar={() => setRascunho(null)}
-          onFigura={comFigura}
-        />
-      )}
     </div>
   );
 }
@@ -363,8 +331,12 @@ export function Painel() {
 function MontarTrilhas({
   banco,
   onNovaFase,
-  onEditarFase,
   onApagarFase,
+  onMudarFase,
+  onNovaPalavra,
+  onFigura,
+  faseAberta,
+  onAbrirFase,
   onNovaTrilha,
   onMudarTrilha,
   onMudarTema,
@@ -376,9 +348,13 @@ function MontarTrilhas({
   onAbrirTrilha,
 }: {
   banco: Banco;
-  onNovaFase: (trilha?: Trilha, tema?: Tema) => void;
-  onEditarFase: (trilha: Trilha, tema: Tema, fase: Fase) => void;
+  onNovaFase: (trilha: Trilha, tema: Tema) => void;
   onApagarFase: (trilhaId: string, temaId: string, faseId: string) => void;
+  onMudarFase: (temaId: string, faseId: string, m: Partial<Fase>) => void;
+  onNovaPalavra: (palavra: Palavra) => void;
+  onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
+  faseAberta: string | null;
+  onAbrirFase: (id: string | null) => void;
   onNovaTrilha: () => void;
   onMudarTrilha: (id: string, mudanca: Partial<Trilha>) => void;
   onMudarTema: (temaId: string, m: Partial<Tema>) => void;
@@ -399,8 +375,12 @@ function MontarTrilhas({
         trilha={trilha}
         onVoltar={() => onAbrirTrilha(null)}
         onNovaFase={onNovaFase}
-        onEditarFase={onEditarFase}
         onApagarFase={onApagarFase}
+        onMudarFase={onMudarFase}
+        onNovaPalavra={onNovaPalavra}
+        onFigura={onFigura}
+        faseAberta={faseAberta}
+        onAbrirFase={onAbrirFase}
         onMudarTrilha={(m) => onMudarTrilha(trilha.id, m)}
         onMudarTema={onMudarTema}
         onApagarTema={onApagarTema}
@@ -515,8 +495,12 @@ function TrilhaAberta({
   trilha,
   onVoltar,
   onNovaFase,
-  onEditarFase,
   onApagarFase,
+  onMudarFase,
+  onNovaPalavra,
+  onFigura,
+  faseAberta,
+  onAbrirFase,
   onMudarTrilha,
   onMudarTema,
   onApagarTema,
@@ -525,9 +509,13 @@ function TrilhaAberta({
   banco: Banco;
   trilha: Trilha;
   onVoltar: () => void;
-  onNovaFase: (trilha?: Trilha, tema?: Tema) => void;
-  onEditarFase: (trilha: Trilha, tema: Tema, fase: Fase) => void;
+  onNovaFase: (trilha: Trilha, tema: Tema) => void;
   onApagarFase: (trilhaId: string, temaId: string, faseId: string) => void;
+  onMudarFase: (temaId: string, faseId: string, m: Partial<Fase>) => void;
+  onNovaPalavra: (palavra: Palavra) => void;
+  onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
+  faseAberta: string | null;
+  onAbrirFase: (id: string | null) => void;
   onMudarTrilha: (m: Partial<Trilha>) => void;
   onMudarTema: (temaId: string, m: Partial<Tema>) => void;
   onApagarTema: (temaId: string) => void;
@@ -624,8 +612,12 @@ function TrilhaAberta({
           trilha={trilha}
           tema={tema}
           onNovaFase={() => onNovaFase(trilha, tema)}
-          onEditarFase={(fase) => onEditarFase(trilha, tema, fase)}
           onApagarFase={(faseId) => onApagarFase(trilha.id, tema.id, faseId)}
+          onMudarFase={(faseId, m) => onMudarFase(tema.id, faseId, m)}
+          onNovaPalavra={onNovaPalavra}
+          onFigura={onFigura}
+          faseAberta={faseAberta}
+          onAbrirFase={onAbrirFase}
           onMudarTema={(m) => onMudarTema(tema.id, m)}
           onApagarTema={() => onApagarTema(tema.id)}
         />
@@ -651,8 +643,12 @@ function BlocoTema({
   trilha,
   tema,
   onNovaFase,
-  onEditarFase,
   onApagarFase,
+  onMudarFase,
+  onNovaPalavra,
+  onFigura,
+  faseAberta,
+  onAbrirFase,
   onMudarTema,
   onApagarTema,
 }: {
@@ -660,8 +656,12 @@ function BlocoTema({
   trilha: Trilha;
   tema: Tema;
   onNovaFase: () => void;
-  onEditarFase: (fase: Fase) => void;
   onApagarFase: (faseId: string) => void;
+  onMudarFase: (faseId: string, m: Partial<Fase>) => void;
+  onNovaPalavra: (palavra: Palavra) => void;
+  onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
+  faseAberta: string | null;
+  onAbrirFase: (id: string | null) => void;
   onMudarTema: (m: Partial<Tema>) => void;
   onApagarTema: () => void;
 }) {
@@ -698,9 +698,7 @@ function BlocoTema({
       </header>
 
       {fases.length === 0 ? (
-        <p className="p-5 text-sm text-slate-500">
-          Nenhuma fase neste tema ainda.
-        </p>
+        <p className="p-5 text-sm text-slate-500">Nenhuma fase neste tema ainda.</p>
       ) : (
         <ul className="divide-y divide-slate-100">
           {fases.map((fase) => (
@@ -708,8 +706,13 @@ function BlocoTema({
               key={fase.id}
               banco={banco}
               trilha={trilha}
+              tema={tema}
               fase={fase}
-              onEditar={() => onEditarFase(fase)}
+              aberta={faseAberta === fase.id}
+              onAbrir={() => onAbrirFase(faseAberta === fase.id ? null : fase.id)}
+              onMudar={(m) => onMudarFase(fase.id, m)}
+              onNovaPalavra={onNovaPalavra}
+              onFigura={onFigura}
               onApagar={() => onApagarFase(fase.id)}
             />
           ))}
@@ -725,18 +728,34 @@ function BlocoTema({
   );
 }
 
-/** Uma fase na lista do tema. */
+/**
+ * Uma fase na lista do tema.
+ *
+ * Clicar abre a fase ali mesmo, com as etapas dela em abas. Era um modal, e
+ * um modal apaga o contexto — a trilha, o tema, as outras fases — justamente
+ * na hora de escrever a fase seguinte.
+ */
 function LinhaFase({
   banco,
   trilha,
+  tema,
   fase,
-  onEditar,
+  aberta,
+  onAbrir,
+  onMudar,
+  onNovaPalavra,
+  onFigura,
   onApagar,
 }: {
   banco: Banco;
   trilha: Trilha;
+  tema: Tema;
   fase: Fase;
-  onEditar: () => void;
+  aberta: boolean;
+  onAbrir: () => void;
+  onMudar: (m: Partial<Fase>) => void;
+  onNovaPalavra: (palavra: Palavra) => void;
+  onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
   onApagar: () => void;
 }) {
   const perguntas = perguntasProntas(fase).length;
@@ -749,56 +768,74 @@ function LinhaFase({
       : palavrasDaFase(banco, fase).length;
 
   return (
-    <li className="flex flex-wrap items-center gap-3 px-5 py-4">
-      <span
-        className={`flex size-7 shrink-0 items-center justify-center rounded-lg text-xs font-extrabold ${
-          perguntas > 0 ? "bg-correct-50 text-correct-700" : "bg-slate-100 text-slate-500"
-        }`}
-      >
-        {fase.ordem}
-      </span>
-
-      <button
-        type="button"
-        onClick={onEditar}
-        className="min-w-0 flex-1 text-left focus-visible:outline-2 focus-visible:outline-offset-2
-                   focus-visible:outline-blue-600"
-      >
-        <span className="block truncate text-sm font-extrabold">
-          {fase.titulo.trim() || "Sem título"}
+    <li className={aberta ? "bg-slate-50/60" : undefined}>
+      <div className="flex flex-wrap items-center gap-3 px-5 py-4">
+        <span
+          className={`flex size-7 shrink-0 items-center justify-center rounded-lg text-xs font-extrabold ${
+            perguntas > 0 ? "bg-correct-50 text-correct-700" : "bg-slate-100 text-slate-500"
+          }`}
+        >
+          {fase.ordem}
         </span>
-        <span className="block truncate text-xs text-slate-500">
-          {fase.descricao.trim() || "Sem descrição"}
+
+        <button
+          type="button"
+          onClick={onAbrir}
+          aria-expanded={aberta}
+          className="min-w-0 flex-1 text-left focus-visible:outline-2 focus-visible:outline-offset-2
+                     focus-visible:outline-blue-600"
+        >
+          <span className="block truncate text-sm font-extrabold">
+            {fase.titulo.trim() || "Sem título"}
+          </span>
+          <span className="block truncate text-xs text-slate-500">
+            {fase.descricao.trim() || "Sem descrição"}
+          </span>
+        </button>
+
+        <Chip cor={fase.tipo === "Revisao" ? "atencao" : "azul"}>{nomeTipo}</Chip>
+
+        <span className="w-44 shrink-0 text-right text-xs text-slate-500">
+          {palavras} {palavras === 1 ? "palavra" : "palavras"} ·{" "}
+          {perguntas > 0 ? (
+            <>
+              {perguntas} {perguntas === 1 ? "pergunta" : "perguntas"}
+            </>
+          ) : (
+            <span className="font-bold text-accent-600">sem perguntas</span>
+          )}
         </span>
-      </button>
 
-      <Chip cor={fase.tipo === "Revisao" ? "atencao" : "azul"}>{nomeTipo}</Chip>
+        <button
+          type="button"
+          aria-label={aberta ? "Fechar a fase" : `Abrir a fase ${fase.titulo || fase.ordem}`}
+          onClick={onAbrir}
+          className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700
+                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        >
+          <ChevronDownIcon className={`size-4 transition ${aberta ? "rotate-180" : ""}`} />
+        </button>
 
-      <span className="w-44 shrink-0 text-right text-xs text-slate-500">
-        {palavras} {palavras === 1 ? "palavra" : "palavras"} ·{" "}
-        {perguntas > 0 ? (
-          <>
-            {perguntas} {perguntas === 1 ? "pergunta" : "perguntas"}
-          </>
-        ) : (
-          <span className="font-bold text-accent-600">sem perguntas</span>
-        )}
-      </span>
+        <Apagar oque={`fase ${fase.ordem}`} onClick={onApagar} />
+      </div>
 
-      <button
-        type="button"
-        aria-label={`Abrir a fase ${fase.titulo || fase.ordem}`}
-        onClick={onEditar}
-        className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700
-                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-      >
-        <ArrowRightIcon className="size-4" />
-      </button>
-
-      <Apagar oque={`fase ${fase.ordem}`} onClick={onApagar} />
+      {aberta && (
+        <div className="px-5 pb-5">
+          <FaseEditor
+            banco={banco}
+            trilha={trilha}
+            tema={tema}
+            fase={fase}
+            onMudar={onMudar}
+            onNovaPalavra={onNovaPalavra}
+            onFigura={onFigura}
+          />
+        </div>
+      )}
     </li>
   );
 }
+
 
 /* ───────────────────────── aba Perguntas ───────────────────────── */
 
