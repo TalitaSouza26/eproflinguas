@@ -44,13 +44,24 @@ import {
 } from "@/lib/demo/banco";
 
 /**
- * As etapas de montar uma fase.
+ * As etapas de montar uma fase, conforme o que a fase é.
+ *
+ * A revisão é só perguntas: ela não apresenta palavra nova nem tem cenas —
+ * repassa o que o tema ensinou. O diálogo tem palavras, mas também não tem
+ * cenas: a conversa já é o conteúdo. Mostrar os passos vazios seria pedir o
+ * que aquela fase não usa.
  *
  * Trilha e tema não estão aqui: a fase é criada dentro do tema a que ela
  * pertence, e os campos dos dois ficam na tela da trilha. Pedi-los de novo
  * aqui seria perguntar o que a pessoa acabou de responder ao clicar.
  */
-const PASSOS = ["Fase", "Palavras", "Cenas", "Perguntas", "Revisão da fase"] as const;
+type Passo = "Fase" | "Palavras" | "Cenas" | "Perguntas" | "Revisão da fase";
+
+const PASSOS: Record<TipoFase, Passo[]> = {
+  Aprendizado: ["Fase", "Palavras", "Cenas", "Perguntas", "Revisão da fase"],
+  Revisao: ["Fase", "Perguntas", "Revisão da fase"],
+  Dialogo: ["Fase", "Palavras", "Perguntas", "Revisão da fase"],
+};
 
 /**
  * O editor de uma fase, aberto dentro da linha dela.
@@ -80,7 +91,7 @@ export function FaseEditor({
   onNovaPalavra: (palavra: Palavra) => void;
   onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
 }) {
-  const [passo, setPasso] = useState(0);
+  const [passo, setPasso] = useState<Passo>("Fase");
 
   const palavras = palavrasLigadas(banco, fase);
 
@@ -90,25 +101,29 @@ export function FaseEditor({
   const palavrasDoQuiz = fase.tipo === "Revisao" ? revisadas : palavras;
   const [previa, setPrevia] = useState(false);
 
+  // Trocar o tipo pode tirar da tela o passo aberto.
+  const passos = PASSOS[fase.tipo];
+  const atual = passos.includes(passo) ? passo : passos[0];
+
   return (
     <div className="rounded-xl bg-slate-50 p-4">
       <nav className="flex flex-wrap items-center gap-1 border-b border-slate-200 pb-3">
-        {PASSOS.map((nome, i) => (
+        {passos.map((nome, i) => (
           <button
             key={nome}
             type="button"
-            onClick={() => setPasso(i)}
-            aria-current={passo === i}
+            onClick={() => setPasso(nome)}
+            aria-current={atual === nome}
             className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold transition
                         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
-                          passo === i
+                          atual === nome
                             ? "text-accent-600"
                             : "text-slate-500 hover:bg-slate-200 hover:text-slate-700"
                         }`}
           >
             <span
               className={`flex size-5 items-center justify-center rounded-full text-[10px] ${
-                passo === i ? "bg-accent-500 text-white" : "bg-slate-200 text-slate-500"
+                atual === nome ? "bg-accent-500 text-white" : "bg-slate-200 text-slate-500"
               }`}
             >
               {i + 1}
@@ -140,7 +155,7 @@ export function FaseEditor({
       )}
 
       <div className="pt-4">
-        {passo === 0 && (
+        {atual === "Fase" && (
           <PassoFase
             fase={fase}
             podeRevisao={revisadas.length >= 2}
@@ -148,7 +163,7 @@ export function FaseEditor({
             onFigura={onFigura}
           />
         )}
-        {passo === 1 && (
+        {atual === "Palavras" && (
           <PassoPalavras
             banco={banco}
             fase={fase}
@@ -157,7 +172,7 @@ export function FaseEditor({
             onNovaPalavra={onNovaPalavra}
           />
         )}
-        {passo === 2 && (
+        {atual === "Cenas" && (
           <PassoHistoria
             banco={banco}
             fase={fase}
@@ -166,7 +181,7 @@ export function FaseEditor({
             onFigura={onFigura}
           />
         )}
-        {passo === 3 && (
+        {atual === "Perguntas" && (
           <PassoPerguntas
             banco={banco}
             trilha={trilha}
@@ -176,7 +191,7 @@ export function FaseEditor({
             onFigura={onFigura}
           />
         )}
-        {passo === 4 && (
+        {atual === "Revisão da fase" && (
           <PassoRevisao
             trilha={trilha}
             tema={tema}
@@ -698,7 +713,10 @@ function PassoRevisao({
           ? "Pelo menos duas palavras ensinadas antes desta fase"
           : "Pelo menos uma palavra na fase",
     },
-    { ok: fase.tipo === "Dialogo" || cards.length > 0, texto: "Cards da abertura em ordem" },
+    {
+      ok: fase.tipo !== "Aprendizado" || cards.length > 0,
+      texto: "Cards da abertura em ordem",
+    },
     {
       ok: fase.perguntas.length > 0 && fase.perguntas.every(perguntaPronta),
       texto: "Perguntas com enunciado, duas ou mais alternativas e uma correta",

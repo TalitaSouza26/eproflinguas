@@ -25,6 +25,10 @@ export function aberturaDaFase(
   fase: Fase,
   contexto: { trilha: string; numero: number },
 ): Abertura {
+  // Só a fase de aprendizado abre com cenas: a revisão é só perguntas e o
+  // diálogo começa na conversa.
+  if (fase.tipo !== "Aprendizado") return null;
+
   const cards = cardsOrdenados(fase);
   if (cards.length === 0) return null;
 

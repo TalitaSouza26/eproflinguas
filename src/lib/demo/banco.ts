@@ -479,9 +479,15 @@ export function perguntasParaOQuiz(banco: Banco, fase: Fase): Question[] {
   });
 }
 
-/** A fase tem uma tela antes do quiz? O diálogo vai direto às perguntas. */
+/**
+ * A fase tem cenas antes do quiz?
+ *
+ * Só a de aprendizado. O diálogo vai direto às perguntas — a conversa já é o
+ * conteúdo — e a revisão é só perguntas: ela repassa o que o tema ensinou, e
+ * abre com o Bubo dizendo quantas vêm pela frente.
+ */
 export function faseTemAbertura(fase: Fase): boolean {
-  return fase.tipo !== "Dialogo" && fase.cards.length > 0;
+  return fase.tipo === "Aprendizado" && fase.cards.length > 0;
 }
 
 /** Abertura só com cards de palavra e figura: é a galeria "Olha e aprende". */
