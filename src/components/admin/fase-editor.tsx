@@ -15,7 +15,7 @@ import {
 } from "@/components/admin/campos";
 import { PerguntasEditor } from "@/components/admin/perguntas-editor";
 import { CardEditor } from "@/components/admin/card-editor";
-import { PreviaCenas } from "@/components/admin/previa-cenas";
+import { PreviaFase } from "@/components/admin/previa-fase";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -88,10 +88,11 @@ export function FaseEditor({
   // trilha ensinou antes dela.
   const revisadas = ensinadasAntes(banco, trilha, fase.id);
   const palavrasDoQuiz = fase.tipo === "Revisao" ? revisadas : palavras;
+  const [previa, setPrevia] = useState(false);
 
   return (
     <div className="rounded-xl bg-slate-50 p-4">
-      <nav className="flex flex-wrap gap-1 border-b border-slate-200 pb-3">
+      <nav className="flex flex-wrap items-center gap-1 border-b border-slate-200 pb-3">
         {PASSOS.map((nome, i) => (
           <button
             key={nome}
@@ -115,7 +116,28 @@ export function FaseEditor({
             {nome}
           </button>
         ))}
+
+        {/* A prévia é da fase inteira — a abertura e o quiz —, e por isso
+            fica aqui em cima e não dentro de um dos passos. */}
+        <button
+          type="button"
+          onClick={() => setPrevia(true)}
+          className={BOTAO_CLARO + " ml-auto"}
+        >
+          <PlayIcon className="size-4" />
+          Ver como o aluno vê
+        </button>
       </nav>
+
+      {previa && (
+        <PreviaFase
+          banco={banco}
+          fase={fase}
+          trilha={trilha.nome}
+          numero={fase.ordem}
+          onFechar={() => setPrevia(false)}
+        />
+      )}
 
       <div className="pt-4">
         {passo === 0 && (
@@ -139,7 +161,6 @@ export function FaseEditor({
           <PassoHistoria
             banco={banco}
             fase={fase}
-            trilhaNome={trilha.nome}
             palavras={palavras}
             onMudar={onMudar}
             onFigura={onFigura}
@@ -427,21 +448,18 @@ function PassoPalavras({
 function PassoHistoria({
   banco,
   fase,
-  trilhaNome,
   palavras,
   onMudar,
   onFigura,
 }: {
   banco: Banco;
   fase: Fase;
-  trilhaNome: string;
   palavras: Palavra[];
   onMudar: (m: Partial<Fase>) => void;
   onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
 }) {
   const cards = cardsOrdenados(fase);
   const [abertoId, setAbertoId] = useState<string | null>(null);
-  const [previa, setPrevia] = useState(false);
   const aberto = cards.find((c) => c.id === abertoId);
 
   function salvar(lista: Card[]) {
@@ -472,30 +490,7 @@ function PassoHistoria({
         <button type="button" onClick={() => adicionar("Palavra")} className={BOTAO_CLARO}>
           + Card de palavra
         </button>
-
-        {/* A prévia é da sequência inteira, e não de um card: é assim que
-            o aluno recebe, uma tela depois da outra. */}
-        {cards.length > 0 && (
-          <button
-            type="button"
-            onClick={() => setPrevia(true)}
-            className={BOTAO_CLARO + " ml-auto"}
-          >
-            <PlayIcon className="size-4" />
-            Ver como o aluno vê
-          </button>
-        )}
       </div>
-
-      {previa && (
-        <PreviaCenas
-          banco={banco}
-          fase={fase}
-          trilha={trilhaNome}
-          numero={fase.ordem}
-          onFechar={() => setPrevia(false)}
-        />
-      )}
 
       {cards.length === 0 ? (
         <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">

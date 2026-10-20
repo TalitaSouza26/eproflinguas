@@ -44,6 +44,7 @@ export function QuizPlayer({
   phases,
   context,
   questions,
+  aoTerminar,
 }: {
   trackSlug: string;
   trackTitle: string;
@@ -53,6 +54,14 @@ export function QuizPlayer({
   /** Onde o aluno está na trilha e o que falta para abrir a próxima. */
   context: string;
   questions: Question[];
+  /**
+   * O que fazer no fim, quando não for seguir para o resultado.
+   *
+   * Existe para a prévia do admin, que roda o quiz de verdade mas não pode
+   * levar quem monta conteúdo para a tela de resultado do aluno — nem contar
+   * o quiz como feito na missão do dia.
+   */
+  aoTerminar?: () => void;
 }) {
   const router = useRouter();
   // O fim do quiz acontece uma vez só. Sem esta trava o efeito registrava a
@@ -123,6 +132,11 @@ export function QuizPlayer({
       // Conta para a missão do dia. Se falhar, o aluno segue para o resultado
       // do mesmo jeito — perder a contagem é menos grave que prender a criança
       // na última questão.
+      if (aoTerminar) {
+        aoTerminar();
+        return;
+      }
+
       void recordQuizDone(trackSlug, phase).catch(() => {});
       router.push(resultHref);
     }, delay);
@@ -137,6 +151,7 @@ export function QuizPlayer({
     resultHref,
     trackSlug,
     phase,
+    aoTerminar,
   ]);
 
   return (
