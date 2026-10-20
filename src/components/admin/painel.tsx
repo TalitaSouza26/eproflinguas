@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/icons";
 import {
   BANCO_VAZIO,
-  contagem,
   ensinadasAntes,
   faseCompleta,
   faseVazia,
@@ -189,8 +188,6 @@ export function Painel() {
     });
   }
 
-  const n = contagem(banco);
-
   return (
     <div className="min-h-screen bg-deep-900 pb-16 text-white">
       <header className="border-b border-white/10">
@@ -255,7 +252,6 @@ export function Painel() {
         {aba === "trilhas" ? (
           <MontarTrilhas
             banco={banco}
-            contagem={n}
             onNovaFase={novaFase}
             onEditarFase={editarFase}
             onApagarFase={apagarFase}
@@ -350,7 +346,6 @@ export function Painel() {
 
 function MontarTrilhas({
   banco,
-  contagem: n,
   onNovaFase,
   onEditarFase,
   onApagarFase,
@@ -364,7 +359,6 @@ function MontarTrilhas({
   onAbrirTrilha,
 }: {
   banco: Banco;
-  contagem: ReturnType<typeof contagem>;
   onNovaFase: (trilha?: Trilha, tema?: Tema) => void;
   onEditarFase: (trilha: Trilha, tema: Tema, fase: Fase) => void;
   onApagarFase: (trilhaId: string, temaId: string, faseId: string) => void;
@@ -404,10 +398,6 @@ function MontarTrilhas({
           <p className="mt-1 text-sm leading-relaxed text-blue-100">
             Abra uma trilha para ver os temas e as fases dela. As perguntas ficam na aba
             Perguntas.
-          </p>
-          <p className="mt-2 text-xs font-bold text-accent-500">
-            No banco: {n.fases} fases, {n.palavras} palavras, {n.cards} cards, {n.perguntas}{" "}
-            perguntas e {n.alternativas} alternativas.
           </p>
         </div>
 

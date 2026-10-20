@@ -277,25 +277,6 @@ export function fasesProntas(trilha: Trilha): number {
   return fasesDaTrilha(trilha).filter(({ fase }) => faseCompleta(fase)).length;
 }
 
-/** Quantos registros o conteúdo montado daria no banco. Vai no topo da tela. */
-export function contagem(banco: Banco) {
-  let fases = 0;
-  let cards = 0;
-  let perguntas = 0;
-  let alternativas = 0;
-
-  for (const trilha of banco.trilhas) {
-    for (const { fase } of fasesDaTrilha(trilha)) {
-      fases += 1;
-      cards += fase.cards.length;
-      perguntas += fase.perguntas.length;
-      for (const p of fase.perguntas) alternativas += p.alternativas.length;
-    }
-  }
-
-  return { fases, palavras: banco.palavras.length, cards, perguntas, alternativas };
-}
-
 /**
  * As Palavras que a trilha ensinou antes de certa fase.
  *
