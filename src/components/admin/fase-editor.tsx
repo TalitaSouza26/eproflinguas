@@ -217,21 +217,14 @@ function PassoFase({
         </div>
 
         <div className="grid min-w-[280px] flex-1 gap-4">
-          <Campo
-            id="fase-titulo"
-            rotulo="Título"
-            valor={fase.titulo}
-            placeholder="Um novo amigo"
-            onChange={(titulo) => onMudar({ titulo })}
-          />
-          <CampoLongo
-            id="fase-descricao"
-            rotulo="Descrição"
-            valor={fase.descricao}
-            placeholder="Sofia conhece um menino que ainda não fala português."
-            onChange={(descricao) => onMudar({ descricao })}
-          />
-          <div className="w-32">
+          <div className="grid gap-4 sm:grid-cols-[1fr_100px]">
+            <Campo
+              id="fase-titulo"
+              rotulo="Título"
+              valor={fase.titulo}
+              placeholder="Um novo amigo"
+              onChange={(titulo) => onMudar({ titulo })}
+            />
             <Campo
               id="fase-ordem"
               rotulo="Ordem"
@@ -239,6 +232,14 @@ function PassoFase({
               onChange={(v) => onMudar({ ordem: Number(v) || 1 })}
             />
           </div>
+          <CampoLongo
+            id="fase-descricao"
+            rotulo="Descrição"
+            valor={fase.descricao}
+            linhas={5}
+            placeholder="Sofia conhece um menino que ainda não fala português."
+            onChange={(descricao) => onMudar({ descricao })}
+          />
         </div>
       </div>
     </div>
