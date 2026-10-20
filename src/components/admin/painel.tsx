@@ -621,41 +621,48 @@ function TrilhaAberta({
 
       {/* Os temas, cada um com as suas fases dentro. Fechados, cabem todos
           na tela — que é o que responde "o que tem nesta trilha". */}
-      <section className="mt-5 space-y-3">
-        {temas.map((tema) => (
-          <BlocoTema
-            key={tema.id}
-            banco={banco}
-            trilha={trilha}
-            tema={tema}
-            aberto={temaAberto === tema.id}
-            onAbrir={() => onAbrirTema(temaAberto === tema.id ? null : tema.id)}
-            onNovaFase={() => onNovaFase(trilha, tema)}
-            onApagarFase={(faseId) => onApagarFase(trilha.id, tema.id, faseId)}
-            onMudarFase={(faseId, m) => onMudarFase(tema.id, faseId, m)}
-            onNovaPalavra={onNovaPalavra}
-            onFigura={onFigura}
-            faseAberta={faseAberta}
-            onAbrirFase={onAbrirFase}
-            onMudarTema={(m) => onMudarTema(tema.id, m)}
-            onApagarTema={() => onApagarTema(tema.id)}
-          />
-        ))}
+      <section className="mt-7">
+        <h2 className="text-lg font-extrabold">Temas</h2>
+        <p className="mt-0.5 text-sm text-blue-100">
+          Na ordem em que o aluno percorre. Abra um tema para ver as fases dele.
+        </p>
 
-        <button
-          type="button"
-          onClick={() => onNovoTema(trilha)}
-          className="w-full rounded-2xl border border-dashed border-white/25 py-4 text-sm
-                     font-bold text-blue-100 transition hover:border-white/50 hover:bg-white/5
-                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-        >
-          + Novo tema
-          {temas.length === 0 && (
-            <span className="mt-1 block text-xs font-normal text-blue-200">
-              As fases ficam dentro de um tema. Crie o primeiro para começar.
-            </span>
-          )}
-        </button>
+        <div className="mt-3 space-y-3">
+          {temas.map((tema) => (
+            <BlocoTema
+              key={tema.id}
+              banco={banco}
+              trilha={trilha}
+              tema={tema}
+              aberto={temaAberto === tema.id}
+              onAbrir={() => onAbrirTema(temaAberto === tema.id ? null : tema.id)}
+              onNovaFase={() => onNovaFase(trilha, tema)}
+              onApagarFase={(faseId) => onApagarFase(trilha.id, tema.id, faseId)}
+              onMudarFase={(faseId, m) => onMudarFase(tema.id, faseId, m)}
+              onNovaPalavra={onNovaPalavra}
+              onFigura={onFigura}
+              faseAberta={faseAberta}
+              onAbrirFase={onAbrirFase}
+              onMudarTema={(m) => onMudarTema(tema.id, m)}
+              onApagarTema={() => onApagarTema(tema.id)}
+            />
+          ))}
+
+          <button
+            type="button"
+            onClick={() => onNovoTema(trilha)}
+            className="w-full rounded-2xl border border-dashed border-white/25 py-4 text-sm
+                       font-bold text-blue-100 transition hover:border-white/50 hover:bg-white/5
+                       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            + Novo tema
+            {temas.length === 0 && (
+              <span className="mt-1 block text-xs font-normal text-blue-200">
+                As fases ficam dentro de um tema. Crie o primeiro para começar.
+              </span>
+            )}
+          </button>
+        </div>
       </section>
     </>
   );
