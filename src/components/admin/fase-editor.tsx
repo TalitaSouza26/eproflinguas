@@ -201,35 +201,20 @@ function PassoFase({
         </div>
       </div>
 
-      {/* A capa ao lado do título: é ela e o título que aparecem juntos no
-          card da fase, e aqui ficam juntos também. */}
-      <div className="mt-5 flex flex-wrap items-start gap-4">
-        <div>
-          <span className="mb-1 block text-xs font-bold text-slate-600">Imagem de capa</span>
-          <CampoFigura
-            imagem={fase.imagemCapa}
-            rotulo="Imagem de capa da fase"
-            tamanho="h-[72px] w-[128px]"
-            onEscolher={(arquivo) => onFigura(arquivo, (imagemCapa) => onMudar({ imagemCapa }))}
-          />
-          <span className="mt-1 block text-[11px] text-slate-500">Opcional.</span>
-        </div>
-
-        <div className="grid min-w-[280px] flex-1 gap-4 sm:grid-cols-[1fr_120px]">
-          <Campo
-            id="fase-titulo"
-            rotulo="Título"
-            valor={fase.titulo}
-            placeholder="Um novo amigo"
-            onChange={(titulo) => onMudar({ titulo })}
-          />
-          <Campo
-            id="fase-ordem"
-            rotulo="Ordem"
-            valor={String(fase.ordem)}
-            onChange={(v) => onMudar({ ordem: Number(v) || 1 })}
-          />
-        </div>
+      <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_120px]">
+        <Campo
+          id="fase-titulo"
+          rotulo="Título"
+          valor={fase.titulo}
+          placeholder="Um novo amigo"
+          onChange={(titulo) => onMudar({ titulo })}
+        />
+        <Campo
+          id="fase-ordem"
+          rotulo="Ordem"
+          valor={String(fase.ordem)}
+          onChange={(v) => onMudar({ ordem: Number(v) || 1 })}
+        />
       </div>
 
       <div className="mt-4">
@@ -240,6 +225,19 @@ function PassoFase({
           placeholder="Sofia conhece um menino que ainda não fala português."
           onChange={(descricao) => onMudar({ descricao })}
         />
+      </div>
+
+      <div className="mt-5">
+        <span className="mb-2 block text-xs font-bold text-slate-600">Imagem de capa</span>
+        <div className="flex items-center gap-3">
+          <CampoFigura
+            imagem={fase.imagemCapa}
+            rotulo="Imagem de capa da fase"
+            tamanho="h-[88px] w-[156px]"
+            onEscolher={(arquivo) => onFigura(arquivo, (imagemCapa) => onMudar({ imagemCapa }))}
+          />
+          <p className="text-xs text-slate-500">Opcional. Aparece no card da fase.</p>
+        </div>
       </div>
     </div>
   );
