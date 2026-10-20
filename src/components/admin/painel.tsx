@@ -3,7 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Apagar, BOTAO_CLARO, BOTAO_FORTE, Campo, Chip } from "@/components/admin/campos";
+import {
+  Apagar,
+  BOTAO_AZUL,
+  BOTAO_CLARO,
+  BOTAO_FORTE,
+  Campo,
+  Chip,
+} from "@/components/admin/campos";
 import { FaseEditor } from "@/components/admin/fase-editor";
 import { PerguntasEditor } from "@/components/admin/perguntas-editor";
 import {
@@ -781,10 +788,19 @@ function BlocoTema({
             </ul>
           )}
 
-          <div className="p-5 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-5 pt-4">
             <button type="button" onClick={onNovaFase} className={BOTAO_CLARO}>
               + Nova fase neste tema
             </button>
+
+            {/* Não há confirmar: grava a cada tecla. O botão só fecha o tema
+                — mas sem ele a tela não diz que já está gravado. */}
+            <span className="flex items-center gap-3">
+              <span className="text-[11px] text-slate-500">Gravado a cada tecla.</span>
+              <button type="button" onClick={onAbrir} className={BOTAO_AZUL}>
+                Pronto
+              </button>
+            </span>
           </div>
         </>
       )}
