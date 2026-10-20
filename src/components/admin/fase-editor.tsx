@@ -530,81 +530,85 @@ function PassoHistoria({
                 </div>
 
                 {abertoId === card.id && (
-                  <div className="border-t border-slate-100 p-3">
-                    {card.tipo === "Historia" ? (
-                      <div className="flex flex-wrap items-start gap-3">
-                        <CampoFigura
-                          imagem={card.imagem}
-                          rotulo={`Imagem do card ${i + 1}`}
-                          tamanho="h-[88px] w-[120px]"
-                          onEscolher={(a) => onFigura(a, (imagem) => mexer(card.id, { imagem }))}
-                        />
-                        <div className="grid min-w-[260px] flex-1 gap-3 sm:grid-cols-3">
-                          <Campo
-                            id={`antes-${card.id}`}
-                            rotulo="Texto antes"
-                            valor={card.textoAntes}
-                            placeholder="Ele sorriu e acenou: —"
-                            onChange={(textoAntes) => mexer(card.id, { textoAntes })}
+                  <div className="grid gap-4 border-t border-slate-100 p-3 lg:grid-cols-[1fr_300px]">
+                    <div>
+                      {card.tipo === "Historia" ? (
+                        <div className="flex flex-wrap items-start gap-3">
+                          <CampoFigura
+                            imagem={card.imagem}
+                            rotulo={`Imagem do card ${i + 1}`}
+                            tamanho="h-[88px] w-[120px]"
+                            onEscolher={(a) => onFigura(a, (imagem) => mexer(card.id, { imagem }))}
                           />
-                          <Campo
-                            id={`destaque-${card.id}`}
-                            rotulo="Destaque"
-                            valor={card.destaque}
-                            placeholder="Hello"
-                            onChange={(destaque) => mexer(card.id, { destaque })}
-                          />
-                          <Campo
-                            id={`depois-${card.id}`}
-                            rotulo="Texto depois"
-                            valor={card.textoDepois}
-                            placeholder="!"
-                            onChange={(textoDepois) => mexer(card.id, { textoDepois })}
-                          />
+                          <div className="grid min-w-[260px] flex-1 gap-3 sm:grid-cols-3">
+                            <Campo
+                              id={`antes-${card.id}`}
+                              rotulo="Texto antes"
+                              valor={card.textoAntes}
+                              placeholder="Ele sorriu e acenou: —"
+                              onChange={(textoAntes) => mexer(card.id, { textoAntes })}
+                            />
+                            <Campo
+                              id={`destaque-${card.id}`}
+                              rotulo="Destaque"
+                              valor={card.destaque}
+                              placeholder="Hello"
+                              onChange={(destaque) => mexer(card.id, { destaque })}
+                            />
+                            <Campo
+                              id={`depois-${card.id}`}
+                              rotulo="Texto depois"
+                              valor={card.textoDepois}
+                              placeholder="!"
+                              onChange={(textoDepois) => mexer(card.id, { textoDepois })}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-wrap items-start gap-3">
-                        <CampoFigura
-                          imagem={card.imagem}
-                          rotulo={`Imagem do card ${i + 1}`}
-                          onEscolher={(a) => onFigura(a, (imagem) => mexer(card.id, { imagem }))}
-                        />
-                        <div className="grid min-w-[260px] flex-1 gap-3 sm:grid-cols-2">
-                          <label className="block">
-                            <span className="mb-1 block text-xs font-bold text-slate-600">
-                              Palavra relacionada
-                            </span>
-                            <select
-                              className={CAMPO}
-                              value={card.palavraId ?? ""}
-                              onChange={(e) => {
-                                const p = palavras.find((x) => x.id === e.target.value);
-                                mexer(card.id, {
-                                  palavraId: p?.id ?? null,
-                                  destaque: p?.ingles ?? card.destaque,
-                                  traducao: p?.traducao ?? card.traducao,
-                                });
-                              }}
-                            >
-                              <option value="">Escolha uma palavra da fase</option>
-                              {palavras.map((p) => (
-                                <option key={p.id} value={p.id}>
-                                  {p.ingles} — {p.traducao}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                          <Campo
-                            id={`traducao-${card.id}`}
-                            rotulo="Tradução mostrada"
-                            valor={card.traducao}
-                            placeholder="olá"
-                            onChange={(traducao) => mexer(card.id, { traducao })}
+                      ) : (
+                        <div className="flex flex-wrap items-start gap-3">
+                          <CampoFigura
+                            imagem={card.imagem}
+                            rotulo={`Imagem do card ${i + 1}`}
+                            onEscolher={(a) => onFigura(a, (imagem) => mexer(card.id, { imagem }))}
                           />
+                          <div className="grid min-w-[260px] flex-1 gap-3 sm:grid-cols-2">
+                            <label className="block">
+                              <span className="mb-1 block text-xs font-bold text-slate-600">
+                                Palavra relacionada
+                              </span>
+                              <select
+                                className={CAMPO}
+                                value={card.palavraId ?? ""}
+                                onChange={(e) => {
+                                  const p = palavras.find((x) => x.id === e.target.value);
+                                  mexer(card.id, {
+                                    palavraId: p?.id ?? null,
+                                    destaque: p?.ingles ?? card.destaque,
+                                    traducao: p?.traducao ?? card.traducao,
+                                  });
+                                }}
+                              >
+                                <option value="">Escolha uma palavra da fase</option>
+                                {palavras.map((p) => (
+                                  <option key={p.id} value={p.id}>
+                                    {p.ingles} — {p.traducao}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                            <Campo
+                              id={`traducao-${card.id}`}
+                              rotulo="Tradução mostrada"
+                              valor={card.traducao}
+                              placeholder="olá"
+                              onChange={(traducao) => mexer(card.id, { traducao })}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
+
+                    <PreviaDoCard card={card} palavra={acharPalavra(banco, card.palavraId)} />
                   </div>
                 )}
               </li>
@@ -781,4 +785,57 @@ function PassoRevisao({
 
 function Ajuda({ children }: { children: React.ReactNode }) {
   return <p className="mb-4 text-sm leading-relaxed text-slate-600">{children}</p>;
+}
+
+/**
+ * Como o card chega ao aluno.
+ *
+ * A cena é texto com uma palavra em destaque; o card de palavra para tudo e
+ * mostra a figura, a palavra e o que ela quer dizer. São duas telas bem
+ * diferentes, e os mesmos campos no editor não deixam isso claro.
+ */
+function PreviaDoCard({ card, palavra }: { card: Card; palavra: Palavra | undefined }) {
+  const ingles = palavra?.ingles || card.destaque;
+  const traducao = card.traducao || palavra?.traducao || "";
+  const temTexto = card.textoAntes || card.destaque || card.textoDepois;
+
+  return (
+    <aside className="h-fit rounded-xl bg-deep-900 p-4 text-white">
+      <p className="text-[11px] font-bold uppercase tracking-wide text-blue-200">
+        Prévia do aluno
+      </p>
+
+      <div className="mt-3 rounded-xl bg-white p-4 text-slate-900">
+        {card.imagem && (
+          // eslint-disable-next-line @next/next/no-img-element -- data URL do admin, nunca otimizada
+          <img src={card.imagem} alt="" className="mb-3 h-28 w-full rounded-lg object-cover" />
+        )}
+
+        {card.tipo === "Historia" ? (
+          <p className="text-sm leading-relaxed">
+            {temTexto ? (
+              <>
+                {card.textoAntes}{" "}
+                {card.destaque && (
+                  <strong className="font-extrabold text-accent-600">{card.destaque}</strong>
+                )}{" "}
+                {card.textoDepois}
+              </>
+            ) : (
+              <span className="text-slate-400">O texto da cena aparece aqui.</span>
+            )}
+          </p>
+        ) : (
+          <div className="text-center">
+            <p className="text-xl font-extrabold text-deep-900">
+              {ingles || <span className="text-slate-400">A palavra</span>}
+            </p>
+            <p className="mt-1 text-sm text-ink-700">
+              {traducao || <span className="text-slate-400">o que ela quer dizer</span>}
+            </p>
+          </div>
+        )}
+      </div>
+    </aside>
+  );
 }
