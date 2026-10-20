@@ -11,7 +11,6 @@ import {
 import {
   Apagar,
   BOTAO_AZUL,
-  BOTAO_CLARO,
   CAMPO,
   Campo,
   CampoFigura,
@@ -197,7 +196,10 @@ export function PerguntaEditor({
                   onClick={() =>
                     onMudar({ alternativas: [...pergunta.alternativas, alternativaVazia(false)] })
                   }
-                  className={`${BOTAO_CLARO} disabled:cursor-not-allowed disabled:opacity-50`}
+                  className="rounded-full border border-dashed border-slate-300 px-2.5 py-1
+                             text-[11px] font-bold text-slate-600 transition hover:bg-slate-100
+                             disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2
+                             focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                 >
                   + Alternativa
                 </button>
