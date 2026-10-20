@@ -52,6 +52,7 @@ export function Painel() {
   const [banco, setBanco] = useState<Banco>(BANCO_VAZIO);
   const [aba, setAba] = useState<"trilhas" | "perguntas">("trilhas");
   const [faseAberta, setFaseAberta] = useState<string | null>(null);
+  const [temaAberto, setTemaAberto] = useState<string | null>(null);
   const [faseDasPerguntas, setFaseDasPerguntas] = useState<string | null>(null);
   const [trilhaAberta, setTrilhaAberta] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -251,6 +252,8 @@ export function Painel() {
             onFigura={comFigura}
             faseAberta={faseAberta}
             onAbrirFase={setFaseAberta}
+            temaAberto={temaAberto}
+            onAbrirTema={setTemaAberto}
             onNovaTrilha={() => {
               const nova = trilhaVazia(banco.trilhas.length + 1);
               guardar({ ...banco, trilhas: [...banco.trilhas, nova] });
@@ -262,16 +265,18 @@ export function Painel() {
                 trilhas: banco.trilhas.map((t) => (t.id === id ? { ...t, ...mudanca } : t)),
               })
             }
-            onNovoTema={(trilha) =>
+            onNovoTema={(trilha) => {
+              const novo = temaVazio(trilha.temas.length + 1);
               guardar({
                 ...banco,
                 trilhas: banco.trilhas.map((t) =>
-                  t.id === trilha.id
-                    ? { ...t, temas: [...t.temas, temaVazio(t.temas.length + 1)] }
-                    : t,
+                  t.id === trilha.id ? { ...t, temas: [...t.temas, novo] } : t,
                 ),
-              })
-            }
+              });
+              // Tema recém-criado abre nos próprios campos: sem título, não
+              // há o que mostrar fechado.
+              setTemaAberto(novo.id);
+            }}
             onMudarTema={(temaId, mudanca) => mexerTema(temaId, mudanca)}
             onApagarTema={(temaId) => apagarTema(temaId)}
             trilhaAberta={trilhaAberta}
@@ -337,6 +342,8 @@ function MontarTrilhas({
   onFigura,
   faseAberta,
   onAbrirFase,
+  temaAberto,
+  onAbrirTema,
   onNovaTrilha,
   onMudarTrilha,
   onMudarTema,
@@ -355,6 +362,8 @@ function MontarTrilhas({
   onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
   faseAberta: string | null;
   onAbrirFase: (id: string | null) => void;
+  temaAberto: string | null;
+  onAbrirTema: (id: string | null) => void;
   onNovaTrilha: () => void;
   onMudarTrilha: (id: string, mudanca: Partial<Trilha>) => void;
   onMudarTema: (temaId: string, m: Partial<Tema>) => void;
@@ -381,6 +390,8 @@ function MontarTrilhas({
         onFigura={onFigura}
         faseAberta={faseAberta}
         onAbrirFase={onAbrirFase}
+        temaAberto={temaAberto}
+        onAbrirTema={onAbrirTema}
         onMudarTrilha={(m) => onMudarTrilha(trilha.id, m)}
         onMudarTema={onMudarTema}
         onApagarTema={onApagarTema}
@@ -501,6 +512,8 @@ function TrilhaAberta({
   onFigura,
   faseAberta,
   onAbrirFase,
+  temaAberto,
+  onAbrirTema,
   onMudarTrilha,
   onMudarTema,
   onApagarTema,
@@ -516,6 +529,8 @@ function TrilhaAberta({
   onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
   faseAberta: string | null;
   onAbrirFase: (id: string | null) => void;
+  temaAberto: string | null;
+  onAbrirTema: (id: string | null) => void;
   onMudarTrilha: (m: Partial<Trilha>) => void;
   onMudarTema: (temaId: string, m: Partial<Tema>) => void;
   onApagarTema: (temaId: string) => void;
@@ -604,35 +619,44 @@ function TrilhaAberta({
         </div>
       </section>
 
-      {/* Os temas, cada um com as suas fases */}
-      {temas.map((tema) => (
-        <BlocoTema
-          key={tema.id}
-          banco={banco}
-          trilha={trilha}
-          tema={tema}
-          onNovaFase={() => onNovaFase(trilha, tema)}
-          onApagarFase={(faseId) => onApagarFase(trilha.id, tema.id, faseId)}
-          onMudarFase={(faseId, m) => onMudarFase(tema.id, faseId, m)}
-          onNovaPalavra={onNovaPalavra}
-          onFigura={onFigura}
-          faseAberta={faseAberta}
-          onAbrirFase={onAbrirFase}
-          onMudarTema={(m) => onMudarTema(tema.id, m)}
-          onApagarTema={() => onApagarTema(tema.id)}
-        />
-      ))}
+      {/* Os temas, cada um com as suas fases dentro. Fechados, cabem todos
+          na tela — que é o que responde "o que tem nesta trilha". */}
+      <section className="mt-5 space-y-3">
+        {temas.map((tema) => (
+          <BlocoTema
+            key={tema.id}
+            banco={banco}
+            trilha={trilha}
+            tema={tema}
+            aberto={temaAberto === tema.id}
+            onAbrir={() => onAbrirTema(temaAberto === tema.id ? null : tema.id)}
+            onNovaFase={() => onNovaFase(trilha, tema)}
+            onApagarFase={(faseId) => onApagarFase(trilha.id, tema.id, faseId)}
+            onMudarFase={(faseId, m) => onMudarFase(tema.id, faseId, m)}
+            onNovaPalavra={onNovaPalavra}
+            onFigura={onFigura}
+            faseAberta={faseAberta}
+            onAbrirFase={onAbrirFase}
+            onMudarTema={(m) => onMudarTema(tema.id, m)}
+            onApagarTema={() => onApagarTema(tema.id)}
+          />
+        ))}
 
-      <div className="mt-5">
-        <button type="button" onClick={() => onNovoTema(trilha)} className={BOTAO_FORTE}>
+        <button
+          type="button"
+          onClick={() => onNovoTema(trilha)}
+          className="w-full rounded-2xl border border-dashed border-white/25 py-4 text-sm
+                     font-bold text-blue-100 transition hover:border-white/50 hover:bg-white/5
+                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
           + Novo tema
+          {temas.length === 0 && (
+            <span className="mt-1 block text-xs font-normal text-blue-200">
+              As fases ficam dentro de um tema. Crie o primeiro para começar.
+            </span>
+          )}
         </button>
-        {temas.length === 0 && (
-          <p className="mt-2 text-xs text-blue-200">
-            As fases ficam dentro de um tema. Crie o primeiro para começar.
-          </p>
-        )}
-      </div>
+      </section>
     </>
   );
 }
@@ -642,6 +666,8 @@ function BlocoTema({
   banco,
   trilha,
   tema,
+  aberto,
+  onAbrir,
   onNovaFase,
   onApagarFase,
   onMudarFase,
@@ -655,6 +681,8 @@ function BlocoTema({
   banco: Banco;
   trilha: Trilha;
   tema: Tema;
+  aberto: boolean;
+  onAbrir: () => void;
   onNovaFase: () => void;
   onApagarFase: (faseId: string) => void;
   onMudarFase: (faseId: string, m: Partial<Fase>) => void;
@@ -666,64 +694,93 @@ function BlocoTema({
   onApagarTema: () => void;
 }) {
   const fases = [...tema.fases].sort((a, b) => a.ordem - b.ordem);
+  const pendentes = fases.filter((f) => !faseCompleta(f)).length;
 
   return (
-    <section className="mt-5 rounded-2xl bg-white text-slate-900">
-      <header className="border-b border-slate-200 p-5">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 className="text-base font-extrabold">Tema {tema.ordem}</h2>
-            <p className="mt-0.5 text-sm text-slate-500">
-              As fases deste tema, na ordem em que o aluno percorre.
-            </p>
-          </div>
-          <Apagar oque={`tema ${tema.titulo || tema.ordem}`} onClick={onApagarTema} />
-        </div>
+    <section className="rounded-2xl bg-white text-slate-900">
+      <header className="flex flex-wrap items-center gap-3 p-5">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-sm font-extrabold text-blue-700">
+          {tema.ordem}
+        </span>
 
-        <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_120px]">
-          <Campo
-            id={`tema-titulo-${tema.id}`}
-            rotulo="Título"
-            valor={tema.titulo}
-            placeholder="Cumprimentos básicos"
-            onChange={(titulo) => onMudarTema({ titulo })}
-          />
-          <Campo
-            id={`tema-ordem-${tema.id}`}
-            rotulo="Ordem"
-            valor={String(tema.ordem)}
-            onChange={(v) => onMudarTema({ ordem: Number(v) || 1 })}
-          />
-        </div>
+        <button
+          type="button"
+          onClick={onAbrir}
+          aria-expanded={aberto}
+          className="min-w-0 flex-1 text-left focus-visible:outline-2 focus-visible:outline-offset-2
+                     focus-visible:outline-blue-600"
+        >
+          <span className="block truncate text-base font-extrabold">
+            {tema.titulo.trim() || "Tema sem título"}
+          </span>
+          <span className="mt-0.5 block text-xs text-slate-500">
+            {fases.length} {fases.length === 1 ? "fase" : "fases"}
+            {pendentes > 0 && `, ${pendentes} ${pendentes === 1 ? "pendente" : "pendentes"}`}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          aria-label={aberto ? "Fechar o tema" : `Abrir o tema ${tema.titulo || tema.ordem}`}
+          onClick={onAbrir}
+          className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700
+                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        >
+          <ChevronDownIcon className={`size-4 transition ${aberto ? "rotate-180" : ""}`} />
+        </button>
+
+        <Apagar oque={`tema ${tema.titulo || tema.ordem}`} onClick={onApagarTema} />
       </header>
 
-      {fases.length === 0 ? (
-        <p className="p-5 text-sm text-slate-500">Nenhuma fase neste tema ainda.</p>
-      ) : (
-        <ul className="divide-y divide-slate-100">
-          {fases.map((fase) => (
-            <LinhaFase
-              key={fase.id}
-              banco={banco}
-              trilha={trilha}
-              tema={tema}
-              fase={fase}
-              aberta={faseAberta === fase.id}
-              onAbrir={() => onAbrirFase(faseAberta === fase.id ? null : fase.id)}
-              onMudar={(m) => onMudarFase(fase.id, m)}
-              onNovaPalavra={onNovaPalavra}
-              onFigura={onFigura}
-              onApagar={() => onApagarFase(fase.id)}
+      {aberto && (
+        <>
+          <div className="grid gap-4 border-t border-slate-200 p-5 sm:grid-cols-[1fr_120px]">
+            <Campo
+              id={`tema-titulo-${tema.id}`}
+              rotulo="Título"
+              valor={tema.titulo}
+              placeholder="Cumprimentos básicos"
+              onChange={(titulo) => onMudarTema({ titulo })}
             />
-          ))}
-        </ul>
-      )}
+            <Campo
+              id={`tema-ordem-${tema.id}`}
+              rotulo="Ordem"
+              valor={String(tema.ordem)}
+              onChange={(v) => onMudarTema({ ordem: Number(v) || 1 })}
+            />
+          </div>
 
-      <div className="p-5 pt-4">
-        <button type="button" onClick={onNovaFase} className={BOTAO_CLARO}>
-          + Nova fase neste tema
-        </button>
-      </div>
+          {fases.length === 0 ? (
+            <p className="border-t border-slate-200 p-5 text-sm text-slate-500">
+              Nenhuma fase neste tema ainda.
+            </p>
+          ) : (
+            <ul className="divide-y divide-slate-100 border-t border-slate-200">
+              {fases.map((fase) => (
+                <LinhaFase
+                  key={fase.id}
+                  banco={banco}
+                  trilha={trilha}
+                  tema={tema}
+                  fase={fase}
+                  aberta={faseAberta === fase.id}
+                  onAbrir={() => onAbrirFase(faseAberta === fase.id ? null : fase.id)}
+                  onMudar={(m) => onMudarFase(fase.id, m)}
+                  onNovaPalavra={onNovaPalavra}
+                  onFigura={onFigura}
+                  onApagar={() => onApagarFase(fase.id)}
+                />
+              ))}
+            </ul>
+          )}
+
+          <div className="p-5 pt-4">
+            <button type="button" onClick={onNovaFase} className={BOTAO_CLARO}>
+              + Nova fase neste tema
+            </button>
+          </div>
+        </>
+      )}
     </section>
   );
 }
