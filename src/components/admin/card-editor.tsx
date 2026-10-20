@@ -79,20 +79,21 @@ export function CardEditor({
 
             {card.tipo === "Historia" ? (
               <>
-                {/* Também na cena: é a palavra que a cena ensina, e
-                    escolhê-la poupa digitar o destaque de novo. */}
-                <SelecionarPalavra
-                  card={card}
-                  palavras={palavras}
-                  ajuda="A palavra que esta cena ensina. Escolher preenche o destaque."
-                  onMudar={onMudar}
-                />
                 <Campo
                   id={`antes-${card.id}`}
                   rotulo="Texto antes"
                   valor={card.textoAntes}
                   placeholder="Ele sorriu e acenou: —"
                   onChange={(textoAntes) => onMudar({ textoAntes })}
+                />
+
+                {/* Depois do texto, porque é a leitura da cena: escreve-se a
+                    frase e só então se diz qual palavra dela é a ensinada. */}
+                <SelecionarPalavra
+                  card={card}
+                  palavras={palavras}
+                  ajuda="A palavra que esta cena ensina. Escolher preenche o destaque."
+                  onMudar={onMudar}
                 />
                 <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
                   <Campo
