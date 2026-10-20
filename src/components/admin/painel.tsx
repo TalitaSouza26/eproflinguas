@@ -3,10 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Apagar, BOTAO_CLARO, BOTAO_FORTE, Chip } from "@/components/admin/campos";
+import { Apagar, BOTAO_CLARO, BOTAO_FORTE, Campo, Chip } from "@/components/admin/campos";
 import { FaseEditor, type Rascunho } from "@/components/admin/fase-editor";
 import { PerguntasEditor } from "@/components/admin/perguntas-editor";
-import { ChevronDownIcon, LogoutIcon, ReplayIcon } from "@/components/ui/icons";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ChevronDownIcon,
+  LogoutIcon,
+  ReplayIcon,
+} from "@/components/ui/icons";
 import {
   BANCO_VAZIO,
   contagem,
@@ -24,6 +30,7 @@ import {
   reduzirImagem,
   TIPOS_FASE,
   temaVazio,
+  trilhaVazia,
   trilhaNoAr,
   type Banco,
   type Fase,
@@ -49,6 +56,7 @@ export function Painel() {
   const [aba, setAba] = useState<"trilhas" | "perguntas">("trilhas");
   const [rascunho, setRascunho] = useState<Rascunho | null>(null);
   const [faseDasPerguntas, setFaseDasPerguntas] = useState<string | null>(null);
+  const [trilhaAberta, setTrilhaAberta] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
 
   // O que já estiver na aba volta para a tela. Aba limpa abre com a trilha
@@ -251,6 +259,17 @@ export function Painel() {
             onNovaFase={novaFase}
             onEditarFase={editarFase}
             onApagarFase={apagarFase}
+            onNovaTrilha={() => {
+              const nova = trilhaVazia(banco.trilhas.length + 1);
+              guardar({ ...banco, trilhas: [...banco.trilhas, nova] });
+              setTrilhaAberta(nova.id);
+            }}
+            onMudarTrilha={(id, mudanca) =>
+              guardar({
+                ...banco,
+                trilhas: banco.trilhas.map((t) => (t.id === id ? { ...t, ...mudanca } : t)),
+              })
+            }
             onNovoTema={(trilha) =>
               guardar({
                 ...banco,
@@ -265,9 +284,12 @@ export function Painel() {
               setFaseDasPerguntas(faseId);
               setAba("perguntas");
             }}
+            trilhaAberta={trilhaAberta}
+            onAbrirTrilha={setTrilhaAberta}
             onLimpar={() => {
               limparBanco();
               setBanco(BANCO_VAZIO);
+              setTrilhaAberta(null);
             }}
             onExemplo={() => {
               const exemplo = bancoDeExemplo();
@@ -332,29 +354,56 @@ function MontarTrilhas({
   onNovaFase,
   onEditarFase,
   onApagarFase,
+  onNovaTrilha,
+  onMudarTrilha,
   onNovoTema,
   onPerguntas,
   onLimpar,
   onExemplo,
+  trilhaAberta,
+  onAbrirTrilha,
 }: {
   banco: Banco;
   contagem: ReturnType<typeof contagem>;
   onNovaFase: (trilha?: Trilha, tema?: Tema) => void;
   onEditarFase: (trilha: Trilha, tema: Tema, fase: Fase) => void;
   onApagarFase: (trilhaId: string, temaId: string, faseId: string) => void;
+  onNovaTrilha: () => void;
+  onMudarTrilha: (id: string, mudanca: Partial<Trilha>) => void;
   onNovoTema: (trilha: Trilha) => void;
   onPerguntas: (faseId: string) => void;
   onLimpar: () => void;
   onExemplo: () => void;
+  trilhaAberta: string | null;
+  onAbrirTrilha: (id: string | null) => void;
 }) {
+  const trilha = banco.trilhas.find((t) => t.id === trilhaAberta);
+
+  // Dentro de uma trilha: o nome dela no topo, e abaixo os temas com as fases.
+  if (trilha) {
+    return (
+      <TrilhaAberta
+        banco={banco}
+        trilha={trilha}
+        onVoltar={() => onAbrirTrilha(null)}
+        onNovaFase={onNovaFase}
+        onEditarFase={onEditarFase}
+        onApagarFase={onApagarFase}
+        onMudarTrilha={(m) => onMudarTrilha(trilha.id, m)}
+        onNovoTema={onNovoTema}
+        onPerguntas={onPerguntas}
+      />
+    );
+  }
+
   return (
     <>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-xl">
-          <h1 className="text-3xl font-extrabold">Montar trilhas</h1>
+          <h1 className="text-3xl font-extrabold">Trilhas</h1>
           <p className="mt-1 text-sm leading-relaxed text-blue-100">
-            Cada fase reúne as palavras e os cards da história que o aluno vê antes do quiz. As
-            perguntas ficam na aba Perguntas.
+            Abra uma trilha para ver os temas e as fases dela. As perguntas ficam na aba
+            Perguntas.
           </p>
           <p className="mt-2 text-xs font-bold text-accent-500">
             No banco: {n.fases} fases, {n.palavras} palavras, {n.cards} cards, {n.perguntas}{" "}
@@ -362,36 +411,27 @@ function MontarTrilhas({
           </p>
         </div>
 
-        <button type="button" onClick={() => onNovaFase()} className={BOTAO_FORTE}>
-          + Nova fase
+        <button type="button" onClick={onNovaTrilha} className={BOTAO_FORTE}>
+          + Nova trilha
         </button>
       </div>
 
       {banco.trilhas.length === 0 ? (
         <div className="mt-6 rounded-2xl bg-white p-8 text-center text-slate-600">
           <p className="text-sm">
-            Nenhuma trilha ainda. Comece por uma fase — ou traga a trilha que o produto já tem,
-            para usar de exemplo.
+            Nenhuma trilha ainda. Crie a primeira — ou traga a trilha que o produto já tem, para
+            usar de exemplo.
           </p>
           <button type="button" onClick={onExemplo} className={`${BOTAO_CLARO} mt-4`}>
             Trazer a trilha do produto
           </button>
         </div>
       ) : (
-        <ul className="mt-6 space-y-4">
+        <ul className="mt-6 space-y-3">
           {[...banco.trilhas]
             .sort((a, b) => a.ordem - b.ordem)
             .map((trilha) => (
-              <CartaoTrilha
-                key={trilha.id}
-                banco={banco}
-                trilha={trilha}
-                onNovaFase={onNovaFase}
-                onEditarFase={onEditarFase}
-                onApagarFase={onApagarFase}
-                onNovoTema={onNovoTema}
-                onPerguntas={onPerguntas}
-              />
+              <LinhaTrilha key={trilha.id} trilha={trilha} onAbrir={() => onAbrirTrilha(trilha.id)} />
             ))}
         </ul>
       )}
@@ -414,78 +454,199 @@ function MontarTrilhas({
   );
 }
 
-function CartaoTrilha({
+/** Uma trilha na lista: o bastante para reconhecê-la e saber se está de pé. */
+function LinhaTrilha({ trilha, onAbrir }: { trilha: Trilha; onAbrir: () => void }) {
+  const fases = fasesDaTrilha(trilha);
+  const pendentes = fases.filter(({ fase }) => !faseCompleta(fase)).length;
+
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={onAbrir}
+        className="flex w-full items-center gap-4 rounded-2xl bg-white p-5 text-left text-slate-900
+                   transition hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2
+                   focus-visible:outline-white"
+      >
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent-50 text-sm font-extrabold text-accent-600">
+          {trilha.ordem}
+        </span>
+
+        <span className="min-w-0 flex-1">
+          <span className="flex flex-wrap items-center gap-2">
+            <strong className="text-lg font-extrabold">{trilha.nome.trim() || "Sem nome"}</strong>
+            {trilha.ativa ? <Chip cor="ok">Ativa</Chip> : <Chip>Inativa</Chip>}
+          </span>
+          <span className="mt-0.5 block truncate text-xs text-slate-500">
+            {trilha.descricao.trim() || "Sem descrição"}
+          </span>
+          <span className="mt-1 block text-[11px] text-slate-500">
+            {trilha.temas.length} {trilha.temas.length === 1 ? "tema" : "temas"} · {fases.length}{" "}
+            {fases.length === 1 ? "fase" : "fases"}
+            {pendentes > 0 && `, ${pendentes} pendentes`}
+          </span>
+        </span>
+
+        <ArrowRightIcon className="size-5 shrink-0 text-slate-400" />
+      </button>
+    </li>
+  );
+}
+
+/** A trilha aberta: o nome dela no topo, os temas e as fases abaixo. */
+function TrilhaAberta({
   banco,
   trilha,
+  onVoltar,
   onNovaFase,
   onEditarFase,
   onApagarFase,
+  onMudarTrilha,
   onNovoTema,
   onPerguntas,
 }: {
   banco: Banco;
   trilha: Trilha;
+  onVoltar: () => void;
   onNovaFase: (trilha?: Trilha, tema?: Tema) => void;
   onEditarFase: (trilha: Trilha, tema: Tema, fase: Fase) => void;
   onApagarFase: (trilhaId: string, temaId: string, faseId: string) => void;
+  onMudarTrilha: (m: Partial<Trilha>) => void;
   onNovoTema: (trilha: Trilha) => void;
   onPerguntas: (faseId: string) => void;
 }) {
-  const todas = fasesDaTrilha(trilha);
+  const fases = fasesDaTrilha(trilha);
+  // Trilha recém-criada abre nos dados: sem nome, não há o que mostrar ainda.
+  const [editando, setEditando] = useState(!trilha.nome.trim());
 
   return (
-    <li className="rounded-2xl bg-white p-5 text-slate-900">
-      <header className="flex flex-wrap items-center gap-3">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-50 text-sm font-extrabold text-accent-600">
-          {trilha.ordem}
-        </span>
-        <h2 className="text-lg font-extrabold">{trilha.nome.trim() || "Sem nome"}</h2>
-        {trilha.ativa ? <Chip cor="ok">Ativa</Chip> : <Chip>Inativa</Chip>}
-        <span className="text-xs text-slate-500">
-          ({trilha.temas.length} {trilha.temas.length === 1 ? "tema" : "temas"}, {todas.length}{" "}
-          {todas.length === 1 ? "fase" : "fases"})
-        </span>
+    <>
+      <button
+        type="button"
+        onClick={onVoltar}
+        className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-200
+                   underline-offset-4 hover:underline focus-visible:outline-2
+                   focus-visible:outline-offset-2 focus-visible:outline-white"
+      >
+        <ArrowLeftIcon className="size-4" />
+        Trilhas
+      </button>
 
-        <span className="ml-auto flex items-center gap-2">
+      <div className="mt-2 flex flex-wrap items-start justify-between gap-4">
+        <div className="max-w-xl">
+          <h1 className="flex flex-wrap items-center gap-3 text-3xl font-extrabold">
+            {trilha.nome.trim() || "Sem nome"}
+            {trilha.ativa ? <Chip cor="ok">Ativa</Chip> : <Chip>Inativa</Chip>}
+          </h1>
+          <p className="mt-1 text-sm text-blue-100">
+            {trilha.descricao.trim() || "Sem descrição"}
+          </p>
+          <p className="mt-2 text-xs font-bold text-accent-500">
+            {trilha.temas.length} {trilha.temas.length === 1 ? "tema" : "temas"} · {fases.length}{" "}
+            {fases.length === 1 ? "fase" : "fases"}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
           {trilhaNoAr(trilha) && (
             <Link
               href={`/quizzes/demo?trilha=${trilha.id}&fase=1`}
-              className="text-xs font-bold text-blue-700 underline-offset-4 hover:underline"
+              className="text-xs font-bold text-blue-200 underline-offset-4 hover:underline"
             >
               Jogar esta trilha
             </Link>
           )}
+          <button
+            type="button"
+            onClick={() => setEditando((e) => !e)}
+            className={BOTAO_CLARO}
+            aria-expanded={editando}
+          >
+            Dados da trilha
+          </button>
           <button type="button" onClick={() => onNovoTema(trilha)} className={BOTAO_CLARO}>
             + Tema
           </button>
-        </span>
-      </header>
+          <button type="button" onClick={() => onNovaFase(trilha)} className={BOTAO_FORTE}>
+            + Nova fase
+          </button>
+        </div>
+      </div>
 
-      {trilha.descricao.trim() && (
-        <p className="mt-1 pl-11 text-xs text-slate-500">{trilha.descricao}</p>
+      {editando && (
+        <section className="mt-6 rounded-2xl bg-white p-5 text-slate-900">
+          <div className="grid gap-4 sm:grid-cols-[1fr_120px_120px]">
+            <Campo
+              id="trilha-aberta-nome"
+              rotulo="Nome"
+              valor={trilha.nome}
+              placeholder="Cores e números"
+              onChange={(nome) => onMudarTrilha({ nome })}
+            />
+            <Campo
+              id="trilha-aberta-ordem"
+              rotulo="Ordem"
+              valor={String(trilha.ordem)}
+              onChange={(v) => onMudarTrilha({ ordem: Number(v) || 1 })}
+            />
+            <div>
+              <span className="mb-1 block text-xs font-bold text-slate-600">Ativa</span>
+              <div className="flex gap-2">
+                {[true, false].map((v) => (
+                  <button
+                    key={String(v)}
+                    type="button"
+                    aria-pressed={trilha.ativa === v}
+                    onClick={() => onMudarTrilha({ ativa: v })}
+                    className={`rounded-full px-4 py-1.5 text-xs font-bold transition
+                                focus-visible:outline-2 focus-visible:outline-offset-2
+                                focus-visible:outline-blue-600 ${
+                                  trilha.ativa === v
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                }`}
+                  >
+                    {v ? "Sim" : "Não"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="sm:col-span-3">
+              <Campo
+                id="trilha-aberta-descricao"
+                rotulo="Descrição"
+                valor={trilha.descricao}
+                placeholder="Cumprimentos e expressões básicas."
+                onChange={(descricao) => onMudarTrilha({ descricao })}
+              />
+            </div>
+          </div>
+        </section>
       )}
 
       {trilha.temas.length === 0 ? (
-        <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-4 text-center text-xs text-slate-500">
+        <p className="mt-6 rounded-2xl bg-white p-8 text-center text-sm text-slate-500">
           Nenhum tema. Crie um para pendurar as fases.
         </p>
       ) : (
-        [...trilha.temas]
-          .sort((a, b) => a.ordem - b.ordem)
-          .map((tema) => (
-            <BlocoTema
-              key={tema.id}
-              banco={banco}
-              trilha={trilha}
-              tema={tema}
-              onNovaFase={onNovaFase}
-              onEditarFase={onEditarFase}
-              onApagarFase={onApagarFase}
-              onPerguntas={onPerguntas}
-            />
-          ))
+        <div className="mt-6 space-y-4">
+          {[...trilha.temas]
+            .sort((a, b) => a.ordem - b.ordem)
+            .map((tema) => (
+              <BlocoTema
+                key={tema.id}
+                banco={banco}
+                trilha={trilha}
+                tema={tema}
+                onNovaFase={onNovaFase}
+                onEditarFase={onEditarFase}
+                onApagarFase={onApagarFase}
+                onPerguntas={onPerguntas}
+              />
+            ))}
+        </div>
       )}
-    </li>
+    </>
   );
 }
 
@@ -511,7 +672,7 @@ function BlocoTema({
   const pendentes = fases.filter((f) => !faseCompleta(f)).length;
 
   return (
-    <section className="mt-4 rounded-xl bg-slate-50 p-4">
+    <section className="rounded-2xl bg-white p-5 text-slate-900">
       <header className="flex flex-wrap items-center gap-3">
         <h3 className="text-sm text-slate-500">
           Tema {tema.ordem}:{" "}
@@ -591,7 +752,7 @@ function LinhaFase({
   const semPalavras = fase.tipo === "Revisao" ? revisadas < 2 : palavras.length === 0;
 
   return (
-    <li className="rounded-xl bg-white p-3">
+    <li className="rounded-xl bg-slate-50 p-3">
       <div className="flex flex-wrap items-start gap-3">
         <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-extrabold text-slate-600">
           {fase.ordem}
