@@ -50,7 +50,7 @@ import {
  * pertence, e os campos dos dois ficam na tela da trilha. Pedi-los de novo
  * aqui seria perguntar o que a pessoa acabou de responder ao clicar.
  */
-const PASSOS = ["Fase", "Palavras", "Cenas", "Perguntas", "Revisão"] as const;
+const PASSOS = ["Fase", "Palavras", "Cenas", "Perguntas", "Revisão da fase"] as const;
 
 /**
  * O editor de uma fase, aberto dentro da linha dela.
@@ -631,7 +631,7 @@ function PassoPerguntas({
   );
 }
 
-/* ───────────────────────────── 5 · Revisão ───────────────────────────── */
+/* ───────────────────────────── 5 · Revisão da fase ───────────────────────────── */
 
 function PassoRevisao({
   trilha,
