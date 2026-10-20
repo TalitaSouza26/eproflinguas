@@ -9,7 +9,6 @@ import { PerguntasEditor } from "@/components/admin/perguntas-editor";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
-  ChevronDownIcon,
   LogoutIcon,
   ReplayIcon,
 } from "@/components/ui/icons";
@@ -24,8 +23,7 @@ import {
   limparBanco,
   novoId,
   palavrasDaFase,
-  perguntasOrdenadas,
-  perguntaPronta,
+  perguntasProntas,
   reduzirImagem,
   TIPOS_FASE,
   temaVazio,
@@ -33,7 +31,6 @@ import {
   trilhaNoAr,
   type Banco,
   type Fase,
-  type Palavra,
   type Tema,
   type Trilha,
 } from "@/lib/demo/banco";
@@ -188,6 +185,27 @@ export function Painel() {
     });
   }
 
+  /** Mexe num tema da trilha aberta. Só ela tem tema à vista. */
+  function mexerTema(temaId: string, mudanca: Partial<Tema>) {
+    guardar({
+      ...banco,
+      trilhas: banco.trilhas.map((t) =>
+        t.id !== trilhaAberta
+          ? t
+          : { ...t, temas: t.temas.map((tema) => (tema.id === temaId ? { ...tema, ...mudanca } : tema)) },
+      ),
+    });
+  }
+
+  function apagarTema(temaId: string) {
+    guardar({
+      ...banco,
+      trilhas: banco.trilhas.map((t) =>
+        t.id !== trilhaAberta ? t : { ...t, temas: t.temas.filter((tema) => tema.id !== temaId) },
+      ),
+    });
+  }
+
   return (
     <div className="min-h-screen bg-deep-900 pb-16 text-white">
       <header className="border-b border-white/10">
@@ -276,10 +294,8 @@ export function Painel() {
                 ),
               })
             }
-            onPerguntas={(faseId) => {
-              setFaseDasPerguntas(faseId);
-              setAba("perguntas");
-            }}
+            onMudarTema={(temaId, mudanca) => mexerTema(temaId, mudanca)}
+            onApagarTema={(temaId) => apagarTema(temaId)}
             trilhaAberta={trilhaAberta}
             onAbrirTrilha={setTrilhaAberta}
             onLimpar={() => {
@@ -351,8 +367,9 @@ function MontarTrilhas({
   onApagarFase,
   onNovaTrilha,
   onMudarTrilha,
+  onMudarTema,
+  onApagarTema,
   onNovoTema,
-  onPerguntas,
   onLimpar,
   onExemplo,
   trilhaAberta,
@@ -364,8 +381,9 @@ function MontarTrilhas({
   onApagarFase: (trilhaId: string, temaId: string, faseId: string) => void;
   onNovaTrilha: () => void;
   onMudarTrilha: (id: string, mudanca: Partial<Trilha>) => void;
+  onMudarTema: (temaId: string, m: Partial<Tema>) => void;
+  onApagarTema: (temaId: string) => void;
   onNovoTema: (trilha: Trilha) => void;
-  onPerguntas: (faseId: string) => void;
   onLimpar: () => void;
   onExemplo: () => void;
   trilhaAberta: string | null;
@@ -384,8 +402,9 @@ function MontarTrilhas({
         onEditarFase={onEditarFase}
         onApagarFase={onApagarFase}
         onMudarTrilha={(m) => onMudarTrilha(trilha.id, m)}
+        onMudarTema={onMudarTema}
+        onApagarTema={onApagarTema}
         onNovoTema={onNovoTema}
-        onPerguntas={onPerguntas}
       />
     );
   }
@@ -483,7 +502,14 @@ function LinhaTrilha({ trilha, onAbrir }: { trilha: Trilha; onAbrir: () => void 
   );
 }
 
-/** A trilha aberta: o nome dela no topo, os temas e as fases abaixo. */
+/**
+ * A trilha aberta.
+ *
+ * Em cima, a trilha. Abaixo, um bloco por tema, e dentro de cada tema as
+ * fases dele — com o botão de criar fase ali mesmo, no tema a que ela vai
+ * pertencer. Criar fase de fora obrigaria a escolher o tema num segundo
+ * momento, que é justamente o que esta tela já responde.
+ */
 function TrilhaAberta({
   banco,
   trilha,
@@ -492,8 +518,9 @@ function TrilhaAberta({
   onEditarFase,
   onApagarFase,
   onMudarTrilha,
+  onMudarTema,
+  onApagarTema,
   onNovoTema,
-  onPerguntas,
 }: {
   banco: Banco;
   trilha: Trilha;
@@ -502,12 +529,11 @@ function TrilhaAberta({
   onEditarFase: (trilha: Trilha, tema: Tema, fase: Fase) => void;
   onApagarFase: (trilhaId: string, temaId: string, faseId: string) => void;
   onMudarTrilha: (m: Partial<Trilha>) => void;
+  onMudarTema: (temaId: string, m: Partial<Tema>) => void;
+  onApagarTema: (temaId: string) => void;
   onNovoTema: (trilha: Trilha) => void;
-  onPerguntas: (faseId: string) => void;
 }) {
-  const fases = fasesDaTrilha(trilha);
-  // Trilha recém-criada abre nos dados: sem nome, não há o que mostrar ainda.
-  const [editando, setEditando] = useState(!trilha.nome.trim());
+  const temas = [...trilha.temas].sort((a, b) => a.ordem - b.ordem);
 
   return (
     <>
@@ -522,124 +548,104 @@ function TrilhaAberta({
         Trilhas
       </button>
 
-      <div className="mt-2 flex flex-wrap items-start justify-between gap-4">
-        <div className="max-w-xl">
-          <h1 className="flex flex-wrap items-center gap-3 text-3xl font-extrabold">
-            {trilha.nome.trim() || "Sem nome"}
-            {trilha.ativa ? <Chip cor="ok">Ativa</Chip> : <Chip>Inativa</Chip>}
-          </h1>
-          <p className="mt-1 text-sm text-blue-100">
-            {trilha.descricao.trim() || "Sem descrição"}
-          </p>
-          <p className="mt-2 text-xs font-bold text-accent-500">
-            {trilha.temas.length} {trilha.temas.length === 1 ? "tema" : "temas"} · {fases.length}{" "}
-            {fases.length === 1 ? "fase" : "fases"}
-          </p>
-        </div>
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-3xl font-extrabold">{trilha.nome.trim() || "Sem nome"}</h1>
 
-        <div className="flex flex-wrap items-center gap-2">
-          {trilhaNoAr(trilha) && (
-            <Link
-              href={`/quizzes/demo?trilha=${trilha.id}&fase=1`}
-              className="text-xs font-bold text-blue-200 underline-offset-4 hover:underline"
-            >
-              Jogar esta trilha
-            </Link>
-          )}
-          <button
-            type="button"
-            onClick={() => setEditando((e) => !e)}
-            className={BOTAO_CLARO}
-            aria-expanded={editando}
+        {trilhaNoAr(trilha) && (
+          <Link
+            href={`/quizzes/demo?trilha=${trilha.id}&fase=1`}
+            className="text-xs font-bold text-blue-200 underline-offset-4 hover:underline"
           >
-            Dados da trilha
-          </button>
-          <button type="button" onClick={() => onNovoTema(trilha)} className={BOTAO_CLARO}>
-            + Tema
-          </button>
-          <button type="button" onClick={() => onNovaFase(trilha)} className={BOTAO_FORTE}>
-            + Nova fase
-          </button>
-        </div>
+            Jogar esta trilha
+          </Link>
+        )}
       </div>
 
-      {editando && (
-        <section className="mt-6 rounded-2xl bg-white p-5 text-slate-900">
-          <div className="grid gap-4 sm:grid-cols-[1fr_120px_120px]">
-            <Campo
-              id="trilha-aberta-nome"
-              rotulo="Nome"
-              valor={trilha.nome}
-              placeholder="Cores e números"
-              onChange={(nome) => onMudarTrilha({ nome })}
-            />
-            <Campo
-              id="trilha-aberta-ordem"
-              rotulo="Ordem"
-              valor={String(trilha.ordem)}
-              onChange={(v) => onMudarTrilha({ ordem: Number(v) || 1 })}
-            />
-            <div>
-              <span className="mb-1 block text-xs font-bold text-slate-600">Ativa</span>
-              <div className="flex gap-2">
-                {[true, false].map((v) => (
-                  <button
-                    key={String(v)}
-                    type="button"
-                    aria-pressed={trilha.ativa === v}
-                    onClick={() => onMudarTrilha({ ativa: v })}
-                    className={`rounded-full px-4 py-1.5 text-xs font-bold transition
-                                focus-visible:outline-2 focus-visible:outline-offset-2
-                                focus-visible:outline-blue-600 ${
-                                  trilha.ativa === v
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                                }`}
-                  >
-                    {v ? "Sim" : "Não"}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="sm:col-span-3">
-              <Campo
-                id="trilha-aberta-descricao"
-                rotulo="Descrição"
-                valor={trilha.descricao}
-                placeholder="Cumprimentos e expressões básicas."
-                onChange={(descricao) => onMudarTrilha({ descricao })}
-              />
+      {/* A trilha */}
+      <section className="mt-5 rounded-2xl bg-white p-5 text-slate-900">
+        <h2 className="text-base font-extrabold">A trilha</h2>
+        <p className="mt-0.5 text-sm text-slate-500">
+          O nome aparece na lista de trilhas do aluno. Inativa fica oculta para ele.
+        </p>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_120px_120px]">
+          <Campo
+            id="trilha-nome"
+            rotulo="Nome"
+            valor={trilha.nome}
+            placeholder="Cores e números"
+            onChange={(nome) => onMudarTrilha({ nome })}
+          />
+          <Campo
+            id="trilha-ordem"
+            rotulo="Ordem"
+            valor={String(trilha.ordem)}
+            onChange={(v) => onMudarTrilha({ ordem: Number(v) || 1 })}
+          />
+          <div>
+            <span className="mb-1 block text-xs font-bold text-slate-600">Ativa</span>
+            <div className="flex gap-2">
+              {[true, false].map((v) => (
+                <button
+                  key={String(v)}
+                  type="button"
+                  aria-pressed={trilha.ativa === v}
+                  onClick={() => onMudarTrilha({ ativa: v })}
+                  className={`rounded-full px-4 py-1.5 text-xs font-bold transition
+                              focus-visible:outline-2 focus-visible:outline-offset-2
+                              focus-visible:outline-blue-600 ${
+                                trilha.ativa === v
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                              }`}
+                >
+                  {v ? "Sim" : "Não"}
+                </button>
+              ))}
             </div>
           </div>
-        </section>
-      )}
-
-      {trilha.temas.length === 0 ? (
-        <p className="mt-6 rounded-2xl bg-white p-8 text-center text-sm text-slate-500">
-          Nenhum tema. Crie um para pendurar as fases.
-        </p>
-      ) : (
-        <div className="mt-6 space-y-4">
-          {[...trilha.temas]
-            .sort((a, b) => a.ordem - b.ordem)
-            .map((tema) => (
-              <BlocoTema
-                key={tema.id}
-                banco={banco}
-                trilha={trilha}
-                tema={tema}
-                onNovaFase={onNovaFase}
-                onEditarFase={onEditarFase}
-                onApagarFase={onApagarFase}
-                onPerguntas={onPerguntas}
-              />
-            ))}
+          <div className="sm:col-span-3">
+            <Campo
+              id="trilha-descricao"
+              rotulo="Descrição"
+              valor={trilha.descricao}
+              placeholder="Cumprimentos e expressões básicas."
+              onChange={(descricao) => onMudarTrilha({ descricao })}
+            />
+          </div>
         </div>
-      )}
+      </section>
+
+      {/* Os temas, cada um com as suas fases */}
+      {temas.map((tema) => (
+        <BlocoTema
+          key={tema.id}
+          banco={banco}
+          trilha={trilha}
+          tema={tema}
+          onNovaFase={() => onNovaFase(trilha, tema)}
+          onEditarFase={(fase) => onEditarFase(trilha, tema, fase)}
+          onApagarFase={(faseId) => onApagarFase(trilha.id, tema.id, faseId)}
+          onMudarTema={(m) => onMudarTema(tema.id, m)}
+          onApagarTema={() => onApagarTema(tema.id)}
+        />
+      ))}
+
+      <div className="mt-5">
+        <button type="button" onClick={() => onNovoTema(trilha)} className={BOTAO_FORTE}>
+          + Novo tema
+        </button>
+        {temas.length === 0 && (
+          <p className="mt-2 text-xs text-blue-200">
+            As fases ficam dentro de um tema. Crie o primeiro para começar.
+          </p>
+        )}
+      </div>
     </>
   );
 }
 
+/** Um tema da trilha, com as fases dele. */
 function BlocoTema({
   banco,
   trilha,
@@ -647,170 +653,149 @@ function BlocoTema({
   onNovaFase,
   onEditarFase,
   onApagarFase,
-  onPerguntas,
+  onMudarTema,
+  onApagarTema,
 }: {
   banco: Banco;
   trilha: Trilha;
   tema: Tema;
-  onNovaFase: (trilha?: Trilha, tema?: Tema) => void;
-  onEditarFase: (trilha: Trilha, tema: Tema, fase: Fase) => void;
-  onApagarFase: (trilhaId: string, temaId: string, faseId: string) => void;
-  onPerguntas: (faseId: string) => void;
+  onNovaFase: () => void;
+  onEditarFase: (fase: Fase) => void;
+  onApagarFase: (faseId: string) => void;
+  onMudarTema: (m: Partial<Tema>) => void;
+  onApagarTema: () => void;
 }) {
-  const [aberto, setAberto] = useState(true);
   const fases = [...tema.fases].sort((a, b) => a.ordem - b.ordem);
-  const pendentes = fases.filter((f) => !faseCompleta(f)).length;
 
   return (
-    <section className="rounded-2xl bg-white p-5 text-slate-900">
-      <header className="flex flex-wrap items-center gap-3">
-        <h3 className="text-sm text-slate-500">
-          Tema {tema.ordem}:{" "}
-          <strong className="font-extrabold text-slate-900">
-            {tema.titulo.trim() || "Sem título"}
-          </strong>
-        </h3>
-        <button
-          type="button"
-          onClick={() => onNovaFase(trilha, tema)}
-          className={`${BOTAO_CLARO} ml-auto`}
-        >
-          + Fase neste tema
-        </button>
+    <section className="mt-5 rounded-2xl bg-white text-slate-900">
+      <header className="border-b border-slate-200 p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-base font-extrabold">Tema {tema.ordem}</h2>
+            <p className="mt-0.5 text-sm text-slate-500">
+              As fases deste tema, na ordem em que o aluno percorre.
+            </p>
+          </div>
+          <Apagar oque={`tema ${tema.titulo || tema.ordem}`} onClick={onApagarTema} />
+        </div>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_120px]">
+          <Campo
+            id={`tema-titulo-${tema.id}`}
+            rotulo="Título"
+            valor={tema.titulo}
+            placeholder="Cumprimentos básicos"
+            onChange={(titulo) => onMudarTema({ titulo })}
+          />
+          <Campo
+            id={`tema-ordem-${tema.id}`}
+            rotulo="Ordem"
+            valor={String(tema.ordem)}
+            onChange={(v) => onMudarTema({ ordem: Number(v) || 1 })}
+          />
+        </div>
       </header>
 
-      {fases.length > 0 && (
-        <button
-          type="button"
-          onClick={() => setAberto((a) => !a)}
-          className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-slate-600
-                     underline-offset-4 hover:underline focus-visible:outline-2
-                     focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        >
-          <ChevronDownIcon className={`size-4 transition ${aberto ? "" : "-rotate-90"}`} />
-          {aberto ? "Ver menos" : "Ver mais…"}
-          <span className="font-normal text-slate-500">
-            ({fases.length} {fases.length === 1 ? "fase" : "fases"}
-            {pendentes > 0 && `, ${pendentes} pendentes`})
-          </span>
-        </button>
-      )}
-
-      {aberto && fases.length > 0 && (
-        <ul className="mt-3 space-y-2">
+      {fases.length === 0 ? (
+        <p className="p-5 text-sm text-slate-500">
+          Nenhuma fase neste tema ainda.
+        </p>
+      ) : (
+        <ul className="divide-y divide-slate-100">
           {fases.map((fase) => (
             <LinhaFase
               key={fase.id}
               banco={banco}
               trilha={trilha}
-              tema={tema}
               fase={fase}
-              onEditar={() => onEditarFase(trilha, tema, fase)}
-              onApagar={() => onApagarFase(trilha.id, tema.id, fase.id)}
-              onPerguntas={() => onPerguntas(fase.id)}
+              onEditar={() => onEditarFase(fase)}
+              onApagar={() => onApagarFase(fase.id)}
             />
           ))}
         </ul>
       )}
+
+      <div className="p-5 pt-4">
+        <button type="button" onClick={onNovaFase} className={BOTAO_CLARO}>
+          + Nova fase neste tema
+        </button>
+      </div>
     </section>
   );
 }
 
+/** Uma fase na lista do tema. */
 function LinhaFase({
   banco,
   trilha,
-  tema,
   fase,
   onEditar,
   onApagar,
-  onPerguntas,
 }: {
   banco: Banco;
   trilha: Trilha;
-  tema: Tema;
   fase: Fase;
   onEditar: () => void;
   onApagar: () => void;
-  onPerguntas: () => void;
 }) {
-  const palavras = palavrasDaFase(banco, fase);
-  const cards = fase.cards.length;
-  const perguntas = fase.perguntas.length;
+  const perguntas = perguntasProntas(fase).length;
   const nomeTipo = TIPOS_FASE.find((t) => t.tipo === fase.tipo)?.nome ?? fase.tipo;
 
-  const revisadas = fase.tipo === "Revisao" ? ensinadasAntes(banco, trilha, fase.id).length : 0;
-  const semPalavras = fase.tipo === "Revisao" ? revisadas < 2 : palavras.length === 0;
+  // A revisão não tem palavras próprias: ela repassa as das fases anteriores.
+  const palavras =
+    fase.tipo === "Revisao"
+      ? ensinadasAntes(banco, trilha, fase.id).length
+      : palavrasDaFase(banco, fase).length;
 
   return (
-    <li className="rounded-xl bg-slate-50 p-3">
-      <div className="flex flex-wrap items-start gap-3">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-extrabold text-slate-600">
-          {fase.ordem}
+    <li className="flex flex-wrap items-center gap-3 px-5 py-4">
+      <span
+        className={`flex size-7 shrink-0 items-center justify-center rounded-lg text-xs font-extrabold ${
+          perguntas > 0 ? "bg-correct-50 text-correct-700" : "bg-slate-100 text-slate-500"
+        }`}
+      >
+        {fase.ordem}
+      </span>
+
+      <button
+        type="button"
+        onClick={onEditar}
+        className="min-w-0 flex-1 text-left focus-visible:outline-2 focus-visible:outline-offset-2
+                   focus-visible:outline-blue-600"
+      >
+        <span className="block truncate text-sm font-extrabold">
+          {fase.titulo.trim() || "Sem título"}
         </span>
+        <span className="block truncate text-xs text-slate-500">
+          {fase.descricao.trim() || "Sem descrição"}
+        </span>
+      </button>
 
-        <div className="min-w-0 flex-1">
-          <p className="flex flex-wrap items-center gap-2">
-            <strong className="text-sm font-extrabold text-slate-900">
-              Fase {fase.ordem}: {fase.titulo.trim() || "Sem título"}
-            </strong>
-            <Chip cor={fase.tipo === "Revisao" ? "atencao" : "azul"}>{nomeTipo}</Chip>
-          </p>
+      <Chip cor={fase.tipo === "Revisao" ? "atencao" : "azul"}>{nomeTipo}</Chip>
 
-          <p className="mt-0.5 truncate text-xs text-slate-500">
-            {fase.descricao.trim() || "Sem descrição"}
-          </p>
+      <span className="w-44 shrink-0 text-right text-xs text-slate-500">
+        {palavras} {palavras === 1 ? "palavra" : "palavras"} ·{" "}
+        {perguntas > 0 ? (
+          <>
+            {perguntas} {perguntas === 1 ? "pergunta" : "perguntas"}
+          </>
+        ) : (
+          <span className="font-bold text-accent-600">sem perguntas</span>
+        )}
+      </span>
 
-          {palavras.length > 0 && (
-            <ul className="mt-1.5 flex flex-wrap gap-1.5">
-              {palavras.slice(0, 6).map((p: Palavra) => (
-                <li
-                  key={p.id}
-                  className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700"
-                >
-                  {p.ingles}
-                </li>
-              ))}
-            </ul>
-          )}
+      <button
+        type="button"
+        aria-label={`Abrir a fase ${fase.titulo || fase.ordem}`}
+        onClick={onEditar}
+        className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700
+                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+      >
+        <ArrowRightIcon className="size-4" />
+      </button>
 
-          <p className="mt-1.5 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
-            <span>
-              {fase.tipo === "Revisao" ? `${revisadas} palavras revisadas` : `${palavras.length} palavras`}{" "}
-              · {cards} cards da história · {perguntas}{" "}
-              {perguntas === 1 ? "pergunta" : "perguntas"}
-            </span>
-
-            {faseCompleta(fase) && !semPalavras ? (
-              <Chip cor="ok">Pronta para o aluno</Chip>
-            ) : (
-              <>
-                {semPalavras && <Chip cor="atencao">Sem palavras</Chip>}
-                {fase.tipo !== "Dialogo" && cards === 0 && <Chip cor="atencao">Sem história</Chip>}
-                {perguntas === 0 && <Chip cor="atencao">Sem perguntas</Chip>}
-                {perguntas > 0 && !perguntasOrdenadas(fase).every(perguntaPronta) && (
-                  <Chip cor="atencao">Perguntas incompletas</Chip>
-                )}
-              </>
-            )}
-          </p>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2">
-          <button type="button" onClick={onEditar} className={BOTAO_CLARO}>
-            Editar fase
-          </button>
-          <button
-            type="button"
-            onClick={onPerguntas}
-            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2
-                       text-sm font-bold text-white transition hover:bg-blue-700
-                       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          >
-            Perguntas
-          </button>
-          <Apagar oque={`fase ${fase.ordem} de ${tema.titulo || "este tema"}`} onClick={onApagar} />
-        </div>
-      </div>
+      <Apagar oque={`fase ${fase.ordem}`} onClick={onApagar} />
     </li>
   );
 }
