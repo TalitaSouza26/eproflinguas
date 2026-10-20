@@ -399,15 +399,12 @@ function PassoPalavras({
                 <ChevronDownIcon className="size-4" />
               </AcaoLinha>
 
-              <button
-                type="button"
+              {/* Tira a palavra desta fase. A Palavra em si continua no
+                  banco, para as outras fases que a usam. */}
+              <Apagar
+                oque={`${p.ingles} desta fase`}
                 onClick={() => reordenar(palavras.filter((x) => x.id !== p.id))}
-                className="rounded-full px-2.5 py-1 text-[11px] font-bold text-accent-600
-                           transition hover:bg-accent-50 focus-visible:outline-2
-                           focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-              >
-                Tirar da fase
-              </button>
+              />
             </li>
           ))}
         </ul>
