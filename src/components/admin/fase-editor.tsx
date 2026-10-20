@@ -55,15 +55,14 @@ export type Rascunho = {
   existente: boolean;
 };
 
-const PASSOS = [
-  "Trilha",
-  "Tema",
-  "Fase",
-  "Palavras",
-  "História",
-  "Perguntas",
-  "Revisão",
-] as const;
+/**
+ * Os passos de montar uma fase.
+ *
+ * Trilha e tema não estão aqui: a fase é criada de dentro do tema a que ela
+ * pertence, e os campos dos dois ficam na tela da trilha. Pedi-los de novo
+ * aqui seria perguntar o que a pessoa acabou de responder ao clicar.
+ */
+const PASSOS = ["Fase", "Palavras", "História", "Perguntas", "Revisão"] as const;
 
 export function FaseEditor({
   banco,
@@ -122,7 +121,7 @@ export function FaseEditor({
               {fase.titulo.trim() ? `: ${fase.titulo}` : ""}
             </h2>
             <p className="mt-0.5 text-xs text-slate-500">
-              Trilha, tema, palavras, história e perguntas da fase em um só lugar.
+              {caminho}
             </p>
           </div>
 
@@ -164,18 +163,15 @@ export function FaseEditor({
         </nav>
 
         <div className="max-h-[62vh] overflow-y-auto p-6">
-          {passo === 0 && <PassoTrilha banco={banco} rascunho={rascunho} onMudar={onMudar} />}
-          {passo === 1 && <PassoTema banco={banco} rascunho={rascunho} onMudar={onMudar} />}
-          {passo === 2 && (
+          {passo === 0 && (
             <PassoFase
-              caminho={caminho}
               fase={fase}
               podeRevisao={revisadas.length >= 2}
               onMudar={mexerFase}
               onFigura={onFigura}
             />
           )}
-          {passo === 3 && (
+          {passo === 1 && (
             <PassoPalavras
               banco={bancoDoRascunho}
               rascunho={rascunho}
@@ -183,7 +179,7 @@ export function FaseEditor({
               onMudar={onMudar}
             />
           )}
-          {passo === 4 && (
+          {passo === 2 && (
             <PassoHistoria
               banco={bancoDoRascunho}
               fase={fase}
@@ -192,7 +188,7 @@ export function FaseEditor({
               onFigura={onFigura}
             />
           )}
-          {passo === 5 && (
+          {passo === 3 && (
             <PassoPerguntas
               banco={bancoDoRascunho}
               trilha={trilha}
@@ -202,7 +198,7 @@ export function FaseEditor({
               onFigura={onFigura}
             />
           )}
-          {passo === 6 && (
+          {passo === 4 && (
             <PassoRevisao
               banco={bancoDoRascunho}
               rascunho={rascunho}
@@ -247,193 +243,14 @@ export function FaseEditor({
   );
 }
 
-/* ───────────────────────────── 1 · Trilha ───────────────────────────── */
-
-function PassoTrilha({
-  banco,
-  rascunho,
-  onMudar,
-}: {
-  banco: Banco;
-  rascunho: Rascunho;
-  onMudar: (r: Rascunho) => void;
-}) {
-  return (
-    <div>
-      <Ajuda>
-        Escolha a trilha onde a fase vai entrar, ou crie uma nova. A trilha organiza a jornada do
-        aluno.
-      </Ajuda>
-
-      <Lista
-        rotulo="Trilha"
-        novo="+ Criar nova trilha"
-        itens={banco.trilhas.map((t) => ({
-          id: t.id,
-          ordem: t.ordem,
-          nome: t.nome.trim() || "Sem nome",
-        }))}
-        selecionado={rascunho.trilhaId}
-        onEscolher={(id) => {
-          const t = banco.trilhas.find((x) => x.id === id);
-          onMudar({
-            ...rascunho,
-            trilhaId: id,
-            trilha: t
-              ? { nome: t.nome, descricao: t.descricao, ordem: t.ordem, ativa: t.ativa }
-              : { nome: "", descricao: "", ordem: banco.trilhas.length + 1, ativa: true },
-            // Trocar de trilha invalida o tema escolhido na anterior.
-            temaId: null,
-            tema: { titulo: "", ordem: 1 },
-          });
-        }}
-      />
-
-      <p className="mt-3 text-[11px] text-slate-500">
-        {rascunho.trilhaId
-          ? "Você está usando uma trilha existente. Se mudar os campos abaixo, ela será atualizada."
-          : "Uma trilha nova será criada com os campos abaixo."}
-      </p>
-
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <Campo
-          id="trilha-nome"
-          rotulo="Nome"
-          valor={rascunho.trilha.nome}
-          placeholder="Primeiras palavras"
-          onChange={(nome) => onMudar({ ...rascunho, trilha: { ...rascunho.trilha, nome } })}
-        />
-        <Campo
-          id="trilha-ordem"
-          rotulo="Ordem"
-          valor={String(rascunho.trilha.ordem)}
-          ajuda="A trilha abre quando o aluno termina a anterior."
-          onChange={(v) =>
-            onMudar({ ...rascunho, trilha: { ...rascunho.trilha, ordem: Number(v) || 1 } })
-          }
-        />
-        <div className="sm:col-span-2">
-          <CampoLongo
-            id="trilha-descricao"
-            rotulo="Descrição"
-            valor={rascunho.trilha.descricao}
-            placeholder="Cumprimentos e expressões básicas."
-            onChange={(descricao) =>
-              onMudar({ ...rascunho, trilha: { ...rascunho.trilha, descricao } })
-            }
-          />
-        </div>
-
-        <div>
-          <span className="mb-1 block text-xs font-bold text-slate-600">Ativa</span>
-          <div className="flex gap-2">
-            {[true, false].map((v) => (
-              <button
-                key={String(v)}
-                type="button"
-                aria-pressed={rascunho.trilha.ativa === v}
-                onClick={() =>
-                  onMudar({ ...rascunho, trilha: { ...rascunho.trilha, ativa: v } })
-                }
-                className={`rounded-full px-4 py-1.5 text-xs font-bold transition
-                            focus-visible:outline-2 focus-visible:outline-offset-2
-                            focus-visible:outline-blue-600 ${
-                              rascunho.trilha.ativa === v
-                                ? "bg-blue-600 text-white"
-                                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                            }`}
-              >
-                {v ? "Sim" : "Não"}
-              </button>
-            ))}
-          </div>
-          <span className="mt-1 block text-[11px] text-slate-500">
-            Inativas ficam ocultas para os alunos.
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ───────────────────────────── 2 · Tema ───────────────────────────── */
-
-function PassoTema({
-  banco,
-  rascunho,
-  onMudar,
-}: {
-  banco: Banco;
-  rascunho: Rascunho;
-  onMudar: (r: Rascunho) => void;
-}) {
-  const trilha = banco.trilhas.find((t) => t.id === rascunho.trilhaId);
-  const temas = trilha?.temas ?? [];
-
-  return (
-    <div>
-      <Ajuda>
-        Trilha: {rascunho.trilha.nome.trim() || "sem nome"}. Escolha um tema dela ou crie um novo.
-      </Ajuda>
-
-      <Lista
-        rotulo="Tema"
-        novo="+ Criar novo tema"
-        itens={temas.map((t) => ({
-          id: t.id,
-          ordem: t.ordem,
-          nome: t.titulo.trim() || "Sem título",
-        }))}
-        selecionado={rascunho.temaId}
-        onEscolher={(id) => {
-          const t = temas.find((x) => x.id === id);
-          onMudar({
-            ...rascunho,
-            temaId: id,
-            tema: t
-              ? { titulo: t.titulo, ordem: t.ordem }
-              : { titulo: "", ordem: temas.length + 1 },
-          });
-        }}
-      />
-
-      <p className="mt-3 text-[11px] text-slate-500">
-        {rascunho.temaId
-          ? "Você está usando um tema existente desta trilha."
-          : "Um tema novo será criado nesta trilha."}
-      </p>
-
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <Campo
-          id="tema-titulo"
-          rotulo="Título"
-          valor={rascunho.tema.titulo}
-          placeholder="Cumprimentos básicos"
-          onChange={(titulo) => onMudar({ ...rascunho, tema: { ...rascunho.tema, titulo } })}
-        />
-        <Campo
-          id="tema-ordem"
-          rotulo="Ordem"
-          valor={String(rascunho.tema.ordem)}
-          onChange={(v) =>
-            onMudar({ ...rascunho, tema: { ...rascunho.tema, ordem: Number(v) || 1 } })
-          }
-        />
-      </div>
-    </div>
-  );
-}
-
-/* ───────────────────────────── 3 · Fase ───────────────────────────── */
+/* ───────────────────────────── 1 · Fase ───────────────────────────── */
 
 function PassoFase({
-  caminho,
   fase,
   podeRevisao,
   onMudar,
   onFigura,
 }: {
-  caminho: string;
   fase: Fase;
   podeRevisao: boolean;
   onMudar: (m: Partial<Fase>) => void;
@@ -442,7 +259,7 @@ function PassoFase({
   return (
     <div>
       <Ajuda>
-        {caminho}. A fase é a unidade do quiz: palavras, história e perguntas ficam ligadas a ela.
+        A fase é a unidade do quiz: palavras, história e perguntas ficam ligadas a ela.
       </Ajuda>
 
       <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
@@ -506,7 +323,7 @@ function PassoFase({
   );
 }
 
-/* ───────────────────────────── 4 · Palavras ───────────────────────────── */
+/* ───────────────────────────── 2 · Palavras ───────────────────────────── */
 
 function PassoPalavras({
   banco,
@@ -701,7 +518,7 @@ function PassoPalavras({
   );
 }
 
-/* ───────────────────────────── 5 · História ───────────────────────────── */
+/* ───────────────────────────── 3 · História ───────────────────────────── */
 
 function PassoHistoria({
   banco,
@@ -904,7 +721,7 @@ function PassoHistoria({
   );
 }
 
-/* ───────────────────────────── 6 · Perguntas ───────────────────────────── */
+/* ───────────────────────────── 4 · Perguntas ───────────────────────────── */
 
 function PassoPerguntas({
   banco,
@@ -926,7 +743,7 @@ function PassoPerguntas({
       <Ajuda>
         {fase.tipo === "Revisao"
           ? "A revisão repassa as palavras das fases anteriores, sempre por um caminho diferente do que as ensinou."
-          : "Crie o quiz da fase usando as palavras da seção 4 e a história da seção 5. Tudo é gravado junto quando você salvar a fase."}
+          : "Crie o quiz da fase usando as palavras e a história dos passos anteriores. Tudo é gravado junto quando você salvar a fase."}
       </Ajuda>
 
       {fase.tipo === "Revisao" && trilha && palavras.length >= 2 && (
@@ -950,7 +767,7 @@ function PassoPerguntas({
   );
 }
 
-/* ───────────────────────────── 7 · Revisão ───────────────────────────── */
+/* ───────────────────────────── 5 · Revisão ───────────────────────────── */
 
 function PassoRevisao({
   banco,
@@ -1086,68 +903,4 @@ function PassoRevisao({
 
 function Ajuda({ children }: { children: React.ReactNode }) {
   return <p className="mb-4 text-sm leading-relaxed text-slate-600">{children}</p>;
-}
-
-/** A lista de escolher-ou-criar dos passos 1 e 2. */
-function Lista({
-  rotulo,
-  novo,
-  itens,
-  selecionado,
-  onEscolher,
-}: {
-  rotulo: string;
-  novo: string;
-  itens: { id: string; ordem: number; nome: string }[];
-  selecionado: string | null;
-  onEscolher: (id: string | null) => void;
-}) {
-  return (
-    <div>
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <span className="text-xs font-bold text-slate-600">{rotulo}</span>
-        <button
-          type="button"
-          onClick={() => onEscolher(null)}
-          className={`rounded-full px-3 py-1 text-xs font-bold transition focus-visible:outline-2
-                      focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
-                        selecionado === null
-                          ? "bg-blue-600 text-white"
-                          : "text-blue-700 hover:bg-blue-50"
-                      }`}
-        >
-          {novo}
-        </button>
-      </div>
-
-      {itens.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-slate-300 p-4 text-center text-xs text-slate-500">
-          Nada ainda. O primeiro será criado agora.
-        </p>
-      ) : (
-        <ul className="flex flex-wrap gap-2">
-          {[...itens]
-            .sort((a, b) => a.ordem - b.ordem)
-            .map((i) => (
-              <li key={i.id}>
-                <button
-                  type="button"
-                  aria-pressed={selecionado === i.id}
-                  onClick={() => onEscolher(i.id)}
-                  className={`rounded-full px-3 py-1.5 text-xs font-bold transition
-                              focus-visible:outline-2 focus-visible:outline-offset-2
-                              focus-visible:outline-blue-600 ${
-                                selecionado === i.id
-                                  ? "bg-blue-600 text-white"
-                                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                              }`}
-                >
-                  {i.ordem}. {i.nome}
-                </button>
-              </li>
-            ))}
-        </ul>
-      )}
-    </div>
-  );
 }
