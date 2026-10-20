@@ -201,42 +201,44 @@ function PassoFase({
         </div>
       </div>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_120px]">
-        <Campo
-          id="fase-titulo"
-          rotulo="Título"
-          valor={fase.titulo}
-          placeholder="Um novo amigo"
-          onChange={(titulo) => onMudar({ titulo })}
-        />
-        <Campo
-          id="fase-ordem"
-          rotulo="Ordem"
-          valor={String(fase.ordem)}
-          onChange={(v) => onMudar({ ordem: Number(v) || 1 })}
-        />
-      </div>
-
-      <div className="mt-4">
-        <CampoLongo
-          id="fase-descricao"
-          rotulo="Descrição"
-          valor={fase.descricao}
-          placeholder="Sofia conhece um menino que ainda não fala português."
-          onChange={(descricao) => onMudar({ descricao })}
-        />
-      </div>
-
-      <div className="mt-5">
-        <span className="mb-2 block text-xs font-bold text-slate-600">Imagem de capa</span>
-        <div className="flex items-center gap-3">
+      {/* A capa grande, e ao lado dela os campos da fase em coluna. */}
+      <div className="mt-5 flex flex-wrap items-start gap-5">
+        <div className="shrink-0">
+          <span className="mb-1 block text-xs font-bold text-slate-600">Imagem de capa</span>
           <CampoFigura
             imagem={fase.imagemCapa}
             rotulo="Imagem de capa da fase"
-            tamanho="h-[88px] w-[156px]"
+            tamanho="h-[188px] w-[280px] max-w-full"
             onEscolher={(arquivo) => onFigura(arquivo, (imagemCapa) => onMudar({ imagemCapa }))}
           />
-          <p className="text-xs text-slate-500">Opcional. Aparece no card da fase.</p>
+          <span className="mt-1 block text-[11px] text-slate-500">
+            Opcional. Aparece no card da fase.
+          </span>
+        </div>
+
+        <div className="grid min-w-[280px] flex-1 gap-4">
+          <Campo
+            id="fase-titulo"
+            rotulo="Título"
+            valor={fase.titulo}
+            placeholder="Um novo amigo"
+            onChange={(titulo) => onMudar({ titulo })}
+          />
+          <CampoLongo
+            id="fase-descricao"
+            rotulo="Descrição"
+            valor={fase.descricao}
+            placeholder="Sofia conhece um menino que ainda não fala português."
+            onChange={(descricao) => onMudar({ descricao })}
+          />
+          <div className="w-32">
+            <Campo
+              id="fase-ordem"
+              rotulo="Ordem"
+              valor={String(fase.ordem)}
+              onChange={(v) => onMudar({ ordem: Number(v) || 1 })}
+            />
+          </div>
         </div>
       </div>
     </div>
