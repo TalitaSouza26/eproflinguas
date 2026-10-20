@@ -5,19 +5,15 @@ import { GalleryPlayer } from "@/components/quiz/gallery-player";
 import { QuizPlayer } from "@/components/quiz/quiz-player";
 import { ReviewIntro } from "@/components/quiz/review-intro";
 import { StoryPlayer } from "@/components/quiz/story-player";
+import { aberturaDaFase } from "@/lib/demo/abertura";
 import {
-  aberturaEhGaleria,
-  acharPalavra,
   acharTrilha,
-  cardsOrdenados,
   faseCompleta,
   faseTemAbertura,
   fasesDaTrilha,
   perguntasParaOQuiz,
 } from "@/lib/demo/banco";
 import { useBanco } from "@/lib/demo/use-banco";
-import type { Gallery } from "@/lib/quiz/galeria";
-import type { Story, StoryBeat } from "@/lib/quiz/stories";
 
 /**
  * Uma fase montada no admin, rodando na tela do aluno.
@@ -72,59 +68,14 @@ export function DemoFase({
     );
   }
 
-  const cards = cardsOrdenados(atual);
+  const abertura = aberturaDaFase(banco, atual, { trilha: trilha.nome, numero: fase });
+  if (!abertura) return <ReviewIntro questions={perguntas.length} quizHref={quizHref} />;
 
-  // Só cards de palavra, todos com figura: é a galeria "Olha e aprende".
-  if (aberturaEhGaleria(atual)) {
-    const galeria: Gallery = {
-      slug: "demo",
-      phase: fase,
-      title: atual.titulo || trilha.nome,
-      track: trilha.nome,
-      words: cards.map((c) => ({
-        en: acharPalavra(banco, c.palavraId)?.ingles ?? c.destaque,
-        pt: c.traducao || (acharPalavra(banco, c.palavraId)?.traducao ?? ""),
-        image: c.imagem ?? "",
-      })),
-    };
-    return <GalleryPlayer gallery={galeria} quizHref={quizHref} />;
-  }
-
-  // Os cards viram as batidas da história, na mesma ordem: o de história
-  // narra, o de palavra para tudo e mostra o que ela quer dizer.
-  const beats: StoryBeat[] = cards.map((c) =>
-    c.tipo === "Historia"
-      ? {
-          kind: "narration" as const,
-          text: (c.destaque
-            ? `${c.textoAntes} *${c.destaque}* ${c.textoDepois}`
-            : `${c.textoAntes} ${c.textoDepois}`
-          )
-            .replace(/\s+/g, " ")
-            .trim(),
-          ...(c.imagem ? { image: c.imagem } : {}),
-        }
-      : {
-          kind: "lesson" as const,
-          word: acharPalavra(banco, c.palavraId)?.ingles || c.destaque,
-          meaning: c.traducao || (acharPalavra(banco, c.palavraId)?.traducao ?? ""),
-        },
+  return abertura.tipo === "galeria" ? (
+    <GalleryPlayer gallery={abertura.galeria} quizHref={quizHref} />
+  ) : (
+    <StoryPlayer story={abertura.historia} quizHref={quizHref} parts={total} />
   );
-
-  const novas = cards.filter((c) => c.tipo === "Palavra").length;
-
-  const historia: Story = {
-    slug: "demo",
-    phase: fase,
-    part: fase,
-    title: atual.titulo || trilha.nome,
-    subtitle:
-      atual.descricao.trim() || `${novas} ${novas === 1 ? "palavra nova" : "palavras novas"}.`,
-    cover: atual.imagemCapa ?? cards.find((c) => c.imagem)?.imagem ?? "",
-    beats,
-  };
-
-  return <StoryPlayer story={historia} quizHref={quizHref} parts={total} />;
 }
 
 function contexto(fase: number, total: number): string {

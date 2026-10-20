@@ -14,7 +14,14 @@ import {
   Escolha,
 } from "@/components/admin/campos";
 import { PerguntasEditor } from "@/components/admin/perguntas-editor";
-import { CheckIcon, ChevronDownIcon, CloseIcon, CopyIcon } from "@/components/ui/icons";
+import { PreviaCenas } from "@/components/admin/previa-cenas";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  CloseIcon,
+  CopyIcon,
+  PlayIcon,
+} from "@/components/ui/icons";
 import {
   acharPalavra,
   cardsOrdenados,
@@ -131,6 +138,7 @@ export function FaseEditor({
           <PassoHistoria
             banco={banco}
             fase={fase}
+            trilhaNome={trilha.nome}
             palavras={palavras}
             onMudar={onMudar}
             onFigura={onFigura}
@@ -418,18 +426,21 @@ function PassoPalavras({
 function PassoHistoria({
   banco,
   fase,
+  trilhaNome,
   palavras,
   onMudar,
   onFigura,
 }: {
   banco: Banco;
   fase: Fase;
+  trilhaNome: string;
   palavras: Palavra[];
   onMudar: (m: Partial<Fase>) => void;
   onFigura: (arquivo: File | undefined, aplicar: (dataUrl: string) => void) => void;
 }) {
   const cards = cardsOrdenados(fase);
   const [abertoId, setAbertoId] = useState<string | null>(null);
+  const [previa, setPrevia] = useState(false);
 
   function salvar(lista: Card[]) {
     onMudar({ cards: lista.map((c, i) => ({ ...c, ordem: i + 1 })) });
@@ -452,14 +463,37 @@ function PassoHistoria({
         relacionada, destaque e tradução são preenchidos com os dados dela.
       </Ajuda>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <button type="button" onClick={() => adicionar("Historia")} className={BOTAO_AZUL}>
           + Card de cena
         </button>
         <button type="button" onClick={() => adicionar("Palavra")} className={BOTAO_CLARO}>
           + Card de palavra
         </button>
+
+        {/* A prévia é da sequência inteira, e não de um card: é assim que
+            o aluno recebe, uma tela depois da outra. */}
+        {cards.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setPrevia(true)}
+            className={BOTAO_CLARO + " ml-auto"}
+          >
+            <PlayIcon className="size-4" />
+            Ver como o aluno vê
+          </button>
+        )}
       </div>
+
+      {previa && (
+        <PreviaCenas
+          banco={banco}
+          fase={fase}
+          trilha={trilhaNome}
+          numero={fase.ordem}
+          onFechar={() => setPrevia(false)}
+        />
+      )}
 
       {cards.length === 0 ? (
         <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">
@@ -530,12 +564,10 @@ function PassoHistoria({
                 </div>
 
                 {abertoId === card.id && (
-                  <div className="flex flex-wrap items-start gap-4 border-t border-slate-100 bg-slate-50/60 p-4">
-                    <PreviaDoCard card={card} palavra={acharPalavra(banco, card.palavraId)} />
-
+                  <div className="border-t border-slate-100 bg-slate-50/60 p-4">
                     {/* A figura e os campos num bloco só: separada, ela virava
-                        uma terceira coluna com um campo dentro. */}
-                    <div className="grid min-w-[320px] max-w-2xl flex-1 grid-cols-[96px_1fr] gap-3 rounded-xl border border-slate-200 bg-white p-3">
+                        uma coluna com um campo dentro e o vazio em volta. */}
+                    <div className="grid max-w-3xl grid-cols-[96px_1fr] gap-3">
                       <CampoFigura
                         imagem={card.imagem}
                         rotulo={`Imagem do card ${i + 1}`}
@@ -781,57 +813,4 @@ function PassoRevisao({
 
 function Ajuda({ children }: { children: React.ReactNode }) {
   return <p className="mb-4 text-sm leading-relaxed text-slate-600">{children}</p>;
-}
-
-/**
- * Como o card chega ao aluno.
- *
- * A cena é texto com uma palavra em destaque; o card de palavra para tudo e
- * mostra a figura, a palavra e o que ela quer dizer. São duas telas bem
- * diferentes, e os mesmos campos no editor não deixam isso claro.
- */
-function PreviaDoCard({ card, palavra }: { card: Card; palavra: Palavra | undefined }) {
-  const ingles = palavra?.ingles || card.destaque;
-  const traducao = card.traducao || palavra?.traducao || "";
-  const temTexto = card.textoAntes || card.destaque || card.textoDepois;
-
-  return (
-    <aside className="h-fit w-[240px] shrink-0 rounded-xl bg-deep-900 p-3 text-white">
-      <p className="text-[11px] font-bold uppercase tracking-wide text-blue-200">
-        Prévia do aluno
-      </p>
-
-      <div className="mt-3 rounded-xl bg-white p-4 text-slate-900">
-        {card.imagem && (
-          // eslint-disable-next-line @next/next/no-img-element -- data URL do admin, nunca otimizada
-          <img src={card.imagem} alt="" className="mb-3 h-28 w-full rounded-lg object-cover" />
-        )}
-
-        {card.tipo === "Historia" ? (
-          <p className="text-sm leading-relaxed">
-            {temTexto ? (
-              <>
-                {card.textoAntes}{" "}
-                {card.destaque && (
-                  <strong className="font-extrabold text-accent-600">{card.destaque}</strong>
-                )}{" "}
-                {card.textoDepois}
-              </>
-            ) : (
-              <span className="text-slate-400">O texto da cena aparece aqui.</span>
-            )}
-          </p>
-        ) : (
-          <div className="text-center">
-            <p className="text-xl font-extrabold text-deep-900">
-              {ingles || <span className="text-slate-400">A palavra</span>}
-            </p>
-            <p className="mt-1 text-sm text-ink-700">
-              {traducao || <span className="text-slate-400">o que ela quer dizer</span>}
-            </p>
-          </div>
-        )}
-      </div>
-    </aside>
-  );
 }
